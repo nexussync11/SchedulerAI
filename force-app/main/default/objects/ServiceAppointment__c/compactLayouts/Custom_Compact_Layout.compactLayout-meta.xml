@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CompactLayout xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Custom_Compact_Layout</fullName>
+    <fields>Name</fields>
+    <fields>Actual_Duration_Minutes__c</fields>
+    <fields>Actual_End__c</fields>
+    <fields>Actual_Start__c</fields>
+    <fields>Additional_Information__c</fields>
+    <fields>Address__c</fields>
+    <fields>Anonymous_Booking__c</fields>
+    <label>Custom Compact Layout</label>
+</CompactLayout>

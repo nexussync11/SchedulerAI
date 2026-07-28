@@ -1,0 +1,84 @@
+<aura:component controller="AvailabilityManagerController"
+                implements="flexipage:availableForAllPageTypes,force:appHostable"
+                access="global">
+
+    <aura:attribute name="serviceResourceId" type="String" />
+    <aura:attribute name="resourceList" type="List" />
+    <aura:attribute name="dayOptions" type="List" />
+    <aura:attribute name="_isSaving" type="Boolean" default="false"/>
+
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+
+    <lightning:card title="Weekly Availability (Simple)">
+        <div class="slds-p-around_medium">
+            <lightning:combobox label="Select Service Resource"
+                                name="resourceSelector"
+                                value="{!v.serviceResourceId}"
+                                options="{!v.resourceList}"
+                                onchange="{!c.handleResourceChange}" />
+
+            <div class="slds-m-top_medium">
+                <table class="slds-table slds-table_cell-buffer slds-table_bordered">
+                    <thead>
+                        <tr class="slds-text-title_caps">
+                            <th>Day</th>
+                            <th>Available</th>
+                            <th>Start Time</th>
+                            <th>End Time</th>
+                            <th>Break Start</th>
+                            <th>Break End</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <aura:iteration items="{!v.dayOptions}" var="day">
+                            <tr>
+                                <td>{!day.label}</td>
+                                <td>
+                                    <lightning:input type="checkbox"
+                                                     name="{!day.label}"
+                                                     checked="{!day.isActive}"
+                                                     onchange="{!c.handleCheckboxChange}" />
+                                </td>
+                                <td>
+                                    <lightning:input type="time"
+                                                     name="{!day.label}"
+                                                     value="{!day.start}"
+                                                     localId="start"
+                                                     onchange="{!c.handleTimeChange}" />
+                                </td>
+                                <td>
+                                    <lightning:input type="time"
+                                                     name="{!day.label}"
+                                                     value="{!day.end}"
+                                                     localId="end"
+                                                     onchange="{!c.handleTimeChange}" />
+                                </td>
+                                <td>
+                                    <lightning:input type="time"
+                                                     name="{!day.label}"
+                                                     value="{!day.breakStart}"
+                                                     localId="breakStart"
+                                                     onchange="{!c.handleTimeChange}" />
+                                </td>
+                                <td>
+                                    <lightning:input type="time"
+                                                     name="{!day.label}"
+                                                     value="{!day.breakEnd}"
+                                                     localId="breakEnd"
+                                                     onchange="{!c.handleTimeChange}" />
+                                </td>
+                            </tr>
+                        </aura:iteration>
+                    </tbody>
+                </table>
+            </div>
+
+            <div class="slds-m-top_large slds-align_absolute-center">
+                <lightning:button variant="brand"
+                                  label="Save Availability"
+                                  onclick="{!c.saveAvailability}"
+                                  disabled="{!v._isSaving}" />
+            </div>
+        </div>
+    </lightning:card>
+</aura:component>

@@ -1,0 +1,236 @@
+<aura:component controller="Createappointmentreferralcontroller"
+                implements="force:appHostable,flexipage:availableForAllPageTypes,flexipage:availableForRecordHome,force:hasRecordId,forceCommunity:availableForAllPageTypes,force:lightningQuickAction"
+                access="global" >
+    
+    <!-- Attributes -->
+    <aura:attribute name="leadName" type="String"/>
+    <aura:attribute name="recordId" type="String" />
+    <aura:attribute name="newOpportunity" type="Object"/>
+    <aura:attribute name="simpleNewOpportunity" type="Opportunity"/>
+    <aura:attribute name="lstProject" type="List" default="[]" description="Selected Genre Picklist Values"/>
+    <aura:attribute name="newOpportunityError" type="String"/>
+    <aura:attribute name="GenreList" type="List" description="Genre Picklist Values"/>
+    <aura:attribute name="StageList" type="List" default="[]"/>
+    <aura:attribute name="progRefcheck" type="Boolean"/>
+    <aura:attribute name="value" type="string"/>
+    <aura:attribute name="data" type="Object"/>
+    <aura:attribute name="columns" type="List"/>
+    <aura:attribute name="datalst" type="list"/>
+    <aura:attribute name="displaycolumn" type="Boolean" default="false"/>
+    <aura:attribute name="selection" type="String"/>
+    <aura:attribute name="LeadEmail" type="String"/>
+    <aura:attribute name="Referral_Subject" type="String"/>
+    <aura:attribute name="Referral_Details" type="String"/>
+    <aura:attribute name="Prog_Referral_Rep" type="String"/>
+    <aura:attribute name="ApointmentstartDate" type="Date"/>
+    <aura:attribute name="selectedLookUpRecord" type="sObject" default="{}"/>
+    <aura:attribute name="selectedLookUpRecord1" type="string"/>
+    <aura:attribute name="displSection" type="Boolean" default="false"/>  
+    <aura:attribute name="displSection1" type="Boolean" default="true"/>
+    <aura:attribute name="displSection2" type="Boolean" default="true"/>
+    <aura:attribute name="bookingSource" type="String"/>
+    <aura:attribute name="bookingstatus" type="String"/>
+
+    <aura:attribute name="bookedBy" type="String"/>
+    <aura:attribute name="bookedByOptions" type="List"/>
+    <aura:attribute name="isBookedByReady" type="Boolean" default="false"/>
+
+
+    
+     <aura:attribute name="isExpired" type="Boolean" default="false"/>
+    <!-- Handlers -->
+    <aura:handler name="init" value="{!this}" action="{!c.doInit}"/>
+    <aura:handler name="lookupEvent" event="c:Referralcomponentevent" action="{!c.handleComponentEvent}"/>
+    <aura:handler name="change" value="{!v.selectedLookUpRecord}" action="{!c.selectedLookupChanged}"/>
+    
+    <aura:if isTrue="{!v.isExpired}">
+        <div class="slds-text-color_error slds-text-heading_medium" style="padding:2rem;">
+            ⚠️ This booking component has expired and is no longer accessible.
+        </div>
+    <aura:set attribute="else">
+    
+    <!-- Force:recordData to fetch Opportunity fields if needed -->
+    <force:recordData aura:id="OpportunityRecordCreator" 
+                      fields="Name,Email__c,AccountId,Service_Resource__c,StageName,Referral_Subject__c,CloseDate,Prog_Referral_Rep__c, Inhouse_Created_By__c "
+                      targetRecord="{!v.newOpportunity}"
+                      targetFields="{!v.simpleNewOpportunity}"
+                      targetError="{!v.newOpportunityError}" />
+    
+    <!-- Main Form -->
+    <div class="Create Opportunity">
+        <lightning:card>
+            <!-- Two-Column Layout Using slds-grid -->
+            <div class="slds-grid slds-wrap">
+                
+                <!-- Left Column (5 fields) -->
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    
+                    <!-- 1) Lead Name -->
+                    <lightning:input 
+                        aura:id="leadName" 
+                        label="Name" 
+                        value="{!v.leadName}" />
+                    
+                    <!-- 2) Referral Subject -->
+                    <lightning:input 
+                        aura:id="oppField" 
+                        label="Subject of Appointment" 
+                        required="True" 
+                        value="{!v.Referral_Subject}" />
+                    
+                    <!-- 3) Referral Details
+                    <lightning:input 
+                        aura:id="oppField" 
+                        label="Referral Details (max char-255)" 
+                        maxlength="250" 
+                        required="True" 
+                        value="{!v.Referral_Details}" /> -->
+                    
+                    <!-- 4) Sales Consultant 
+                    <lightning:input 
+                        aura:id="oppField" 
+                        label="Sales Consultant" 
+                        value="{!v.Prog_Referral_Rep}" />-->
+                    
+                    <!-- 5) Appointment Date -->
+                    <lightning:input 
+                        aura:id="oppField" 
+                        label="Appointment Date" 
+                        value="{!v.ApointmentstartDate}" 
+                        type="date" 
+                        required="true" />
+                </div>
+                
+                <!-- Right Column (5 fields) -->
+                <div class="slds-col slds-size_1-of-2 slds-p-around_small">
+                    
+                    <!-- 6) Booking Source -->
+
+                           <lightning:input
+                             label="Booking Source"
+                             value="{!v.bookingSource}"
+                             disabled="true"/>
+
+
+
+
+
+                    
+                    <!-- 7) Booking Status 
+                    <lightning:select 
+                        aura:id="bookingstatus" 
+                        label="Booking Status" 
+                        value="{!v.bookingstatus}">
+                        <option value="">Select</option>
+                        <option value="Arrived">Arrived</option>
+                        <option value="Cancel">Cancel</option>
+                        <option value="No Show">No Show</option>
+                        <option value="Open">Open</option>
+                    </lightning:select>-->
+                    
+                    <!-- 8) Email -->
+                    <lightning:input 
+                        aura:id="oppField" 
+                        label="Email" 
+                        value="{!v.LeadEmail}" 
+                        type="Email" />
+                    
+                    <!-- 9) & 10) Service Resource Lookups -->
+                    <!-- Show Either LookupReferralComponent or customLookup -->
+                    <aura:if isTrue="{!v.displSection2}">
+                        <aura:if isTrue="{!v.displSection}">
+                            <div style="margin-top:4px">
+                                <c:lookupreferralcomponent
+                                    name="serviceresourceLookup"
+                                    fieldLabel="Service Resource"
+                                    childObjectApiName="Opportunity"
+                                    targetFieldApiName="Service_Resource__c"
+                                    value="{!v.simpleNewOpportunity.Service_Resource__c}"
+                                    addToRecent="true"/>
+                            </div>
+                        </aura:if>
+                        
+                        <aura:if isTrue="{!v.displSection1}">
+                            <div style="margin-top:4px">
+                                <c:customLookup 
+                                    objectAPIName="Service_Resource__c" 
+                                    IconName="standard:service_resource" 
+                                    selectedRecord="{!v.selectedLookUpRecord1}" 
+                                    label="Service Resource"/>
+                            </div>
+                        </aura:if>
+                    </aura:if>
+
+   <!-- ***************************************************** -->
+   <aura:if isTrue="{!v.isBookedByReady}">
+<lightning:select
+    label="Booked By"
+    value="{!v.bookedBy}"
+    required="true">
+
+    <option value="">-- Select --</option>
+
+    <aura:iteration items="{!v.bookedByOptions}" var="opt">
+        <option value="{!opt}">{!opt}</option>
+    </aura:iteration>
+
+</lightning:select>
+ </aura:if>
+
+   <!-- ******************************************************* -->
+
+                </div>
+            </div>
+            
+            <!-- Buttons Row -->
+            <div class="slds-grid slds-gutters" style="margin-top: 20px;">
+                <div class="slds-col slds-size_1-of-2">
+                    <lightning:button 
+                        variant="brand" 
+                        label="Check availability" 
+                        onclick="{! c.handleClick }" />
+                </div>
+                <div class="slds-col slds-size_1-of-2" style="text-align:right;">
+                    <lightning:button 
+                        label="Save" 
+                        variant="brand" 
+                        onclick="{!c.handleSaveContact}"/>
+                </div>
+            </div>
+            
+            <!-- Available Time Slots Section -->
+            <aura:if isTrue="{!v.displaycolumn}">
+                <div class="slds-section slds-is-open" style="text-align:center; margin-top:20px;">
+                    <h3 class="slds-section__title" style="text-align:center;">
+                        <span class="slds-truncate" title="Section Title">Available Time Slots</span>
+                    </h3>
+                    
+                    <table class="slds-table slds-table--bordered slds-table--striped slds-table--cell-buffer slds-table--fixed-layout" style="margin:auto; width:80%;">
+                        <tbody>
+                            <aura:iteration items="{!v.datalst}" var="x">
+                                <tr>
+                                    <td style="text-align:center">
+                                        <div class="slds-truncate">
+                                            {!x[0]} - {!x[1]}
+                                        </div>
+                                        <div class="slds-truncate" style="float:left;">
+                                            <lightning:input 
+                                                aura:id="checkbox1" 
+                                                type="checkbox" 
+                                                value="{!x[0]}" 
+                                                onchange="{!c.onCheck}" 
+                                                multiple="false"/>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </aura:iteration>
+                        </tbody>
+                    </table>     
+                </div>
+            </aura:if>
+            
+        </lightning:card>
+    </div>
+    </aura:set>
+    </aura:if>
+</aura:component>

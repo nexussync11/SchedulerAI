@@ -1,0 +1,36 @@
+<aura:component controller="Createappointmentreferralcontroller" access="global">
+    <aura:attribute name="name" type="String" default=""/>
+    <aura:attribute name="variantLabel" type="String" default="label-hidden"/>
+    <aura:attribute name="fieldLabel" type="String" default=""/>
+    <aura:attribute name="childObjectApiName" type="String" default=""/>
+    <aura:attribute name="targetFieldApiName" type="String" default=""/>
+    <aura:attribute name="value" type="String" default=""/>
+    <aura:attribute name="required" type="Boolean" default="false"/>
+    <aura:attribute name="addToRecent" type="Boolean" default="false"/>
+
+    <!-- Register Event -->
+    <aura:registerEvent name="lookupEvent" type="c:Referralcomponentevent"/>
+
+    <lightning:recordEditForm objectApiName="{!v.childObjectApiName}">
+        <div class="slds-form-element">
+            <aura:if isTrue="{!v.required}">
+                <label class="slds-float_left"><abbr title="required" class="slds-required">*</abbr>{!v.fieldLabel}</label>
+                <aura:set attribute="else">
+                    <label class="slds-float_left">{!v.fieldLabel}</label>
+                </aura:set>
+            </aura:if>
+
+            <div class="slds-form-element__control">
+                <lightning:inputField
+                        aura:id="lookupField"
+                        variant="{!v.variantLabel}"
+                        fieldName="{!v.targetFieldApiName}"
+                        value="{!v.value}"
+                        required="{!v.required}"
+                        onchange="{!c.handleChange}"
+                />
+            </div>
+        </div>
+    </lightning:recordEditForm>
+	
+</aura:component>

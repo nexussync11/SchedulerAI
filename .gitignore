@@ -1,0 +1,14 @@
+.sf/
+.sfdx/
+.localdevserver/
+.vscode/
+node_modules/
+coverage/
+*.log
+.env
+.env.*
+auth/
+*.key
+*.pem
+*.p12
+*.pfx

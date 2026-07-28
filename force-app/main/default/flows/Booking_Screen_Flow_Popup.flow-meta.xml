@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Flow xmlns="http://soap.sforce.com/2006/04/metadata">
+    <apiVersion>66.0</apiVersion>
+    <areMetricsLoggedToDataCloud>false</areMetricsLoggedToDataCloud>
+    <customProperties>
+        <name>ScreenProgressIndicator</name>
+        <value>
+            <stringValue>{&quot;location&quot;:&quot;top&quot;,&quot;type&quot;:&quot;simple&quot;}</stringValue>
+        </value>
+    </customProperties>
+    <environments>Default</environments>
+    <interviewLabel>Booking Screen Flow Popup {!$Flow.CurrentDateTime}</interviewLabel>
+    <label>Booking Screen Flow Popup</label>
+    <processMetadataValues>
+        <name>BuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>CanvasMode</name>
+        <value>
+            <stringValue>AUTO_LAYOUT_CANVAS</stringValue>
+        </value>
+    </processMetadataValues>
+    <processMetadataValues>
+        <name>OriginBuilderType</name>
+        <value>
+            <stringValue>LightningFlowBuilder</stringValue>
+        </value>
+    </processMetadataValues>
+    <processType>Flow</processType>
+    <screens>
+        <description>Booking HT Appointment</description>
+        <name>Book_HT_Patient_Appointment</name>
+        <label>Book HT Patient Appointment</label>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <allowBack>true</allowBack>
+        <allowFinish>true</allowFinish>
+        <allowPause>false</allowPause>
+        <backButtonLabel>Cancel</backButtonLabel>
+        <fields>
+            <name>F2F_Manchester_Link</name>
+            <fieldText>&lt;p&gt;&lt;a href=&quot;https://calendly.com/mrhakeemharleysthairclinic/f2f-manchester&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;F2F Manchester&lt;/a&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>F2F_London_Mayfair_Link</name>
+            <fieldText>&lt;p&gt;&lt;a href=&quot;https://calendly.com/shahin-hair-transplant-clinics/f2f-london-mayfair&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;F2F London Mayfair&lt;/a&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>F2F_London_Harley_Street_Link</name>
+            <fieldText>&lt;p&gt;&lt;a href=&quot;https://calendly.com/harleystreethairtransplantyaseen/f2f-london-harley-street&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;F2F London Harley Street&lt;/a&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <fields>
+            <name>Virtual_Hair_Consultation_Linl</name>
+            <fieldText>&lt;p&gt;&lt;a href=&quot;https://calendly.com/d/cyhy-tsm-545/virtual-consultation&quot; rel=&quot;noopener noreferrer&quot; target=&quot;_blank&quot;&gt;Virtual HT Conusltation Link&lt;/a&gt;&lt;/p&gt;</fieldText>
+            <fieldType>DisplayText</fieldType>
+            <styleProperties>
+                <verticalAlignment>
+                    <stringValue>top</stringValue>
+                </verticalAlignment>
+                <width>
+                    <stringValue>12</stringValue>
+                </width>
+            </styleProperties>
+        </fields>
+        <helpText>&lt;p&gt;Please select which type of appoointment the patient wants&lt;/p&gt;</helpText>
+        <nextOrFinishButtonLabel>Booked</nextOrFinishButtonLabel>
+        <showFooter>true</showFooter>
+        <showHeader>false</showHeader>
+    </screens>
+    <start>
+        <locationX>0</locationX>
+        <locationY>0</locationY>
+        <connector>
+            <targetReference>Book_HT_Patient_Appointment</targetReference>
+        </connector>
+    </start>
+    <status>Active</status>
+</Flow>

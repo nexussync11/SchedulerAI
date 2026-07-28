@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ValidationRule xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Confirmed_by_Rule</fullName>
+    <active>true</active>
+    <description>SDR cannot tick “Confirmed” and run
+They MUST put their name
+You now know exactly who confirmed what</description>
+    <errorConditionFormula>AND(
+Confirmed__c = TRUE,
+ISBLANK(Confirmed_By_SDR__c)
+)</errorConditionFormula>
+    <errorDisplayField>Confirmed_By_SDR__c</errorDisplayField>
+    <errorMessage>Select yourself when confirming the appointment</errorMessage>
+</ValidationRule>

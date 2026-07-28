@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Content_Type__c</fullName>
+    <description>Automatically adds a header for the type selected for POST requests only</description>
+    <label>Content-Type</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>none</fullName>
+                <default>false</default>
+                <label>none</label>
+            </value>
+            <value>
+                <fullName>application/json</fullName>
+                <default>false</default>
+                <label>application/json</label>
+            </value>
+            <value>
+                <fullName>application/XML</fullName>
+                <default>false</default>
+                <label>application/XML</label>
+            </value>
+            <value>
+                <fullName>application/x-www-form-urlencoded</fullName>
+                <default>false</default>
+                <label>application/x-www-form-urlencoded</label>
+            </value>
+            <value>
+                <fullName>text/plain</fullName>
+                <default>false</default>
+                <label>text/plain</label>
+            </value>
+            <value>
+                <fullName>text/xml</fullName>
+                <default>false</default>
+                <label>text/xml</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>

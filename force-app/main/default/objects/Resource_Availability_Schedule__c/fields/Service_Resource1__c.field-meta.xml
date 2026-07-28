@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Service_Resource1__c</fullName>
+    <deleteConstraint>SetNull</deleteConstraint>
+    <label>Service Resource1</label>
+    <referenceTo>Service_Resource__c</referenceTo>
+    <relationshipLabel>Resource Availability Schedules</relationshipLabel>
+    <relationshipName>Resource_Availability_Schedules</relationshipName>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>Lookup</type>
+</CustomField>

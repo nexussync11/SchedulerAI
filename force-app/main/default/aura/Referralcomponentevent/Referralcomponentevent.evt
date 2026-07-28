@@ -1,0 +1,4 @@
+<aura:event type="COMPONENT">
+    <aura:attribute name="recordId" type="String"/>
+    <aura:attribute name="recordByEvent" type="sObject"/>
+</aura:event>

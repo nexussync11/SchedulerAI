@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Appointment_Mode__c</fullName>
+    <label>Booking Source</label>
+    <required>false</required>
+    <trackFeedHistory>false</trackFeedHistory>
+    <trackTrending>false</trackTrending>
+    <type>Picklist</type>
+    <valueSet>
+        <restricted>true</restricted>
+        <valueSetDefinition>
+            <sorted>false</sorted>
+            <value>
+                <fullName>Phone</fullName>
+                <default>false</default>
+                <label>Phone</label>
+            </value>
+            <value>
+                <fullName>Web</fullName>
+                <default>false</default>
+                <label>Web</label>
+            </value>
+            <value>
+                <fullName>In-Person</fullName>
+                <default>false</default>
+                <label>In-Person</label>
+            </value>
+            <value>
+                <fullName>Answer4U</fullName>
+                <default>false</default>
+                <label>Answer4U</label>
+            </value>
+            <value>
+                <fullName>Facebook</fullName>
+                <default>false</default>
+                <label>Facebook</label>
+            </value>
+            <value>
+                <fullName>Facebook Chat</fullName>
+                <default>false</default>
+                <label>Facebook Chat</label>
+            </value>
+            <value>
+                <fullName>Groupon</fullName>
+                <default>false</default>
+                <label>Groupon</label>
+            </value>
+            <value>
+                <fullName>Hair Calculator</fullName>
+                <default>false</default>
+                <label>Hair Calculator</label>
+            </value>
+            <value>
+                <fullName>Other</fullName>
+                <default>false</default>
+                <label>Other</label>
+            </value>
+            <value>
+                <fullName>Self Generated</fullName>
+                <default>false</default>
+                <label>Self Generated</label>
+            </value>
+            <value>
+                <fullName>TikTok</fullName>
+                <default>false</default>
+                <label>TikTok</label>
+            </value>
+            <value>
+                <fullName>Website</fullName>
+                <default>false</default>
+                <label>Website</label>
+            </value>
+            <value>
+                <fullName>VFT Funnel</fullName>
+                <default>false</default>
+                <label>VFT Funnel</label>
+            </value>
+            <value>
+                <fullName>B2B Referral</fullName>
+                <default>false</default>
+                <label>B2B Referral</label>
+            </value>
+            <value>
+                <fullName>Spam</fullName>
+                <default>false</default>
+                <label>Spam</label>
+            </value>
+        </valueSetDefinition>
+    </valueSet>
+</CustomField>
