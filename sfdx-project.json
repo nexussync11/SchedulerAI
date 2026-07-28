@@ -1,11 +1,17 @@
 {
   "packageDirectories": [
     {
+      "path": "ladminai-appointment",
+      "default": true,
+      "versionName": "Phase 0",
+      "versionNumber": "0.1.0.NEXT"
+    },
+    {
       "path": "force-app",
-      "default": true
+      "default": false
     }
   ],
-  "name": "SchedulerAI",
+  "name": "LadminAI Appointment",
   "namespace": "",
   "sfdcLoginUrl": "https://test.salesforce.com",
   "sourceApiVersion": "67.0"

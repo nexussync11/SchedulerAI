@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <defaultValue>true</defaultValue>
+    <fullName>LadminAI_Enable_Compatibility_Aura__c</fullName>
+    <label>Enable Compatibility Aura</label>
+    <type>Checkbox</type>
+</CustomField>

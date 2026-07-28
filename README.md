@@ -22,3 +22,11 @@ No metadata was changed or deployed during retrieval. No Salesforce records were
 
 The source is preserved as retrieved. It has not been refactored, modernized, or functionally changed.
 
+## LadminAI Appointment Phase 0
+
+The `phase-0-ladminai-appointment` branch transforms the retrieved scheduler into a focused Salesforce AppExchange scheduling product through gated changes. New commercial package source is under `ladminai-appointment/main/default`; the original `force-app` remains a non-default legacy reference directory.
+
+- [Configuration guide](docs/CONFIGURATION_GUIDE.md)
+- [2GP packaging guide](docs/2GP_PACKAGING_GUIDE.md)
+- [Product branding](docs/PRODUCT_BRANDING.md)
+

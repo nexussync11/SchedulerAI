@@ -1,0 +1,10 @@
+{
+  "orgName": "LadminAI Appointment Development",
+  "edition": "Enterprise",
+  "features": [],
+  "settings": {
+    "lightningExperienceSettings": {
+      "enableS1DesktopEnabled": true
+    }
+  }
+}

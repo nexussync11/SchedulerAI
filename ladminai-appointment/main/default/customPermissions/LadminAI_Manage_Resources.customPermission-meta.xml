@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Allows management of LadminAI Appointment service resources when object and record access also permit it.</description>
+    <label>LadminAI Manage Resources</label>
+</CustomPermission>

@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomPermission xmlns="http://soap.sforce.com/2006/04/metadata">
+    <description>Allows administration of LadminAI Appointment configuration through approved product interfaces.</description>
+    <label>LadminAI Configure Appointment</label>
+</CustomPermission>
