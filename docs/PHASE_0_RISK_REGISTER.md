@@ -10,7 +10,7 @@
 | R-04 | Blank booking status risk | UI initializes blank status; controller overwrites `Scheduled` with input | High | Gate 2 validated canonical default |
 | R-05 | Premature navigation | Aura navigates before booking callback resolves | High | Gate 5 awaits typed success |
 | R-06 | Separate Booked By update | `updateBookedBy` runs apart from booking transaction | High | Gate 2 parent adapter in atomic transaction |
-| R-07 | Event and appointment not linked | records share contextual values but no durable relationship | Critical | Gate 4 relationship fields/service |
+| R-07 | Event projection and appointment not linked | records share contextual values but no durable relationship | Critical | Gate 4 relationship fields/service; appointment remains master |
 | R-08 | Reschedule handler bulk defect | SOQL/DML and early return occur inside Event loop | Critical | Gate 4 bulk rewrite and 200-Event test |
 | R-09 | Broad permissions | `BookingAppointment` grants CRUD, Modify All, View All/Fields | Critical | Gate 7 least-privilege personas |
 | R-10 | Incomplete CRUD/FLS | controllers/handlers lack systematic enforcement | Critical | Gates 2–7 security service/user-mode access |
@@ -47,7 +47,7 @@
 - A scratch org or dedicated non-Harley development org is required for runtime deployment, Apex coverage, packaging validation, and concurrency harness testing.
 - Effective Event relationship metadata must be proven in that development environment.
 - Existing subscriber duplicates must be assessed before enforcing availability uniqueness.
-- Product ownership must approve canonical statuses, package boundary, and Lead-adapter inclusion.
+- Product ownership approved the expanded canonical lifecycle and generic parent-adapter design; final Lead implementation package placement remains open.
 - Exact runtime usage of Aura, screen flow, obsolete flows, and permission assignments is unknown because Gate 0 performed no data or activity queries.
 
 ## Safety controls

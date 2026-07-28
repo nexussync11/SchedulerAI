@@ -4,6 +4,7 @@
 
 - Preserve existing object API names and subscriber data.
 - Add product-owned metadata without hard-coded namespace references.
+- Prefix every new Apex type, LWC bundle, metadata API name, field, permission, and configuration asset with the appropriate `LadminAI` naming form.
 - Keep domain rules in Apex services, not UI controllers.
 - Treat all booking writes as one transaction.
 - Serialize conflict checks before inserting an appointment.
@@ -25,7 +26,8 @@ flowchart TB
   SEC["security\nauthorization, user-mode access, safe errors"]
   CFG["configuration\ncustom metadata and feature flags"]
   CORE["core\nDTO conventions, clock, result/error primitives"]
-  DATA["Existing objects\nServiceAppointment, Event, Resource, Assignment, Availability"]
+  DATA["Authoritative appointment data\nAppointment / ServiceAppointment"]
+  EVENT["Event\nsynchronized calendar projection"]
 
   UI --> BOOK
   UI --> SLOT
@@ -44,6 +46,7 @@ flowchart TB
   LIFE --> SEC
   LIFE --> CFG
   LIFE --> DATA
+  LIFE --> EVENT
 ```
 
 ## Module ownership
@@ -75,7 +78,7 @@ Owns active resource resolution and optional active User validation. Resource se
 
 ### lifecycle
 
-Owns canonical status transitions, legacy status mapping, Event linkage, cancellation/reschedule consistency, and counter side effects. Trigger handlers delegate to this module and contain no business logic.
+Owns canonical status transitions, legacy status mapping, Event projection synchronization, cancellation/reschedule consistency, and counter side effects. `Appointment__c` and `ServiceAppointment__c` are authoritative appointment records; Event is not permitted to become the booking master. Trigger handlers delegate to this module and contain no business logic.
 
 ### security
 
@@ -83,7 +86,7 @@ Owns custom-permission checks, record access, CRUD/FLS enforcement, user-mode qu
 
 ### configuration
 
-Owns `LadminAI_Appointment_Settings__mdt` and `LadminAI_Status_Mapping__mdt`. Defaults are safe and product-neutral. Configuration lookup is centralized and test-overridable.
+Owns `LadminAI_Appointment_Settings__mdt` and `LadminAI_Status_Mapping__mdt`. It reserves a metadata-driven catalogue boundary for `LadminAI_Service_Type__mdt` and `LadminAI_Appointment_Type__mdt`, including future duration, eligibility, active-state, and service-to-appointment-type mapping. Catalogue implementation is deferred. Defaults are safe and product-neutral. Configuration lookup is centralized and test-overridable.
 
 ### ui
 
@@ -117,8 +120,8 @@ sequenceDiagram
     API->>SLOT: validate availability and overlaps
     API->>LIFE: resolve canonical status
     API->>DB: optional parent adapter update
-    API->>DB: insert ServiceAppointment
-    API->>DB: insert Event and write link
+    API->>DB: insert authoritative ServiceAppointment
+    API->>DB: insert synchronized Event projection and write link
     API->>DB: insert Assigned Resource
     API-->>UI: committed typed result
   end
@@ -128,7 +131,7 @@ All DML is in the request transaction. An unhandled internal failure rolls back 
 
 ## Lock design
 
-Use one `LadminAI_Booking_Lock__c` row per service resource and resource-local service date. `Resource_Date_Key__c` is a deterministic unique external ID. The transaction:
+Use one `LadminAI_Booking_Lock__c` row per service resource and resource-local service date. `LadminAI_Resource_Date_Key__c` is a deterministic unique external ID. The transaction:
 
 1. derives resource-local date from the requested start and configured timezone;
 2. gets or creates the ledger row, handling a duplicate insert by re-querying;
@@ -156,6 +159,17 @@ ladminAiAvailabilityManager
 ```
 
 The booking parent owns request state, request token, submission guard, refreshed alternatives, focus movement, and screen-reader announcements. Child components are reusable and contain no record DML.
+
+## Parent record adapter
+
+The domain contract is generically named `IBookingParentAdapter`; its Apex realization is `LadminAIAppointmentIBookingParentAdapter` to comply with the mandatory LadminAI prefix. `LadminAIAppointmentLeadParentAdapter` is one implementation. Future Account, Contact, Opportunity, Case, or subscriber adapters can implement the same contract without adding Lead dependencies to booking core.
+
+## Appointment system of record
+
+- `Appointment__c` remains authoritative for the established external/Calendly-oriented path until a separately approved migration consolidates it.
+- `ServiceAppointment__c` is authoritative for the native LadminAI booking path and owns lifecycle, idempotency, resource assignment, and the durable Event link.
+- Event is a synchronized projection for Salesforce calendar visibility. Event edits must be routed through lifecycle synchronization or rejected when they would contradict the authoritative appointment.
+- Phase 0 does not destructively merge the two existing appointment objects.
 
 ## 2GP directory strategy
 

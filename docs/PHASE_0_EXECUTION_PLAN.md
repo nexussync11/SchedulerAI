@@ -34,7 +34,8 @@ Planned metadata:
 - Lightning app `LadminAI_Appointment`
 - tabs or LWC navigation surfaces for Book Appointment, Appointments, Availability, and Service Resources
 - custom metadata types `LadminAI_Appointment_Settings__mdt` and `LadminAI_Status_Mapping__mdt`
-- six custom permissions specified in the gate brief
+- reserved future types `LadminAI_Service_Type__mdt` and `LadminAI_Appointment_Type__mdt` (architecture only unless separately approved)
+- six custom permissions from the gate brief, created with `LadminAI_` API-name prefixes
 - scratch definition under `config/project-scratch-def.json`
 - initial package directory and product documentation
 
@@ -50,8 +51,8 @@ Planned Apex:
 - `LadminAIAppointmentConflict`
 - `LadminAIAppointmentException`
 - `LadminAIAppointmentAuthorization`
-- `LadminAIAppointmentParentAdapter`
-- `LadminAIAppointmentLeadAdapter`
+- `LadminAIAppointmentIBookingParentAdapter` — the LadminAI-named `IBookingParentAdapter` interface
+- `LadminAIAppointmentLeadParentAdapter` — the Lead implementation of the generic parent contract
 - `LadminAIAppointmentBookingServiceTest`
 - shared `LadminAIAppointmentTestDataFactory`
 
@@ -59,7 +60,7 @@ Planned behavior:
 
 1. validate and authorize one typed request;
 2. resolve configuration and canonical status;
-3. apply the optional parent adapter;
+3. apply the optional generic booking-parent adapter;
 4. create `ServiceAppointment__c`, Event, and `Assigned_Resource__c` in one transaction;
 5. persist the Event relationship and idempotency record/key;
 6. return a safe typed result.
@@ -80,9 +81,9 @@ Planned Apex:
 Planned metadata:
 
 - `LadminAI_Booking_Lock__c`
-- `Resource_Date_Key__c` unique external-ID text field
-- `Service_Resource__c`, `Service_Date__c`, and lock/audit fields
-- optional configuration fields `Slot_Interval_Minutes__c` and `Conflict_Retry_Count__c`
+- `LadminAI_Resource_Date_Key__c` unique external-ID text field
+- `LadminAI_Service_Resource__c`, `LadminAI_Service_Date__c`, and LadminAI-prefixed lock/audit fields
+- optional configuration fields `LadminAI_Slot_Interval_Minutes__c` and `LadminAI_Conflict_Retry_Count__c`
 
 Migration effect: lock rows are created lazily for new booking dates. Existing appointments remain authoritative blockers and are queried after the lock is acquired.
 
@@ -98,16 +99,18 @@ Planned Apex:
 
 Planned fields:
 
-- `ServiceAppointment__c.Event__c` — lookup to Event
+- `ServiceAppointment__c.LadminAI_Event__c` — lookup to Event
 - `Event.LadminAI_Service_Appointment__c` — lookup to `ServiceAppointment__c`, if Salesforce metadata/runtime validation confirms the relationship is supported and package-safe
-- `ServiceAppointment__c.Idempotency_Key__c` — unique external ID
-- `ServiceAppointment__c.Booking_Reference__c` — unique, user-safe reference
-- `ServiceAppointment__c.Booking_Source__c`
+- `ServiceAppointment__c.LadminAI_Idempotency_Key__c` — unique external ID
+- `ServiceAppointment__c.LadminAI_Booking_Reference__c` — unique, user-safe reference
+- `ServiceAppointment__c.LadminAI_Booking_Source__c`
 - `Event.LadminAI_Managed__c` — marker used to scope trigger behavior
 
-If a bidirectional Event lookup is not supported in the target packaging model, the fallback is a single durable `ServiceAppointment__c.Event__c` lookup plus the managed marker and indexed Event query. This requires approval before implementation.
+`Appointment__c` and `ServiceAppointment__c` remain the appointment systems of record for their established paths; the new native booking path uses `ServiceAppointment__c` as its transactional master. Event is a synchronized calendar projection, never the master. If a bidirectional Event lookup is not supported, the fallback is `ServiceAppointment__c.LadminAI_Event__c` plus the managed marker and indexed Event query.
 
 Migration effect: legacy statuses are retained and mapped. Existing unlinked rows are not changed automatically; a separate administrator-reviewed backfill is documented, not run against Harley.
+
+Canonical values include Draft, Reserved, Booked, Confirmed, Checked In, In Progress, Arrived, Completed, Cancelled, No Show, and Rescheduled.
 
 ### Gate 5 — modern booking UI
 
