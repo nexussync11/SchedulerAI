@@ -29,4 +29,6 @@ The `phase-0-ladminai-appointment` branch transforms the retrieved scheduler int
 - [Configuration guide](docs/CONFIGURATION_GUIDE.md)
 - [2GP packaging guide](docs/2GP_PACKAGING_GUIDE.md)
 - [Product branding](docs/PRODUCT_BRANDING.md)
+- [Booking service design](docs/BOOKING_SERVICE_DESIGN.md)
+- [Booking API contract](docs/BOOKING_API_CONTRACT.md)
 

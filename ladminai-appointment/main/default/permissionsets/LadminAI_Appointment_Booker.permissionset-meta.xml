@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <classAccesses><apexClass>LadminAIAppointmentBookingController</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>LadminAIAppointmentBookingService</apexClass><enabled>true</enabled></classAccesses>
+    <customPermissions><enabled>true</enabled><name>LadminAI_Book_Appointment</name></customPermissions>
+    <fieldPermissions><editable>true</editable><field>Assigned_Resource__c.Service_Resource__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Address__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Appointment_Mode__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Appointment_Type__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Duration__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.LadminAI_Booking_Reference__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.LadminAI_Idempotency_Key__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Parent_Record1__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Scheduled_End__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Scheduled_Start__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Service_Resource_Name__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Status__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Subject__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Service_Resource__c.Active__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>Service_Resource__c.RelatedRecordId__c</field><readable>true</readable></fieldPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>LadminAI Appointment Booker</label>
+    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Assigned_Resource__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Event</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Lead</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>ServiceAppointment__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Service_Resource__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+</PermissionSet>
