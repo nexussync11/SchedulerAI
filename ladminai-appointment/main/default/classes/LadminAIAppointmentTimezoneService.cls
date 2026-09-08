@@ -31,6 +31,47 @@ public with sharing class LadminAIAppointmentTimezoneService {
         return getSettings();
     }
 
+    @AuraEnabled
+    public static String saveBusinessTimezone(String timezoneSidKey) {
+        Set<String> activeValues = new Set<String>();
+        for (TimezoneOption option : getOptions()) activeValues.add(option.value);
+        if (String.isBlank(timezoneSidKey) || !activeValues.contains(timezoneSidKey)) {
+            throw safeException('Select a valid Salesforce timezone.');
+        }
+        if (!FeatureManagement.checkPermission('LadminAI_Configure_Appointment')) {
+            throw safeException('You do not have permission to configure appointment settings.');
+        }
+        LadminAI_Appointment_Settings__mdt current =
+            LadminAI_Appointment_Settings__mdt.getInstance('Default');
+        Metadata.CustomMetadata record = new Metadata.CustomMetadata();
+        record.fullName = 'LadminAI_Appointment_Settings.Default';
+        record.label = 'Default';
+        addValue(record, 'LadminAI_Default_Time_Zone__c', timezoneSidKey);
+        addValue(record, 'LadminAI_Default_Slot_Minutes__c', current.LadminAI_Default_Slot_Minutes__c);
+        addValue(record, 'LadminAI_Booking_Horizon_Days__c', current.LadminAI_Booking_Horizon_Days__c);
+        addValue(record, 'LadminAI_Minimum_Lead_Time_Minutes__c', current.LadminAI_Minimum_Lead_Time_Minutes__c);
+        addValue(record, 'LadminAI_Create_Salesforce_Event__c', current.LadminAI_Create_Salesforce_Event__c);
+        addValue(record, 'LadminAI_Default_Booking_Status__c', current.LadminAI_Default_Booking_Status__c);
+        addValue(record, 'LadminAI_Enable_Parent_Adapter__c', current.LadminAI_Enable_Parent_Adapter__c);
+        addValue(record, 'LadminAI_Enable_Compatibility_Aura__c', current.LadminAI_Enable_Compatibility_Aura__c);
+        addValue(record, 'LadminAI_Enable_AI_Insights__c', current.LadminAI_Enable_AI_Insights__c);
+        addValue(record, 'LadminAI_OpenAI_Named_Credential__c', current.LadminAI_OpenAI_Named_Credential__c);
+        addValue(record, 'LadminAI_Max_Active_Locations__c', current.LadminAI_Max_Active_Locations__c);
+        addValue(record, 'LadminAI_Max_Active_Service_Resources__c', current.LadminAI_Max_Active_Service_Resources__c);
+        Metadata.DeployContainer container = new Metadata.DeployContainer();
+        container.addMetadata(record);
+        return String.valueOf(Metadata.Operations.enqueueDeployment(
+            container, new LadminAIAppointmentSettingsDeployCallback()
+        ));
+    }
+
+    private static void addValue(Metadata.CustomMetadata record, String fieldName, Object value) {
+        Metadata.CustomMetadataValue item = new Metadata.CustomMetadataValue();
+        item.field = fieldName;
+        item.value = value;
+        record.values.add(item);
+    }
+
     private static List<TimezoneOption> getOptions() {
         List<TimezoneOption> output = new List<TimezoneOption>();
         for (Schema.PicklistEntry entry : Schema.User.TimeZoneSidKey.getDescribe().getPicklistValues()) {
