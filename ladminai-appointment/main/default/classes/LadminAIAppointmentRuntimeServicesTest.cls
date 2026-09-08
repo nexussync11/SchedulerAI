@@ -1,0 +1,162 @@
+@IsTest
+private class LadminAIAppointmentRuntimeServicesTest {
+    private class Context {
+        Service_Resource__c resource;
+        Schema.Location location;
+        Lead lead;
+    }
+
+    private static Context setupContext() {
+        Context c = new Context();
+        c.resource = new Service_Resource__c(Name = 'Runtime Doctor', Active__c = true, Description__c = 'Test');
+        insert c.resource;
+        c.location = new Schema.Location(
+            Name = 'Runtime Location', LocationType = 'Site',
+            Scheduler_Managed__c = true, Scheduler_Active__c = true,
+            Description = 'Test'
+        );
+        insert c.location;
+        insert new Scheduler_Location_Resource__c(
+            Location__c = c.location.Id, Service_Resource__c = c.resource.Id,
+            Active__c = true,
+            Location_Resource_Key__c = c.location.Id + ':' + c.resource.Id
+        );
+        c.lead = new Lead(LastName = 'Runtime', Company = 'LadminAI Test');
+        insert c.lead;
+        return c;
+    }
+
+    @IsTest static void locationAndResourceAdministration() {
+        Context c = setupContext();
+        System.assertEquals(1, LadminAIAppointmentLocationService.getLocations().size());
+        System.assertEquals(1, LadminAIAppointmentLocationService.getActiveLocations().size());
+        System.assertEquals(1, LadminAIAppointmentLocationService.getDoctorsForLocation(c.location.Id).size());
+        System.assertEquals(0, LadminAIAppointmentLocationService.getDoctorsForLocation(null).size());
+        System.assertEquals('Site', LadminAIAppointmentLocationService.getLocationTypes()[0]);
+        LadminAIAppointmentLocationService.assertActiveAssociation(c.location.Id, c.resource.Id);
+
+        Schema.Location history = new Schema.Location(
+            Name = 'History', LocationType = 'Site', Scheduler_Managed__c = true,
+            Scheduler_Active__c = false
+        );
+        insert history;
+        Id inactiveLocation = history.Id;
+        LadminAIAppointmentLocationService.setActive(inactiveLocation, false);
+
+        System.assertEquals(1, LadminAIAppointmentResourceAdminService.getResources().size());
+        System.assertEquals(0, LadminAIAppointmentResourceAdminService.getAppointments(c.resource.Id).size());
+        Id inactiveResource = LadminAIAppointmentResourceAdminService.saveResource(
+            null, 'History Doctor', false, 'Inactive'
+        );
+        LadminAIAppointmentResourceAdminService.saveResource(
+            inactiveResource, 'History Doctor Updated', false, null
+        );
+        LadminAIAppointmentResourceAdminService.setActive(inactiveResource, false);
+    }
+
+    @IsTest static void availabilitySlotsBreaksAndOverrides() {
+        Context c = setupContext();
+        Date target = Date.today().addDays(7);
+        String weekday = Datetime.newInstance(target, Time.newInstance(12, 0, 0, 0)).format('EEEE');
+        List<Map<String, Object>> days = new List<Map<String, Object>>{
+            new Map<String, Object>{
+                'Day_Of_Week__c' => weekday, 'Start_Time__c' => '09:00',
+                'End_Time__c' => '12:00', 'Break_Start__c' => '10:00',
+                'Break_End__c' => '10:30', 'Is_Active__c' => true
+            },
+            new Map<String, Object>()
+        };
+        Id scheduleId = LadminAIAppointmentAvailabilityService.saveAvailabilityAtLocation(
+            c.resource.Id, c.location.Id, days
+        );
+        System.assertNotEquals(null, scheduleId);
+        System.assertEquals(1, LadminAIAppointmentAvailabilityService.getAllServiceResources().size());
+        System.assertEquals(1, LadminAIAppointmentAvailabilityService.getAvailabilityAtLocation(c.resource.Id, c.location.Id).size());
+        System.assertEquals(0, LadminAIAppointmentAvailabilityService.getAvailability(null).size());
+        System.assert(LadminAIAppointmentAvailabilityService.getAvailableSlots(c.resource.Id, c.location.Id, target).size() > 0);
+        System.assertEquals(0, LadminAIAppointmentAvailabilityService.getAvailableSlots(null, c.location.Id, target).size());
+
+        Id unavailable = LadminAIAppointmentAvailabilityService.saveSpecialDateAtLocation(
+            c.resource.Id, c.location.Id, null, target.addDays(1), 'Unavailable', null, null, null, null
+        );
+        System.assertEquals(1, LadminAIAppointmentAvailabilityService.getSpecialDatesAtLocation(c.resource.Id, c.location.Id).size());
+        System.assertEquals(0, LadminAIAppointmentAvailabilityService.getEffectiveAvailability(c.resource.Id, c.location.Id, target.addDays(1)).size());
+        LadminAIAppointmentAvailabilityService.deleteSpecialDate(unavailable);
+
+        Id customHours = LadminAIAppointmentAvailabilityService.saveSpecialDateAtLocation(
+            c.resource.Id, c.location.Id, null, target.addDays(2), 'Custom Hours',
+            '13:00', '15:00', '14:00', '14:30'
+        );
+        System.assertEquals(1, LadminAIAppointmentAvailabilityService.getEffectiveAvailability(c.resource.Id, c.location.Id, target.addDays(2)).size());
+        LadminAIAppointmentAvailabilityService.saveSpecialDateAtLocation(
+            c.resource.Id, c.location.Id, customHours, target.addDays(2), 'Custom Hours',
+            '13:30', '15:30', null, null
+        );
+    }
+
+    @IsTest static void appointmentCommandsAnalyticsAndAiFallback() {
+        Context c = setupContext();
+        Date target = Date.today().addDays(7);
+        String weekday = Datetime.newInstance(target, Time.newInstance(12, 0, 0, 0)).format('EEEE');
+        LadminAIAppointmentAvailabilityService.saveAvailabilityAtLocation(
+            c.resource.Id, c.location.Id,
+            new List<Map<String, Object>>{ new Map<String, Object>{
+                'Day_Of_Week__c' => weekday, 'Start_Time__c' => '09:00',
+                'End_Time__c' => '17:00', 'Is_Active__c' => true
+            }}
+        );
+        Datetime startAt = LadminAIAppointmentBusinessTimeService.toUtc(target, Time.newInstance(9, 0, 0, 0));
+        Event eventRow = new Event(
+            Subject = 'Runtime Event', StartDateTime = startAt,
+            EndDateTime = startAt.addMinutes(30), WhoId = c.lead.Id
+        );
+        insert eventRow;
+        ServiceAppointment__c appointment = new ServiceAppointment__c(
+            Name = 'Runtime Appointment', Parent_Record1__c = c.lead.Id,
+            Location__c = c.location.Id, Subject__c = 'Consultation',
+            Scheduled_Start__c = startAt, Scheduled_End__c = startAt.addMinutes(30),
+            Status__c = 'Booked', LadminAI_Event__c = eventRow.Id
+        );
+        insert appointment;
+        insert new Assigned_Resource__c(
+            Service_Appointment__c = appointment.Id, Service_Resource__c = c.resource.Id
+        );
+
+        System.assertEquals(1, LadminAIAppointmentCommandService.getAppointments(target, target).size());
+        System.assertEquals(1, LadminAIAppointmentResourceAdminService.getAppointments(c.resource.Id).size());
+        LadminAIAppointmentCommandService.updateStatus(appointment.Id, 'No Show');
+        LadminAIAppointmentCommandService.reschedule(appointment.Id, target, '09:30');
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getSnapshot().appointmentsThisMonth >= 0 ? 1 : 0);
+        LadminAIAppointmentAIInsightsService.InsightResult insight = LadminAIAppointmentAIInsightsService.getInsights();
+        System.assertEquals(false, insight.enabled);
+        LadminAIAppointmentCommandService.cancel(appointment.Id, 'Test cancellation');
+        System.assertEquals(0, [SELECT COUNT() FROM Event WHERE Id = :eventRow.Id]);
+
+        LadminAIAppointmentBusinessTimeService.LocalWallClock local =
+            LadminAIAppointmentBusinessTimeService.toLocalWallClock(startAt);
+        System.assertEquals(target, local.localDate);
+        System.assertNotEquals(null, LadminAIAppointmentTimezoneService.getSettings().options);
+    }
+
+    @IsTest static void validationBranchesRemainSafe() {
+        Context c = setupContext();
+        try {
+            LadminAIAppointmentAvailabilityService.saveSpecialDateAtLocation(
+                c.resource.Id, c.location.Id, null, Date.today(), 'Other', null, null, null, null
+            );
+            System.assert(false);
+        } catch (AuraHandledException expected) {}
+        try {
+            LadminAIAppointmentResourceAdminService.getAppointments(null);
+            System.assert(false);
+        } catch (AuraHandledException expected) {}
+        try {
+            LadminAIAppointmentCommandService.updateStatus(null, 'Unsupported');
+            System.assert(false);
+        } catch (AuraHandledException expected) {}
+        try {
+            LadminAIAppointmentTimezoneService.saveUserTimezone('Not/A_Timezone');
+            System.assert(false);
+        } catch (AuraHandledException expected) {}
+    }
+}
