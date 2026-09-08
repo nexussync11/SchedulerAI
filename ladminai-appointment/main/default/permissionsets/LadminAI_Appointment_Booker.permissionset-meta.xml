@@ -10,6 +10,8 @@
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Duration__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.LadminAI_Booking_Reference__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.LadminAI_Idempotency_Key__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Location__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Booked_By_User__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Parent_Record1__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Scheduled_End__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Scheduled_Start__c</field><readable>true</readable></fieldPermissions>
@@ -17,7 +19,6 @@
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Status__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Subject__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>false</editable><field>Service_Resource__c.Active__c</field><readable>true</readable></fieldPermissions>
-    <fieldPermissions><editable>false</editable><field>Service_Resource__c.RelatedRecordId__c</field><readable>true</readable></fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>LadminAI Smart Appointment Booker</label>
     <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Assigned_Resource__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>

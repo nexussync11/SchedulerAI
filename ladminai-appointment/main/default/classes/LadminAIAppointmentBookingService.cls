@@ -60,8 +60,7 @@ public with sharing class LadminAIAppointmentBookingService {
             }
 
             List<Service_Resource__c> resources = [
-                SELECT Id, Name, Active__c, RelatedRecordId__c,
-                    RelatedRecordId__r.IsActive
+                SELECT Id, Name, Active__c
                 FROM Service_Resource__c
                 WHERE Id = :request.serviceResourceId
                 WITH USER_MODE
@@ -69,9 +68,7 @@ public with sharing class LadminAIAppointmentBookingService {
             ];
             if (
                 resources.isEmpty() ||
-                resources[0].Active__c != true ||
-                resources[0].RelatedRecordId__c == null ||
-                resources[0].RelatedRecordId__r.IsActive != true
+                resources[0].Active__c != true
             ) {
                 Database.rollback(bookingSavepoint);
                 return failure(
@@ -116,6 +113,9 @@ public with sharing class LadminAIAppointmentBookingService {
             Integer durationMinutes = calculateDurationMinutes(request);
             String bookingReference = createBookingReference(request.idempotencyKey);
             Service_Resource__c resource = resources[0];
+            LadminAIAppointmentLocationService.assertActiveAssociation(
+                request.locationId, request.serviceResourceId
+            );
 
             ServiceAppointment__c appointment = new ServiceAppointment__c(
                 Name = bookingReference,
@@ -124,14 +124,15 @@ public with sharing class LadminAIAppointmentBookingService {
                 Scheduled_End__c = request.requestedEnd,
                 Duration__c = durationMinutes,
                 Subject__c = request.subject.trim(),
-                Appointment_Mode__c = request.bookingSource,
                 Status__c = 'Open',
+                Location__c = request.locationId,
+                Booked_By_User__c = UserInfo.getUserId(),
                 Service_Resource_Name__c = abbreviate(resource.Name, 40),
                 LadminAI_Idempotency_Key__c = request.idempotencyKey.trim(),
                 LadminAI_Booking_Reference__c = bookingReference
             );
-            if (!String.isBlank(request.location)) {
-                appointment.Address__c = request.location.trim();
+            if (!String.isBlank(request.bookingSource)) {
+                appointment.Appointment_Mode__c = request.bookingSource;
             }
             if (!String.isBlank(request.appointmentType)) {
                 appointment.Appointment_Type__c = request.appointmentType;
@@ -151,7 +152,7 @@ public with sharing class LadminAIAppointmentBookingService {
             Event calendarProjection = new Event(
                 Subject = request.subject.trim(),
                 WhoId = request.parentRecordId,
-                OwnerId = resource.RelatedRecordId__c,
+                OwnerId = UserInfo.getUserId(),
                 StartDateTime = request.requestedStart,
                 EndDateTime = request.requestedEnd
             );
@@ -294,9 +295,7 @@ public with sharing class LadminAIAppointmentBookingService {
         if (String.isBlank(request.subject) || request.subject.trim().length() > 255) {
             addFieldError(result, 'subject', 'Subject is required and must not exceed 255 characters.');
         }
-        if (String.isBlank(request.bookingSource)) {
-            addFieldError(result, 'bookingSource', 'Booking source is required.');
-        } else if (!isActivePicklistValue(
+        if (!String.isBlank(request.bookingSource) && !isActivePicklistValue(
             ServiceAppointment__c.Appointment_Mode__c,
             request.bookingSource
         )) {
@@ -311,9 +310,7 @@ public with sharing class LadminAIAppointmentBookingService {
         ) {
             addFieldError(result, 'appointmentType', 'Appointment type is not supported.');
         }
-        if (!String.isBlank(request.location) && request.location.trim().length() > 255) {
-            addFieldError(result, 'location', 'Location must not exceed 255 characters.');
-        }
+        if (request.locationId == null) addFieldError(result, 'locationId', 'Location is required.');
         if (
             String.isBlank(request.bookingStatus) ||
             (
@@ -367,15 +364,13 @@ public with sharing class LadminAIAppointmentBookingService {
 
         List<Schema.SObjectField> readableFields = new List<Schema.SObjectField>{
             Service_Resource__c.Active__c,
-            Service_Resource__c.RelatedRecordId__c,
             Assigned_Resource__c.Service_Appointment__c,
             Assigned_Resource__c.Service_Resource__c,
             ServiceAppointment__c.Scheduled_Start__c,
             ServiceAppointment__c.Scheduled_End__c,
             ServiceAppointment__c.Status__c,
             ServiceAppointment__c.LadminAI_Idempotency_Key__c,
-            ServiceAppointment__c.LadminAI_Booking_Reference__c,
-            User.IsActive
+            ServiceAppointment__c.LadminAI_Booking_Reference__c
         };
         List<Schema.SObjectField> createableFields = new List<Schema.SObjectField>{
             ServiceAppointment__c.Parent_Record1__c,
@@ -383,9 +378,10 @@ public with sharing class LadminAIAppointmentBookingService {
             ServiceAppointment__c.Scheduled_End__c,
             ServiceAppointment__c.Duration__c,
             ServiceAppointment__c.Subject__c,
+            ServiceAppointment__c.Location__c,
+            ServiceAppointment__c.Booked_By_User__c,
             ServiceAppointment__c.Appointment_Mode__c,
             ServiceAppointment__c.Appointment_Type__c,
-            ServiceAppointment__c.Address__c,
             ServiceAppointment__c.Status__c,
             ServiceAppointment__c.Service_Resource_Name__c,
             ServiceAppointment__c.LadminAI_Idempotency_Key__c,

@@ -1,0 +1,8 @@
+.booking { max-width: 64rem; margin: 0 auto; padding: 1rem; }
+h2 { color: #092f68; font-size: 1.5rem; font-weight: 700; }
+p { color: #52657f; margin-bottom: 1rem; }
+.form { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 1rem; padding: 1rem; background: white; border: 1px solid #dce6f2; border-radius: .75rem; }
+.message { margin: .75rem 0; padding: .75rem 1rem; border-radius: .5rem; }
+.error { background: #fff0f0; color: #8b1717; }
+.success { background: #e8f7ef; color: #17683d; }
+@media (max-width: 48rem) { .form { grid-template-columns: 1fr; } }

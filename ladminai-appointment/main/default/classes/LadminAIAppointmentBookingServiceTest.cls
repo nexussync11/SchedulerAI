@@ -4,6 +4,7 @@ private class LadminAIAppointmentBookingServiceTest {
         User bookingUser;
         Lead parentLead;
         Service_Resource__c resource;
+        Location bookingLocation;
     }
 
     @IsTest
@@ -160,6 +161,7 @@ private class LadminAIAppointmentBookingServiceTest {
                 new LadminAIAppointmentBookingRequest();
             request.parentRecordId = parentLead.Id;
             request.serviceResourceId = parentLead.Id;
+            request.locationId = parentLead.Id;
             request.appointmentDate = startTime.date();
             request.requestedStart = startTime;
             request.requestedEnd = startTime.addMinutes(30);
@@ -260,10 +262,20 @@ private class LadminAIAppointmentBookingServiceTest {
         insert context.parentLead;
         context.resource = new Service_Resource__c(
             Name = 'Test Resource',
-            Active__c = true,
-            RelatedRecordId__c = bookingUser.Id
+            Active__c = true
         );
         insert context.resource;
+        context.bookingLocation = new Location(
+            Name = 'Test Location', LocationType = 'Site',
+            Scheduler_Active__c = true, Scheduler_Managed__c = true
+        );
+        insert context.bookingLocation;
+        insert new Scheduler_Location_Resource__c(
+            Location__c = context.bookingLocation.Id,
+            Service_Resource__c = context.resource.Id,
+            Active__c = true,
+            Location_Resource_Key__c = context.bookingLocation.Id + ':' + context.resource.Id
+        );
         return context;
     }
 
@@ -275,6 +287,7 @@ private class LadminAIAppointmentBookingServiceTest {
             new LadminAIAppointmentBookingRequest();
         request.parentRecordId = context.parentLead.Id;
         request.serviceResourceId = context.resource.Id;
+        request.locationId = context.bookingLocation.Id;
         request.appointmentDate = startTime.date();
         request.requestedStart = startTime;
         request.requestedEnd = startTime.addMinutes(30);
