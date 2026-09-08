@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+ <classAccesses><apexClass>LadminAIAppointmentAnalyticsService</apexClass><enabled>true</enabled></classAccesses>
+ <classAccesses><apexClass>LadminAIAppointmentAIInsightsService</apexClass><enabled>true</enabled></classAccesses>
+ <customPermissions><enabled>true</enabled><name>LadminAI_View_Operational_Analytics</name></customPermissions>
+ <hasActivationRequired>false</hasActivationRequired><label>LadminAI Analytics Viewer</label>
+ <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>ServiceAppointment__c</object><viewAllFields>true</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+ <tabSettings><tab>LadminAI_Dashboard</tab><visibility>Visible</visibility></tabSettings>
+</PermissionSet>

@@ -8,6 +8,7 @@
     <values><field>LadminAI_Default_Slot_Minutes__c</field><value xsi:type="xsd:double">30</value></values>
     <values><field>LadminAI_Default_Time_Zone__c</field><value xsi:type="xsd:string">UTC</value></values>
     <values><field>LadminAI_Enable_Compatibility_Aura__c</field><value xsi:type="xsd:boolean">true</value></values>
+    <values><field>LadminAI_Enable_AI_Insights__c</field><value xsi:type="xsd:boolean">false</value></values>
     <values><field>LadminAI_Enable_Parent_Adapter__c</field><value xsi:type="xsd:boolean">false</value></values>
     <values><field>LadminAI_Minimum_Lead_Time_Minutes__c</field><value xsi:type="xsd:double">0</value></values>
 </CustomMetadata>

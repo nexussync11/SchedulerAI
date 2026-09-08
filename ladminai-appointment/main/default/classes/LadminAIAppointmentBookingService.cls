@@ -385,7 +385,6 @@ public with sharing class LadminAIAppointmentBookingService {
             ServiceAppointment__c.Location__c,
             ServiceAppointment__c.Booked_By_User__c,
             ServiceAppointment__c.LadminAI_Event__c,
-            ServiceAppointment__c.LadminAI_Event__c,
             ServiceAppointment__c.Appointment_Mode__c,
             ServiceAppointment__c.Appointment_Type__c,
             ServiceAppointment__c.Status__c,
