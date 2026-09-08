@@ -26,13 +26,12 @@ private class LadminAIAppointmentBookingServiceTest {
             System.assert(result.bookingReference.startsWith('LA-'));
 
             ServiceAppointment__c appointment = [
-                SELECT Parent_Record1__c, Booked_By__c, Scheduled_Start__c,
+                SELECT Parent_Record1__c, Scheduled_Start__c,
                     Scheduled_End__c, Status__c, LadminAI_Idempotency_Key__c
                 FROM ServiceAppointment__c
                 WHERE Id = :result.appointmentId
             ];
             System.assertEquals(context.parentLead.Id, appointment.Parent_Record1__c);
-            System.assertEquals(request.bookedBy, appointment.Booked_By__c);
             System.assertEquals('Open', appointment.Status__c);
             System.assertEquals(request.idempotencyKey, appointment.LadminAI_Idempotency_Key__c);
         }
@@ -168,7 +167,6 @@ private class LadminAIAppointmentBookingServiceTest {
                 ServiceAppointment__c.Appointment_Mode__c
             );
             request.bookingStatus = 'Booked';
-            request.bookedBy = firstActiveValue(ServiceAppointment__c.Booked_By__c);
             request.subject = 'Consultation';
             request.idempotencyKey = 'unauthorized-request';
 
@@ -284,7 +282,6 @@ private class LadminAIAppointmentBookingServiceTest {
             ServiceAppointment__c.Appointment_Mode__c
         );
         request.bookingStatus = 'Booked';
-        request.bookedBy = firstActiveValue(ServiceAppointment__c.Booked_By__c);
         request.subject = 'Consultation';
         request.idempotencyKey =
             'test-' + String.valueOf(Crypto.getRandomLong()).replace('-', '0');
@@ -301,8 +298,7 @@ private class LadminAIAppointmentBookingServiceTest {
             Parent_Record1__c = context.parentLead.Id,
             Scheduled_Start__c = startTime,
             Scheduled_End__c = endTime,
-            Status__c = 'Open',
-            Booked_By__c = firstActiveValue(ServiceAppointment__c.Booked_By__c)
+            Status__c = 'Open'
         );
         insert appointment;
         insert new Assigned_Resource__c(

@@ -124,7 +124,6 @@ public with sharing class LadminAIAppointmentBookingService {
                 Scheduled_End__c = request.requestedEnd,
                 Duration__c = durationMinutes,
                 Subject__c = request.subject.trim(),
-                Booked_By__c = request.bookedBy,
                 Appointment_Mode__c = request.bookingSource,
                 Status__c = 'Open',
                 Service_Resource_Name__c = abbreviate(resource.Name, 40),
@@ -295,14 +294,6 @@ public with sharing class LadminAIAppointmentBookingService {
         if (String.isBlank(request.subject) || request.subject.trim().length() > 255) {
             addFieldError(result, 'subject', 'Subject is required and must not exceed 255 characters.');
         }
-        if (String.isBlank(request.bookedBy)) {
-            addFieldError(result, 'bookedBy', 'Booked By is required.');
-        } else if (!isActivePicklistValue(
-            ServiceAppointment__c.Booked_By__c,
-            request.bookedBy
-        )) {
-            addFieldError(result, 'bookedBy', 'Booked By is not supported.');
-        }
         if (String.isBlank(request.bookingSource)) {
             addFieldError(result, 'bookingSource', 'Booking source is required.');
         } else if (!isActivePicklistValue(
@@ -392,7 +383,6 @@ public with sharing class LadminAIAppointmentBookingService {
             ServiceAppointment__c.Scheduled_End__c,
             ServiceAppointment__c.Duration__c,
             ServiceAppointment__c.Subject__c,
-            ServiceAppointment__c.Booked_By__c,
             ServiceAppointment__c.Appointment_Mode__c,
             ServiceAppointment__c.Appointment_Type__c,
             ServiceAppointment__c.Address__c,

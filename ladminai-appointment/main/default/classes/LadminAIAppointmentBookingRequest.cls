@@ -9,7 +9,6 @@ public class LadminAIAppointmentBookingRequest {
     @AuraEnabled public Datetime requestedEnd { get; set; }
     @AuraEnabled public String bookingSource { get; set; }
     @AuraEnabled public String bookingStatus { get; set; }
-    @AuraEnabled public String bookedBy { get; set; }
     @AuraEnabled public String subject { get; set; }
     @AuraEnabled public String location { get; set; }
     @AuraEnabled public String appointmentType { get; set; }
