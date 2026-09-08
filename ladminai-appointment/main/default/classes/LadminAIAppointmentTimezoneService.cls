@@ -61,7 +61,7 @@ public with sharing class LadminAIAppointmentTimezoneService {
         Metadata.DeployContainer container = new Metadata.DeployContainer();
         container.addMetadata(record);
         return String.valueOf(Metadata.Operations.enqueueDeployment(
-            container, new LadminAIAppointmentSettingsDeployCallback()
+            container, new LadminAISettingsDeployCallback()
         ));
     }
 

@@ -3,6 +3,7 @@
     <formFactors>Large</formFactors>
     <formFactors>Small</formFactors>
     <label>LadminAI Smart Appointment</label>
+    <logo>LadminAI_Smart_Appointments_Logo</logo>
     <navType>Standard</navType>
     <tabs>LadminAI_Book_Appointment</tabs>
     <tabs>ServiceAppointment__c</tabs>

@@ -4,7 +4,7 @@ private class LadminAIAppointmentBookingServiceTest {
         User bookingUser;
         Lead parentLead;
         Service_Resource__c resource;
-        Location bookingLocation;
+        Schema.Location bookingLocation;
     }
 
     @IsTest
@@ -259,18 +259,18 @@ private class LadminAIAppointmentBookingServiceTest {
             LastName = 'Booking Context',
             Company = 'LadminAI Test'
         );
-        insert context.parentLead;
+        insert as system context.parentLead;
         context.resource = new Service_Resource__c(
             Name = 'Test Resource',
             Active__c = true
         );
-        insert context.resource;
-        context.bookingLocation = new Location(
+        insert as system context.resource;
+        context.bookingLocation = new Schema.Location(
             Name = 'Test Location', LocationType = 'Site',
             Scheduler_Active__c = true, Scheduler_Managed__c = true
         );
-        insert context.bookingLocation;
-        insert new Scheduler_Location_Resource__c(
+        insert as system context.bookingLocation;
+        insert as system new Scheduler_Location_Resource__c(
             Location__c = context.bookingLocation.Id,
             Service_Resource__c = context.resource.Id,
             Active__c = true,

@@ -141,7 +141,6 @@
         <type>Default</type>
     </actionOverrides>
     <allowInChatterGroups>false</allowInChatterGroups>
-    <compactLayoutAssignment>Custom_Compact_Layout</compactLayoutAssignment>
     <deploymentStatus>Deployed</deploymentStatus>
     <enableActivities>true</enableActivities>
     <enableBulkApi>true</enableBulkApi>
@@ -160,15 +159,6 @@
         <type>Text</type>
     </nameField>
     <pluralLabel>Service Appointment</pluralLabel>
-    <searchLayouts>
-        <searchResultsAdditionalFields>Actual_Duration_Minutes__c</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>Actual_End__c</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>Actual_Start__c</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>Additional_Information__c</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>Address__c</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>Anonymous_Booking__c</searchResultsAdditionalFields>
-        <searchResultsAdditionalFields>Appointment_Booking_URL__c</searchResultsAdditionalFields>
-    </searchLayouts>
     <sharingModel>ReadWrite</sharingModel>
     <visibility>Public</visibility>
 </CustomObject>

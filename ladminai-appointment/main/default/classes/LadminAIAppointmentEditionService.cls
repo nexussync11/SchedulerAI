@@ -24,7 +24,7 @@ public without sharing class LadminAIAppointmentEditionService {
 
     public static void assertLocationActivationAllowed(Id existingId) {
         if (existingId != null) {
-            List<Location> existing = [SELECT Scheduler_Active__c FROM Location WHERE Id=:existingId LIMIT 1];
+            List<Schema.Location> existing = [SELECT Scheduler_Active__c FROM Location WHERE Id=:existingId LIMIT 1];
             if (!existing.isEmpty() && existing[0].Scheduler_Active__c == true) return;
         }
         if (!getLimits().canActivateLocation) throw safe(LOCATION_LIMIT_MESSAGE);

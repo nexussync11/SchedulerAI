@@ -17,7 +17,7 @@ private class LadminAIAppointmentEditionServiceTest {
     }
 
     @IsTest static void enforcesDefaultActiveLocationLimit() {
-        Location first = new Location(
+        Schema.Location first = new Schema.Location(
             Name='First', LocationType='Site', Scheduler_Managed__c=true,
             Scheduler_Active__c=true
         );
@@ -37,7 +37,7 @@ private class LadminAIAppointmentEditionServiceTest {
 
     @IsTest static void inactiveHistoryDoesNotConsumeLimits() {
         insert new Service_Resource__c(Name='Inactive Resource', Active__c=false);
-        insert new Location(Name='Inactive Location', LocationType='Site',
+        insert new Schema.Location(Name='Inactive Location', LocationType='Site',
             Scheduler_Managed__c=true, Scheduler_Active__c=false);
         LadminAIAppointmentEditionService.EditionLimits limits =
             LadminAIAppointmentEditionService.getLimits();
