@@ -144,6 +144,9 @@ public with sharing class LadminAIAppointmentResourceAdminService {
             throw safeException('Resource name is required.');
         }
         Boolean creating = resourceId == null;
+        if (active == true) {
+            LadminAIAppointmentEditionService.assertResourceActivationAllowed(resourceId);
+        }
         assertWriteAccess(creating);
         Service_Resource__c resource = creating
             ? new Service_Resource__c()
@@ -179,6 +182,9 @@ public with sharing class LadminAIAppointmentResourceAdminService {
             throw safeException('A resource is required.');
         }
         assertWriteAccess(false);
+        if (active == true) {
+            LadminAIAppointmentEditionService.assertResourceActivationAllowed(resourceId);
+        }
         Service_Resource__c resource = [
             SELECT Id, Active__c FROM Service_Resource__c
             WHERE Id = :resourceId

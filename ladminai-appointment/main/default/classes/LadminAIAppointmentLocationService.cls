@@ -106,6 +106,9 @@ public with sharing class LadminAIAppointmentLocationService {
         try {
             Boolean creating = locationId == null;
             assertWriteAccess(creating);
+            if (active == null || active == true) {
+                LadminAIAppointmentEditionService.assertLocationActivationAllowed(locationId);
+            }
             if (String.isBlank(name)) {
                 throw new LocationException('Location name is required.');
             }
@@ -131,6 +134,9 @@ public with sharing class LadminAIAppointmentLocationService {
     public static void setActive(Id locationId, Boolean active) {
         try {
             assertWriteAccess(false);
+            if (active == true) {
+                LadminAIAppointmentEditionService.assertLocationActivationAllowed(locationId);
+            }
             if (locationId == null || locationId.getSObjectType() != Schema.Location.SObjectType) {
                 throw new LocationException('A valid Location is required.');
             }
@@ -256,6 +262,11 @@ public with sharing class LadminAIAppointmentLocationService {
         }
     }
     private static AuraHandledException safeException(Exception ex, String fallback) {
+        if (ex != null && ex.getMessage() == LadminAIAppointmentEditionService.LOCATION_LIMIT_MESSAGE) {
+            AuraHandledException limitError = new AuraHandledException(ex.getMessage());
+            limitError.setMessage(ex.getMessage());
+            return limitError;
+        }
         if (ex != null && ex.getMessage() != null &&
             ex.getMessage().contains('STORAGE_LIMIT_EXCEEDED')) {
             return new AuraHandledException(

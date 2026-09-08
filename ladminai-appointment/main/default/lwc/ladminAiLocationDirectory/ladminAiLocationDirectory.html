@@ -2,7 +2,7 @@
     <section class="page" aria-labelledby="locations-heading">
         <header>
             <div><p>Administration</p><h1 id="locations-heading">Locations</h1><span>Manage standard Salesforce Locations used for appointments.</span></div>
-            <lightning-button variant="brand" label="Add Location" icon-name="utility:add" onclick={handleAdd}></lightning-button>
+            <lightning-button variant="brand" label="Add Location" icon-name="utility:add" disabled={addDisabled} onclick={handleAdd}></lightning-button>
         </header>
         <template lwc:if={error}><div class="error" role="alert">{error}</div></template>
         <div class="filters">
@@ -24,7 +24,7 @@
                         </dl>
                         <footer>
                             <lightning-button label="Edit" data-id={location.id} onclick={handleEdit}></lightning-button>
-                            <lightning-button variant="base" label={location.toggleLabel} data-id={location.id} onclick={handleToggle}></lightning-button>
+                            <lightning-button variant="base" label={location.toggleLabel} data-id={location.id} disabled={location.activationDisabled} onclick={handleToggle}></lightning-button>
                         </footer>
                     </article>
                 </template>

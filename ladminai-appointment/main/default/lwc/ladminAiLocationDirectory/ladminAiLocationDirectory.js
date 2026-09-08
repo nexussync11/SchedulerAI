@@ -5,6 +5,7 @@ import getLocationTypes from '@salesforce/apex/LadminAIAppointmentLocationServic
 import saveLocation from '@salesforce/apex/LadminAIAppointmentLocationService.saveLocation';
 import setActive from '@salesforce/apex/LadminAIAppointmentLocationService.setActive';
 import getResources from '@salesforce/apex/LadminAIAppointmentResourceAdminService.getResources';
+import getLimits from '@salesforce/apex/LadminAIAppointmentEditionService.getLimits';
 
 export default class LadminAiLocationDirectory extends LightningElement {
     locations = [];
@@ -17,6 +18,7 @@ export default class LadminAiLocationDirectory extends LightningElement {
     error;
     showEditor = false;
     editor = this.blankEditor();
+    limits;
 
     connectedCallback() { this.load(); }
     blankEditor() {
@@ -47,10 +49,12 @@ export default class LadminAiLocationDirectory extends LightningElement {
             ...row,
             statusLabel: row.active ? 'Active' : 'Inactive',
             statusClass: row.active ? 'status active' : 'status inactive',
-            toggleLabel: row.active ? 'Deactivate' : 'Activate'
+            toggleLabel: row.active ? 'Deactivate' : 'Activate',
+            activationDisabled: !row.active && !this.limits?.canActivateLocation
         }));
     }
     get hasLocations() { return this.filteredLocations.length > 0; }
+    get addDisabled() { return this.limits && !this.limits.canActivateLocation; }
     get editorTitle() { return this.editor.id ? 'Edit Location' : 'Add Location'; }
     get saveDisabled() {
         return this.saving || !this.editor.name.trim() || !this.editor.locationType;
@@ -59,12 +63,13 @@ export default class LadminAiLocationDirectory extends LightningElement {
         this.loading = true;
         this.error = null;
         try {
-            const [locations, types, doctors] = await Promise.all([
-                getLocations(), getLocationTypes(), getResources()
+            const [locations, types, doctors, limits] = await Promise.all([
+                getLocations(), getLocationTypes(), getResources(), getLimits()
             ]);
             this.locations = locations || [];
             this.locationTypes = types || [];
             this.doctors = doctors || [];
+            this.limits = limits;
         } catch (error) {
             this.error = 'Locations could not be loaded. Check your access.';
         } finally { this.loading = false; }

@@ -3,6 +3,7 @@ import getResources from '@salesforce/apex/LadminAIAppointmentResourceAdminServi
 import getAppointments from '@salesforce/apex/LadminAIAppointmentResourceAdminService.getAppointments';
 import saveResource from '@salesforce/apex/LadminAIAppointmentResourceAdminService.saveResource';
 import setActive from '@salesforce/apex/LadminAIAppointmentResourceAdminService.setActive';
+import getLimits from '@salesforce/apex/LadminAIAppointmentEditionService.getLimits';
 
 export default class LadminAiResourceDirectory extends LightningElement {
     resources = [];
@@ -16,6 +17,7 @@ export default class LadminAiResourceDirectory extends LightningElement {
     showAppointments = false;
     editor = this.blankEditor();
     selectedDoctorName;
+    limits;
 
     connectedCallback() { this.loadResources(); }
 
@@ -44,12 +46,14 @@ export default class LadminAiResourceDirectory extends LightningElement {
             statusLabel: resource.active ? 'Active' : 'Inactive',
             statusClass: resource.active ? 'status status_active' : 'status status_inactive',
             toggleLabel: resource.active ? 'Deactivate' : 'Activate',
+            activationDisabled: !resource.active && !this.limits?.canActivateServiceResource,
             locationLabel: (resource.locationNames || []).join(', ') ||
                 'No location assigned'
         }));
     }
 
     get hasResources() { return this.filteredResources.length > 0; }
+    get addDisabled() { return this.limits && !this.limits.canActivateServiceResource; }
     get editorTitle() { return this.editor.id ? 'Edit doctor' : 'Add doctor'; }
     get saveDisabled() {
         return this.isSaving || !this.editor.name?.trim();
@@ -59,7 +63,11 @@ export default class LadminAiResourceDirectory extends LightningElement {
     async loadResources() {
         this.isLoading = true;
         this.errorMessage = null;
-        try { this.resources = await getResources(); }
+        try {
+            const [resources, limits] = await Promise.all([getResources(), getLimits()]);
+            this.resources = resources;
+            this.limits = limits;
+        }
         catch (error) { this.errorMessage = this.message(error, 'Doctors could not be loaded.'); }
         finally { this.isLoading = false; }
     }

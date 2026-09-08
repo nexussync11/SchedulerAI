@@ -4,7 +4,7 @@
             <div><p class="eyebrow">Administration</p><h1 id="doctors-heading" tabindex="-1">Doctors and Resources</h1><p>Manage the people and resources available for appointments.</p></div>
             <div class="header-actions">
                 <lightning-button label="Doctor Availability" icon-name="utility:clock" onclick={handleAvailability}></lightning-button>
-                <lightning-button variant="brand" label="Add Doctor" icon-name="utility:add" onclick={handleAdd}></lightning-button>
+                <lightning-button variant="brand" label="Add Doctor" icon-name="utility:add" disabled={addDisabled} onclick={handleAdd}></lightning-button>
             </div>
         </header>
         <div class="toolbar">
@@ -26,7 +26,7 @@
                         </div>
                         <div class="card-actions">
                             <lightning-button label="Edit" data-id={doctor.id} onclick={handleEdit}></lightning-button>
-                            <lightning-button label={doctor.toggleLabel} data-id={doctor.id} onclick={handleToggle}></lightning-button>
+                            <lightning-button label={doctor.toggleLabel} data-id={doctor.id} disabled={doctor.activationDisabled} onclick={handleToggle}></lightning-button>
                             <lightning-button label="Appointments" icon-name="utility:event" data-id={doctor.id} onclick={handleAppointments}></lightning-button>
                             <lightning-button label="Availability" icon-name="utility:clock" data-id={doctor.id} onclick={handleAvailability}></lightning-button>
                         </div>
