@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Scheduler_Managed__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Identifies standard Salesforce Location records managed by LadminAI Smart Appointment.</description>
+    <label>Scheduler Managed</label>
+    <type>Checkbox</type>
+</CustomField>

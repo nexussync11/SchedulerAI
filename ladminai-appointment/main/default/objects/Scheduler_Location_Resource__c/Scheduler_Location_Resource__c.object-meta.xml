@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomObject xmlns="http://soap.sforce.com/2006/04/metadata">
+    <deploymentStatus>Deployed</deploymentStatus>
+    <description>Active association between an existing Scheduler doctor and a standard Salesforce Location.</description>
+    <enableActivities>false</enableActivities>
+    <enableFeeds>false</enableFeeds>
+    <enableHistory>false</enableHistory>
+    <enableReports>true</enableReports>
+    <label>Scheduler Location Resource</label>
+    <nameField>
+        <displayFormat>SLR-{00000}</displayFormat>
+        <label>Scheduler Location Resource Number</label>
+        <type>AutoNumber</type>
+    </nameField>
+    <pluralLabel>Scheduler Location Resources</pluralLabel>
+    <sharingModel>ReadWrite</sharingModel>
+</CustomObject>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Service_Resource__c</fullName>
+    <deleteConstraint>Restrict</deleteConstraint>
+    <label>Doctor</label>
+    <referenceTo>Service_Resource__c</referenceTo>
+    <relationshipLabel>Scheduler Locations</relationshipLabel>
+    <relationshipName>Scheduler_Locations</relationshipName>
+    <required>true</required>
+    <type>Lookup</type>
+</CustomField>

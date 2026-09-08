@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>Scheduler_Active__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Controls whether this standard Salesforce Location is available to LadminAI Smart Appointment.</description>
+    <label>Scheduler Active</label>
+    <type>Checkbox</type>
+</CustomField>
