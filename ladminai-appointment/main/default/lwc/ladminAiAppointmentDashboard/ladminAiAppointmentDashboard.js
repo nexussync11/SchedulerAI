@@ -1,0 +1,1 @@
+import{LightningElement}from'lwc';import getSnapshot from'@salesforce/apex/LadminAIAppointmentAnalyticsService.getSnapshot';export default class LadminAiAppointmentDashboard extends LightningElement{data;error;connectedCallback(){this.load();}async load(){try{this.data=await getSnapshot();}catch(e){this.error=e?.body?.message||'Analytics could not be loaded.';}}}

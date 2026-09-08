@@ -7,6 +7,7 @@
     <tabs>LadminAI_Book_Appointment</tabs>
     <tabs>ServiceAppointment__c</tabs>
     <tabs>LadminAI_Calendar</tabs>
+    <tabs>LadminAI_Dashboard</tabs>
     <tabs>LadminAI_Resources</tabs>
     <tabs>LadminAI_Locations</tabs>
     <tabs>LadminAI_Availability</tabs>
