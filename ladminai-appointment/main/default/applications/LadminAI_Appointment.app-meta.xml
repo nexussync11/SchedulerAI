@@ -6,7 +6,10 @@
     <navType>Standard</navType>
     <tabs>LadminAI_Book_Appointment</tabs>
     <tabs>ServiceAppointment__c</tabs>
-    <tabs>Weekly_Availability_Manager</tabs>
     <tabs>Service_Resource__c</tabs>
+    <tabs>standard-Location</tabs>
+    <tabs>Scheduler_Location_Resource__c</tabs>
+    <tabs>Resource_Availability_Schedule__c</tabs>
+    <tabs>Resource_Availability__c</tabs>
     <uiType>Lightning</uiType>
 </CustomApplication>
