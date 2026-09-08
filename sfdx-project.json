@@ -11,7 +11,7 @@
       "default": false
     }
   ],
-  "name": "LadminAI Appointment",
+  "name": "LadminAI Smart Appointment",
   "namespace": "",
   "sfdcLoginUrl": "https://test.salesforce.com",
   "sourceApiVersion": "67.0"
