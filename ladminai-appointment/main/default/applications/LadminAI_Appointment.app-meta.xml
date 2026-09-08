@@ -7,8 +7,7 @@
     <tabs>LadminAI_Book_Appointment</tabs>
     <tabs>ServiceAppointment__c</tabs>
     <tabs>LadminAI_Resources</tabs>
-    <tabs>standard-Location</tabs>
-    <tabs>Scheduler_Location_Resource__c</tabs>
+    <tabs>LadminAI_Locations</tabs>
     <tabs>Resource_Availability_Schedule__c</tabs>
     <tabs>Resource_Availability__c</tabs>
     <uiType>Lightning</uiType>

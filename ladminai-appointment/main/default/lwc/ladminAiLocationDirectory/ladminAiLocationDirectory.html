@@ -1,0 +1,50 @@
+<template>
+    <section class="page" aria-labelledby="locations-heading">
+        <header>
+            <div><p>Administration</p><h1 id="locations-heading">Locations</h1><span>Manage standard Salesforce Locations used for appointments.</span></div>
+            <lightning-button variant="brand" label="Add Location" icon-name="utility:add" onclick={handleAdd}></lightning-button>
+        </header>
+        <template lwc:if={error}><div class="error" role="alert">{error}</div></template>
+        <div class="filters">
+            <lightning-input type="search" label="Search locations" value={search} onchange={handleSearch}></lightning-input>
+            <lightning-combobox label="Location status" value={status} options={statusOptions} onchange={handleStatus}></lightning-combobox>
+            <lightning-button label="Refresh" icon-name="utility:refresh" onclick={load}></lightning-button>
+        </div>
+        <template lwc:if={loading}><lightning-spinner alternative-text="Loading locations"></lightning-spinner></template>
+        <template lwc:elseif={hasLocations}>
+            <div class="grid">
+                <template for:each={filteredLocations} for:item="location">
+                    <article key={location.id}>
+                        <div class="title"><div><h2>{location.name}</h2><span>{location.locationType}</span></div><span class={location.statusClass}>{location.statusLabel}</span></div>
+                        <p>{location.description}</p>
+                        <dl>
+                            <div><dt>Doctors</dt><dd>{location.doctorCount}</dd></div>
+                            <div><dt>Availability rows</dt><dd>{location.availabilityCount}</dd></div>
+                            <div><dt>Appointments</dt><dd>{location.appointmentCount}</dd></div>
+                        </dl>
+                        <footer>
+                            <lightning-button label="Edit" data-id={location.id} onclick={handleEdit}></lightning-button>
+                            <lightning-button variant="base" label={location.toggleLabel} data-id={location.id} onclick={handleToggle}></lightning-button>
+                        </footer>
+                    </article>
+                </template>
+            </div>
+        </template>
+        <template lwc:else><div class="empty">No locations match the current filters.</div></template>
+        <div class="guardrail">Locations are deactivated, not deleted, so appointment history is preserved.</div>
+    </section>
+
+    <template lwc:if={showEditor}>
+        <section class="backdrop" role="dialog" aria-modal="true" aria-labelledby="location-editor-title">
+            <div class="dialog">
+                <header><h2 id="location-editor-title">{editorTitle}</h2><lightning-button-icon icon-name="utility:close" alternative-text="Close" onclick={handleClose}></lightning-button-icon></header>
+                <lightning-input label="Location name" value={editor.name} data-field="name" required onchange={handleField}></lightning-input>
+                <lightning-combobox label="Location type" value={editor.locationType} options={typeOptions} data-field="locationType" required onchange={handleField}></lightning-combobox>
+                <lightning-textarea label="Description" value={editor.description} data-field="description" onchange={handleField}></lightning-textarea>
+                <lightning-input type="checkbox" label="Active for Scheduler" checked={editor.active} data-field="active" onchange={handleField}></lightning-input>
+                <lightning-dual-listbox name="doctors" label="Doctors at this location" source-label="Available doctors" selected-label="Assigned doctors" options={doctorOptions} value={editor.doctorIds} onchange={handleDoctors}></lightning-dual-listbox>
+                <footer><lightning-button label="Cancel" onclick={handleClose}></lightning-button><lightning-button variant="brand" label="Save Location" disabled={saveDisabled} onclick={handleSave}></lightning-button></footer>
+            </div>
+        </section>
+    </template>
+</template>
