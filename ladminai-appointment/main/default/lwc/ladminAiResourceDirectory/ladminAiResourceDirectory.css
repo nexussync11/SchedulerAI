@@ -1,0 +1,118 @@
+:host {
+    display: block;
+}
+.page {
+    max-width: 92rem;
+    margin: 0 auto;
+}
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 1rem;
+}
+h1 {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: #0e2245;
+}
+h2 {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: #102348;
+}
+p {
+    color: #536581;
+}
+.eyebrow {
+    color: #0670c7;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+.toolbar {
+    margin: 1rem 0;
+    padding: 0.8rem;
+    display: grid;
+    grid-template-columns: 1fr auto;
+    gap: 0.7rem;
+    background: white;
+    border: 1px solid #dce6f2;
+    border-radius: 0.75rem;
+}
+
+.header-actions,.card-actions { display: flex; flex-wrap: wrap; gap: .5rem; }
+.doctor-title { align-items: center; display: flex; gap: .65rem; }
+.doctor-locations{display:flex;align-items:center;gap:.35rem;color:#314867;margin:.55rem 0}
+.doctor-metrics{display:flex;flex-wrap:wrap;gap:.5rem;margin-top:.75rem}
+.doctor-metrics span{background:#f1f6fc;border-radius:1rem;color:#405470;font-size:.78rem;padding:.3rem .65rem}
+.status { border-radius: 1rem; font-size: .7rem; padding: .2rem .55rem; }
+.status_active { background: #e3f7ed; color: #06713f; }
+.status_inactive { background: #f0f1f3; color: #5c6675; }
+.editor-grid { display: grid; gap: .75rem; grid-template-columns: 1fr 1fr; }
+.editor-grid lightning-textarea { grid-column: span 2; }
+table { border-collapse: collapse; width: 100%; }
+th,td { border-bottom: 1px solid #dde4ed; padding: .65rem; text-align: left; }
+@media (max-width: 48rem) { .editor-grid { grid-template-columns: 1fr; } .editor-grid lightning-textarea { grid-column: auto; } }
+.doctor-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(20rem, 1fr));
+    gap: 1rem;
+}
+.doctor-card {
+    min-height: 10rem;
+    padding: 1.15rem;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 1rem;
+    background: white;
+    border: 1px solid #dce6f2;
+    border-radius: 0.75rem;
+}
+.doctor-card lightning-button {
+    grid-column: 2;
+    justify-self: start;
+}
+.doctor-icon {
+    width: 3rem;
+    height: 3rem;
+    border-radius: 50%;
+    display: grid;
+    place-items: center;
+    background: #edf5ff;
+}
+.active {
+    display: inline-block;
+    margin: 0.3rem 0;
+    padding: 0.2rem 0.5rem;
+    border-radius: 2rem;
+    color: #17683d;
+    background: #e8f7ef;
+    font-size: 0.75rem;
+    font-weight: 700;
+}
+.state {
+    min-height: 20rem;
+    display: grid;
+    place-items: center;
+    background: white;
+    border: 1px solid #dce6f2;
+    border-radius: 0.75rem;
+    color: #536581;
+}
+.state_error {
+    color: #8b1717;
+}
+.guardrail {
+    margin-top: 1rem;
+    padding: 0.8rem 1rem;
+    border-radius: 0.55rem;
+    background: #f1f6fc;
+    color: #405470;
+}
+@media (max-width: 600px) {
+    .page-header {
+        align-items: flex-start;
+        flex-direction: column;
+    }
+}

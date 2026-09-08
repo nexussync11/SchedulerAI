@@ -1,0 +1,67 @@
+<template>
+    <section class="page" aria-labelledby="doctors-heading">
+        <header class="page-header">
+            <div><p class="eyebrow">Administration</p><h1 id="doctors-heading" tabindex="-1">Doctors and Resources</h1><p>Manage the people and resources available for appointments.</p></div>
+            <div class="header-actions">
+                <lightning-button label="Doctor Availability" icon-name="utility:clock" onclick={handleAvailability}></lightning-button>
+                <lightning-button variant="brand" label="Add Doctor" icon-name="utility:add" onclick={handleAdd}></lightning-button>
+            </div>
+        </header>
+        <div class="toolbar">
+            <lightning-input type="search" label="Search doctors" variant="label-hidden" placeholder="Search doctor, User or Location" value={searchTerm} onchange={handleSearch}></lightning-input>
+            <lightning-combobox label="Doctor status" variant="label-hidden" value={statusFilter} options={statusOptions} onchange={handleStatusFilter}></lightning-combobox>
+            <lightning-button label="Refresh" icon-name="utility:refresh" onclick={loadResources}></lightning-button>
+        </div>
+        <template lwc:if={errorMessage}><div class="state state_error" role="alert">{errorMessage}</div></template>
+        <template lwc:if={isLoading}><div class="state" role="status"><lightning-spinner alternative-text="Loading doctors"></lightning-spinner>Loading doctors…</div></template>
+        <template lwc:elseif={hasResources}>
+            <div class="doctor-grid">
+                <template for:each={filteredResources} for:item="doctor">
+                    <article key={doctor.id} class="doctor-card">
+                        <lightning-icon icon-name="utility:user" size="small"></lightning-icon>
+                        <div class="doctor-content">
+                            <div class="doctor-title"><h2>{doctor.name}</h2><span class={doctor.statusClass}>{doctor.statusLabel}</span></div>
+                            <p class="doctor-locations"><lightning-icon icon-name="utility:location" size="xx-small" alternative-text="Locations"></lightning-icon><strong>{doctor.locationLabel}</strong></p>
+                            <div class="doctor-metrics"><span>{doctor.appointmentCount} appointments</span><span>{doctor.availabilityCount} availability rows</span></div>
+                        </div>
+                        <div class="card-actions">
+                            <lightning-button label="Edit" data-id={doctor.id} onclick={handleEdit}></lightning-button>
+                            <lightning-button label={doctor.toggleLabel} data-id={doctor.id} onclick={handleToggle}></lightning-button>
+                            <lightning-button label="Appointments" icon-name="utility:event" data-id={doctor.id} onclick={handleAppointments}></lightning-button>
+                            <lightning-button label="Availability" icon-name="utility:clock" data-id={doctor.id} onclick={handleAvailability}></lightning-button>
+                        </div>
+                    </article>
+                </template>
+            </div>
+        </template>
+        <template lwc:else><div class="state">No doctors match the current filters.</div></template>
+        <div class="guardrail">Doctors with historical appointments are never deleted here. Deactivate them to preserve appointment history.</div>
+    </section>
+
+    <template lwc:if={showEditor}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="editor-title" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header"><h2 id="editor-title" class="slds-text-heading_medium">{editorTitle}</h2></header>
+                <div class="slds-modal__content slds-p-around_medium editor-grid">
+                    <lightning-input label="Doctor name" required value={editor.name} data-field="name" onchange={handleFieldChange}></lightning-input>
+                    <lightning-input type="checkbox" label="Active for booking" checked={editor.active} data-field="active" onchange={handleFieldChange}></lightning-input>
+                    <lightning-textarea label="Description" value={editor.description} data-field="description" onchange={handleFieldChange}></lightning-textarea>
+                </div>
+                <footer class="slds-modal__footer"><lightning-button label="Cancel" onclick={handleCloseEditor}></lightning-button><lightning-button variant="brand" class="slds-m-left_small" label="Save Doctor" disabled={saveDisabled} onclick={handleSave}></lightning-button></footer>
+            </div>
+        </section><div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+
+    <template lwc:if={showAppointments}>
+        <section role="dialog" tabindex="-1" aria-modal="true" aria-labelledby="appointments-title" class="slds-modal slds-fade-in-open">
+            <div class="slds-modal__container">
+                <header class="slds-modal__header"><h2 id="appointments-title" class="slds-text-heading_medium">{selectedDoctorName} appointments</h2></header>
+                <div class="slds-modal__content slds-p-around_medium">
+                    <template lwc:if={hasAppointments}><table><thead><tr><th>Appointment</th><th>Start</th><th>Status</th></tr></thead><tbody><template for:each={appointments} for:item="item"><tr key={item.id}><td>{item.name}</td><td><lightning-formatted-date-time value={item.scheduledStart}></lightning-formatted-date-time></td><td>{item.status}</td></tr></template></tbody></table></template>
+                    <template lwc:else><p>No appointments are linked to this doctor.</p></template>
+                </div>
+                <footer class="slds-modal__footer"><lightning-button label="Close" onclick={handleCloseAppointments}></lightning-button></footer>
+            </div>
+        </section><div class="slds-backdrop slds-backdrop_open"></div>
+    </template>
+</template>
