@@ -161,6 +161,10 @@ public with sharing class LadminAIAppointmentBookingService {
             if (!eventSave.isSuccess()) {
                 throw new BookingOperationException('EVENT_CREATE_FAILED');
             }
+            appointment.LadminAI_Event__c = eventSave.getId();
+            Database.update(appointment, AccessLevel.USER_MODE);
+            appointment.LadminAI_Event__c = eventSave.getId();
+            Database.update(appointment, AccessLevel.USER_MODE);
 
             Assigned_Resource__c assignment = new Assigned_Resource__c(
                 Service_Appointment__c = appointment.Id,
@@ -380,6 +384,8 @@ public with sharing class LadminAIAppointmentBookingService {
             ServiceAppointment__c.Subject__c,
             ServiceAppointment__c.Location__c,
             ServiceAppointment__c.Booked_By_User__c,
+            ServiceAppointment__c.LadminAI_Event__c,
+            ServiceAppointment__c.LadminAI_Event__c,
             ServiceAppointment__c.Appointment_Mode__c,
             ServiceAppointment__c.Appointment_Type__c,
             ServiceAppointment__c.Status__c,
