@@ -1,0 +1,246 @@
+<template>
+    <section class="page" aria-labelledby="availability-heading">
+        <header class="page-header">
+            <div>
+                <p class="eyebrow">Administration</p>
+                <h1 id="availability-heading" tabindex="-1">
+                    Doctor Availability
+                </h1>
+                <p>
+                    Manage existing weekly working hours and one supported
+                    break.
+                </p>
+            </div>
+            <div class="header-actions">
+                <span class="timezone">Configured business timezone</span>
+                <template lwc:if={isDirty}>
+                    <span class="dirty">Unsaved changes</span>
+                </template>
+                <lightning-button
+                    variant="brand"
+                    label="Save Availability"
+                    disabled={saveDisabled}
+                    onclick={handleSave}
+                ></lightning-button>
+            </div>
+        </header>
+
+        <template lwc:if={errorMessage}>
+            <div class="message" role="alert">{errorMessage}</div>
+        </template>
+
+        <div class="resource-card">
+            <lightning-combobox
+                label="Location"
+                placeholder="Select a location"
+                value={locationId}
+                options={locationOptions}
+                onchange={handleLocationChange}
+            ></lightning-combobox>
+            <lightning-combobox
+                label="Doctor"
+                placeholder="Select a doctor"
+                value={resourceId}
+                options={resourceOptions}
+                onchange={handleResourceChange}
+            ></lightning-combobox>
+            <div>
+                <span>Selected doctor</span>
+                <strong>{selectedDoctor}</strong>
+            </div>
+            <div>
+                <span>Active working days</span>
+                <strong>{activeDayCount}</strong>
+            </div>
+        </div>
+
+        <template lwc:if={isLoading}>
+            <div class="state" role="status">
+                <lightning-spinner
+                    alternative-text="Loading availability"
+                ></lightning-spinner>
+                Loading availability…
+            </div>
+        </template>
+        <template lwc:else>
+            <div class="availability-layout">
+                <section class="schedule-card" aria-labelledby="weekly-heading">
+                    <h2 id="weekly-heading">Weekly Availability</h2>
+                    <div class="copy-panel">
+                        <lightning-combobox
+                            label="Copy availability from"
+                            value={copySourceDay}
+                            options={dayOptions}
+                            onchange={handleCopySource}
+                        ></lightning-combobox>
+                        <lightning-checkbox-group
+                            label="Copy to selected days"
+                            value={copyTargetDays}
+                            options={copyTargetOptions}
+                            onchange={handleCopyTargets}
+                        ></lightning-checkbox-group>
+                        <div class="copy-actions">
+                            <lightning-button
+                                label="Copy to selected days"
+                                onclick={handleCopySelected}
+                            ></lightning-button>
+                            <lightning-button
+                                variant="brand-outline"
+                                label="Copy to all weekdays"
+                                onclick={handleCopyWeekdays}
+                            ></lightning-button>
+                        </div>
+                        <p>Copy changes this week on screen only. Review it, then save once.</p>
+                    </div>
+                    <div class="schedule-header">
+                        <span>Day</span><span>Active</span><span>Start</span>
+                        <span>End</span><span>Break start</span><span>Break end</span>
+                    </div>
+                    <template for:each={displayDays} for:item="day">
+                        <div key={day.day} class="day-row">
+                            <strong>{day.day}</strong>
+                            <lightning-input
+                                type="toggle"
+                                label="Active"
+                                variant="label-hidden"
+                                checked={day.isActive}
+                                data-day={day.day}
+                                data-field="isActive"
+                                onchange={handleDayChange}
+                            ></lightning-input>
+                            <lightning-input
+                                type="time"
+                                label="Start time"
+                                variant="label-hidden"
+                                value={day.start}
+                                disabled={day.inputsDisabled}
+                                data-day={day.day}
+                                data-field="start"
+                                onchange={handleDayChange}
+                            ></lightning-input>
+                            <lightning-input
+                                type="time"
+                                label="End time"
+                                variant="label-hidden"
+                                value={day.end}
+                                disabled={day.inputsDisabled}
+                                data-day={day.day}
+                                data-field="end"
+                                onchange={handleDayChange}
+                            ></lightning-input>
+                            <lightning-input
+                                type="time"
+                                label="Break start"
+                                variant="label-hidden"
+                                value={day.breakStart}
+                                disabled={day.inputsDisabled}
+                                data-day={day.day}
+                                data-field="breakStart"
+                                onchange={handleDayChange}
+                            ></lightning-input>
+                            <lightning-input
+                                type="time"
+                                label="Break end"
+                                variant="label-hidden"
+                                value={day.breakEnd}
+                                disabled={day.inputsDisabled}
+                                data-day={day.day}
+                                data-field="breakEnd"
+                                onchange={handleDayChange}
+                            ></lightning-input>
+                        </div>
+                    </template>
+                </section>
+
+                <aside class="preview-card" aria-labelledby="preview-heading">
+                    <h2 id="preview-heading">Booking Slot Preview</h2>
+                    <p>
+                        Preview uses the existing server-side availability and
+                        occupied-slot logic.
+                    </p>
+                    <lightning-input
+                        type="date"
+                        label="Preview date"
+                        value={previewDate}
+                        onchange={handlePreviewDate}
+                    ></lightning-input>
+                    <lightning-button
+                        label="Preview Available Times"
+                        disabled={previewDisabled}
+                        onclick={handlePreview}
+                    ></lightning-button>
+                    <template lwc:if={isPreviewing}>
+                        <div class="preview-state" role="status">
+                            Loading available times…
+                        </div>
+                    </template>
+                    <div class="preview-slots">
+                        <template for:each={previewSlots} for:item="slot">
+                            <span key={slot.key}>{slot.label}</span>
+                        </template>
+                    </div>
+                    <div class="guardrail">
+                        Weekly hours are the recurring baseline. Date-specific
+                        exceptions below take priority for that date only.
+                    </div>
+                </aside>
+            </div>
+
+            <section class="special-card" aria-labelledby="special-heading">
+                <div class="special-heading">
+                    <div>
+                        <h2 id="special-heading">Special Dates / Overrides</h2>
+                        <p>Close one date or replace its weekly hours without changing the recurring schedule.</p>
+                    </div>
+                </div>
+                <div class="override-form">
+                    <lightning-input
+                        type="date"
+                        name="overrideDate"
+                        label="Date"
+                        value={overrideDate}
+                        onchange={handleOverrideInput}
+                    ></lightning-input>
+                    <lightning-combobox
+                        name="overrideType"
+                        label="Type"
+                        value={overrideType}
+                        options={overrideTypeOptions}
+                        onchange={handleOverrideInput}
+                    ></lightning-combobox>
+                    <template lwc:if={isCustomHours}>
+                        <lightning-input type="time" name="overrideStart" label="Start" value={overrideStart} onchange={handleOverrideInput}></lightning-input>
+                        <lightning-input type="time" name="overrideEnd" label="End" value={overrideEnd} onchange={handleOverrideInput}></lightning-input>
+                        <lightning-input type="time" name="overrideBreakStart" label="Break start" value={overrideBreakStart} onchange={handleOverrideInput}></lightning-input>
+                        <lightning-input type="time" name="overrideBreakEnd" label="Break end" value={overrideBreakEnd} onchange={handleOverrideInput}></lightning-input>
+                    </template>
+                    <lightning-button
+                        variant="brand"
+                        label="Save Special Date"
+                        disabled={overrideSaveDisabled}
+                        onclick={handleSaveOverride}
+                    ></lightning-button>
+                </div>
+                <div class="month-calendar" aria-label="Monthly special-date calendar">
+                    <template for:each={specialDateMonths} for:item="month">
+                        <section key={month.key} class="month-group">
+                            <h3>{month.label}</h3>
+                            <div class="month-days">
+                                <template for:each={month.rows} for:item="row">
+                                    <article key={row.Id} class={row.cardClass}>
+                                        <div class="override-date"><span>{row.weekday}</span><strong>{row.dayNumber}</strong></div>
+                                        <div><strong>{row.typeLabel}</strong><span>{row.hoursLabel}</span></div>
+                                        <div class="override-actions">
+                                            <lightning-button-icon icon-name="utility:edit" alternative-text="Edit special date" data-id={row.Id} onclick={handleEditOverride}></lightning-button-icon>
+                                            <lightning-button-icon icon-name="utility:delete" alternative-text="Remove special date" data-id={row.Id} onclick={handleDeleteOverride}></lightning-button-icon>
+                                        </div>
+                                    </article>
+                                </template>
+                            </div>
+                        </section>
+                    </template>
+                </div>
+            </section>
+        </template>
+    </section>
+</template>
