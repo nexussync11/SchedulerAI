@@ -4,7 +4,7 @@ import productLogo from '@salesforce/resourceUrl/LadminAI_Smart_Appointments_Log
 import canManageAdministration from '@salesforce/customPermission/LadminAI_Configure_Appointment';
 import getSettings from '@salesforce/apex/LadminAIAppointmentTimezoneService.getSettings';
 
-const STANDARD_NAVIGATION = [['home', 'Home', 'utility:home'], ['booking', 'Appointment Booking', 'utility:event'], ['schedule', 'Appointment Schedule', 'utility:date_time'], ['salesforceCalendar', 'Salesforce Calendar', 'utility:event'], ['reports', 'Reports & Dashboard', 'utility:chart']];
+const STANDARD_NAVIGATION = [['home', 'Home', 'utility:home'], ['booking', 'Appointment Booking', 'utility:event'], ['schedule', 'Appointment Schedule', 'utility:date_time'], ['salesforceCalendar', 'Salesforce Calendar', 'utility:event'], ['reports', 'Reports & Dashboard', 'utility:chart'], ['insights', 'AI Smart Insights', 'utility:light_bulb']];
 const ADMIN_NAVIGATION = [['availability', 'Resource Availability', 'utility:clock'], ['resources', 'Doctors / Resources', 'utility:user'], ['services', 'Services', 'utility:choice'], ['locations', 'Locations', 'utility:location'], ['health', 'Operational Health', 'utility:shield'], ['settings', 'Settings', 'utility:settings']];
 
 export default class LadminAiAppointmentHome extends NavigationMixin(LightningElement) {
@@ -29,6 +29,7 @@ export default class LadminAiAppointmentHome extends NavigationMixin(LightningEl
     get isServices() { return this.activeView === 'services'; }
     get isLocations() { return this.activeView === 'locations'; }
     get isReports() { return this.activeView === 'reports'; }
+    get isInsights() { return this.activeView === 'insights'; }
     get isSettings() { return this.activeView === 'settings'; }
     get isHealth() { return this.activeView === 'health'; }
     handleNavigate(event) {
