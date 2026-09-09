@@ -21,6 +21,9 @@
                 </section>
                 <section class="panel" aria-labelledby="resource-heading"><h2 id="resource-heading">Appointments by resource</h2><template for:each={resourceRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
                 <section class="panel" aria-labelledby="location-heading"><h2 id="location-heading">Appointments by location</h2><template for:each={locationRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
+                <section class="panel" aria-labelledby="user-heading"><h2 id="user-heading">Appointments by booking user</h2><template for:each={bookingUserRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
+                <section class="panel" aria-labelledby="service-heading"><h2 id="service-heading">Appointments by service</h2><template for:each={serviceRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
+                <section class="panel" aria-labelledby="source-heading"><h2 id="source-heading">Appointments by booking source</h2><template for:each={bookingSourceRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
             </div>
         </template>
         <c-ladmin-ai-smart-insights></c-ladmin-ai-smart-insights>

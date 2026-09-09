@@ -131,6 +131,9 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertNotEquals(null, analytics.statusMetrics);
         System.assertNotEquals(null, analytics.resourceMetrics);
         System.assertNotEquals(null, analytics.locationMetrics);
+        System.assertNotEquals(null, analytics.bookingUserMetrics);
+        System.assertNotEquals(null, analytics.serviceMetrics);
+        System.assertNotEquals(null, analytics.bookingSourceMetrics);
         System.assert(analytics.upcomingNext7Days >= 0);
         LadminAIAppointmentAIInsightsService.InsightResult insight = LadminAIAppointmentAIInsightsService.getInsights();
         System.assertEquals(false, insight.enabled);

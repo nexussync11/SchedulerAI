@@ -13,6 +13,9 @@ export default class LadminAiAppointmentDashboard extends LightningElement {
     get statusRows() { return this.toRows(this.data?.statusMetrics); }
     get locationRows() { return this.toRows(this.data?.locationMetrics, 2); }
     get resourceRows() { return this.toRows(this.data?.resourceMetrics, 5); }
+    get bookingUserRows() { return this.toRows(this.data?.bookingUserMetrics, 1); }
+    get serviceRows() { return this.toRows(this.data?.serviceMetrics, 3); }
+    get bookingSourceRows() { return this.toRows(this.data?.bookingSourceMetrics, 6); }
     get statusTotal() { return this.statusRows.reduce((total, row) => total + row.value, 0); }
     get statusChartLabel() { return `Appointment status distribution. ${this.statusRows.map(row => `${row.label}: ${row.value}`).join(', ')}`; }
     get statusPieStyle() {

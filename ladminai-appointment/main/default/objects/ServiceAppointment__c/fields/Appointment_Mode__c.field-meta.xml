@@ -26,11 +26,6 @@
                 <label>In-Person</label>
             </value>
             <value>
-                <fullName>Answer4U</fullName>
-                <default>false</default>
-                <label>Answer4U</label>
-            </value>
-            <value>
                 <fullName>Facebook</fullName>
                 <default>false</default>
                 <label>Facebook</label>
@@ -44,11 +39,6 @@
                 <fullName>Groupon</fullName>
                 <default>false</default>
                 <label>Groupon</label>
-            </value>
-            <value>
-                <fullName>Hair Calculator</fullName>
-                <default>false</default>
-                <label>Hair Calculator</label>
             </value>
             <value>
                 <fullName>Other</fullName>
@@ -69,11 +59,6 @@
                 <fullName>Website</fullName>
                 <default>false</default>
                 <label>Website</label>
-            </value>
-            <value>
-                <fullName>VFT Funnel</fullName>
-                <default>false</default>
-                <label>VFT Funnel</label>
             </value>
             <value>
                 <fullName>B2B Referral</fullName>
