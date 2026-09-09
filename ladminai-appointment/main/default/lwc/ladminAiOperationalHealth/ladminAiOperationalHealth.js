@@ -21,7 +21,9 @@ export default class LadminAiOperationalHealth extends LightningElement {
             this.check('Active assignments', s.activeAssignments > 0, s.activeAssignments, 'Assign a resource to a location.'),
             this.check('Availability rows', s.activeAvailabilityRows > 0, s.activeAvailabilityRows, 'Add active working hours.'),
             this.check('Resources without availability', s.activeResourcesWithoutAvailability === 0, s.activeResourcesWithoutAvailability, 'Review active resources that cannot accept bookings.'),
-            this.check('Appointments missing Events', s.appointmentsMissingEvents === 0, s.appointmentsMissingEvents, 'Review appointments without Salesforce calendar projections.')
+            this.check('Appointments missing Events', s.appointmentsMissingEvents === 0, s.appointmentsMissingEvents, 'Review appointments without Salesforce calendar projections.'),
+            this.check('Overlapping appointments', s.overlappingAppointments === 0, s.overlappingAppointments, 'Review concurrent appointments assigned to the same resource.'),
+            this.check('Event synchronization mismatches', s.eventSynchronizationMismatches === 0, s.eventSynchronizationMismatches, 'Review linked Events whose start or end differs from the appointment.')
         ];
     }
     get permissions() {
