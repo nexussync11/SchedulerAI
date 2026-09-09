@@ -2,17 +2,21 @@
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <classAccesses><apexClass>LadminAIAppointmentResourceAdminService</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAIAppointmentEditionService</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>LadminAIAppointmentServiceCatalog</apexClass><enabled>true</enabled></classAccesses>
     <customPermissions><enabled>true</enabled><name>LadminAI_Manage_Resources</name></customPermissions>
     <fieldPermissions><editable>true</editable><field>Service_Resource__c.Active__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>Service_Resource__c.Description__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>false</editable><field>Assigned_Resource__c.Service_Resource__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>false</editable><field>Resource_Availability__c.Service_Resource__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Appointment_Service__c.Active__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Appointment_Service__c.Description__c</field><readable>true</readable></fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>LadminAI Resource Administrator</label>
     <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Assigned_Resource__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Resource_Availability__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>ServiceAppointment__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>true</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Service_Resource__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>true</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Appointment_Service__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <tabSettings><tab>LadminAI_Resources</tab><visibility>Visible</visibility></tabSettings>
     <tabSettings><tab>LadminAI_Smart_Appointment</tab><visibility>Visible</visibility></tabSettings>
 </PermissionSet>

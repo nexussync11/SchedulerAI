@@ -5,7 +5,7 @@ import canManageAdministration from '@salesforce/customPermission/LadminAI_Confi
 import getSettings from '@salesforce/apex/LadminAIAppointmentTimezoneService.getSettings';
 
 const STANDARD_NAVIGATION = [['home', 'Home', 'utility:home'], ['booking', 'Appointment Booking', 'utility:event'], ['schedule', 'Appointment Schedule', 'utility:date_time'], ['salesforceCalendar', 'Salesforce Calendar', 'utility:event'], ['reports', 'Reports & Dashboard', 'utility:chart']];
-const ADMIN_NAVIGATION = [['availability', 'Resource Availability', 'utility:clock'], ['resources', 'Doctors / Resources', 'utility:user'], ['locations', 'Locations', 'utility:location'], ['settings', 'Settings', 'utility:settings']];
+const ADMIN_NAVIGATION = [['availability', 'Resource Availability', 'utility:clock'], ['resources', 'Doctors / Resources', 'utility:user'], ['services', 'Services', 'utility:choice'], ['locations', 'Locations', 'utility:location'], ['settings', 'Settings', 'utility:settings']];
 
 export default class LadminAiAppointmentHome extends NavigationMixin(LightningElement) {
     productLogo = productLogo;
@@ -26,6 +26,7 @@ export default class LadminAiAppointmentHome extends NavigationMixin(LightningEl
     get isSchedule() { return this.activeView === 'schedule'; }
     get isAvailability() { return this.activeView === 'availability'; }
     get isResources() { return this.activeView === 'resources'; }
+    get isServices() { return this.activeView === 'services'; }
     get isLocations() { return this.activeView === 'locations'; }
     get isReports() { return this.activeView === 'reports'; }
     get isSettings() { return this.activeView === 'settings'; }
