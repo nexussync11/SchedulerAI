@@ -1,1 +1,22 @@
-<template><section><h1>Appointment Dashboard</h1><template lwc:if={error}><p>{error}</p></template><template lwc:if={data}><div class="grid"><article><strong>{data.appointmentsThisMonth}</strong><span>Appointments this month</span></article><article><strong>{data.completed}</strong><span>Completed</span></article><article><strong>{data.cancelled}</strong><span>Cancelled</span></article><article><strong>{data.cancellationRate}%</strong><span>Cancellation rate</span></article></div></template><c-ladmin-ai-smart-insights></c-ladmin-ai-smart-insights></section></template>
+<template>
+    <section aria-labelledby="analytics-heading">
+        <header><div><h1 id="analytics-heading">Appointment Dashboard</h1><p>Operational performance for the current calendar month.</p></div><lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh appointment analytics" onclick={load}></lightning-button-icon></header>
+        <template lwc:if={loading}><div class="loading" role="status"><lightning-spinner size="small" alternative-text="Loading appointment analytics"></lightning-spinner></div></template>
+        <template lwc:elseif={error}><p class="error" role="alert">{error}</p></template>
+        <template lwc:else>
+            <div class="grid" aria-label="Appointment key performance indicators">
+                <article><strong>{data.appointmentsThisMonth}</strong><span>Appointments this month</span></article>
+                <article><strong>{data.upcomingNext7Days}</strong><span>Upcoming next 7 days</span></article>
+                <article><strong>{data.completionRate}%</strong><span>Completion rate</span></article>
+                <article><strong>{data.cancellationRate}%</strong><span>Cancellation rate</span></article>
+                <article><strong>{data.noShowRate}%</strong><span>No-show rate</span></article>
+            </div>
+            <div class="breakdowns">
+                <section class="panel" aria-labelledby="status-heading"><h2 id="status-heading">By status</h2><template for:each={statusRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
+                <section class="panel" aria-labelledby="resource-heading"><h2 id="resource-heading">By resource</h2><template for:each={resourceRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
+                <section class="panel" aria-labelledby="location-heading"><h2 id="location-heading">By location</h2><template for:each={locationRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
+            </div>
+        </template>
+        <c-ladmin-ai-smart-insights></c-ladmin-ai-smart-insights>
+    </section>
+</template>

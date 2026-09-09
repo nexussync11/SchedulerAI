@@ -126,7 +126,12 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(1, LadminAIAppointmentResourceAdminService.getAppointments(c.resource.Id).size());
         LadminAIAppointmentCommandService.updateStatus(appointment.Id, 'No Show');
         LadminAIAppointmentCommandService.reschedule(appointment.Id, target, '09:30');
-        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getSnapshot().appointmentsThisMonth >= 0 ? 1 : 0);
+        LadminAIAppointmentAnalyticsService.Snapshot analytics = LadminAIAppointmentAnalyticsService.getSnapshot();
+        System.assertEquals(1, analytics.appointmentsThisMonth >= 0 ? 1 : 0);
+        System.assertNotEquals(null, analytics.statusMetrics);
+        System.assertNotEquals(null, analytics.resourceMetrics);
+        System.assertNotEquals(null, analytics.locationMetrics);
+        System.assert(analytics.upcomingNext7Days >= 0);
         LadminAIAppointmentAIInsightsService.InsightResult insight = LadminAIAppointmentAIInsightsService.getInsights();
         System.assertEquals(false, insight.enabled);
         LadminAIAppointmentCommandService.cancel(appointment.Id, 'Test cancellation');
