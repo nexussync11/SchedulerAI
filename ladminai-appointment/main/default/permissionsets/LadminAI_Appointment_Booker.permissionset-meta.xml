@@ -3,6 +3,7 @@
     <classAccesses><apexClass>LadminAIAppointmentBookingController</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAIAppointmentBookingService</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAIAppointmentCommandService</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>LadminAIAppointmentLocationService</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAINotificationService</apexClass><enabled>true</enabled></classAccesses>
     <customPermissions><enabled>true</enabled><name>LadminAI_Book_Appointment</name></customPermissions>
     <fieldPermissions><editable>true</editable><field>Assigned_Resource__c.Service_Resource__c</field><readable>true</readable></fieldPermissions>
@@ -22,16 +23,25 @@
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Service_Resource_Name__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Status__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Subject__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Rescheduled_At__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Rescheduled_By__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Cancellation_Reason__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Cancelled_At__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Cancelled_By__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Status_Changed_At__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Status_Changed_By__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.No_Show_At__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.No_Show_By__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>false</editable><field>Service_Resource__c.Active__c</field><readable>true</readable></fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>LadminAI Smart Appointment Booker</label>
-    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Assigned_Resource__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
-    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Event</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>true</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Assigned_Resource__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>true</allowCreate><allowDelete>true</allowDelete><allowEdit>true</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Event</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Lead</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Appointment_Service__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Location</object><viewAllFields>true</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Scheduler_Location_Resource__c</object><viewAllFields>true</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
-    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>ServiceAppointment__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
+    <objectPermissions><allowCreate>true</allowCreate><allowDelete>false</allowDelete><allowEdit>true</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>ServiceAppointment__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <objectPermissions><allowCreate>false</allowCreate><allowDelete>false</allowDelete><allowEdit>false</allowEdit><allowRead>true</allowRead><modifyAllRecords>false</modifyAllRecords><object>Service_Resource__c</object><viewAllFields>false</viewAllFields><viewAllRecords>false</viewAllRecords></objectPermissions>
     <tabSettings><tab>LadminAI_Book_Appointment</tab><visibility>Visible</visibility></tabSettings>
     <tabSettings><tab>LadminAI_Calendar</tab><visibility>Visible</visibility></tabSettings>

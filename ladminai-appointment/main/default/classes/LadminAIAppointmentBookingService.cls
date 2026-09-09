@@ -163,8 +163,6 @@ public with sharing class LadminAIAppointmentBookingService {
             }
             appointment.LadminAI_Event__c = eventSave.getId();
             Database.update(appointment, AccessLevel.USER_MODE);
-            appointment.LadminAI_Event__c = eventSave.getId();
-            Database.update(appointment, AccessLevel.USER_MODE);
 
             Assigned_Resource__c assignment = new Assigned_Resource__c(
                 Service_Appointment__c = appointment.Id,

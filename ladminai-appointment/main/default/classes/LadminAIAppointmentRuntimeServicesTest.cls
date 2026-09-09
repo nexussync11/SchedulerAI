@@ -131,6 +131,45 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(1, LadminAIAppointmentResourceAdminService.getAppointments(c.resource.Id).size());
         LadminAIAppointmentCommandService.updateStatus(appointment.Id, 'No Show');
         LadminAIAppointmentCommandService.reschedule(appointment.Id, target, '09:30');
+        update new Service_Resource__c(Id = c.resource.Id, Active__c = false);
+        update new Schema.Location(Id = c.location.Id, Scheduler_Active__c = false);
+        Service_Resource__c replacementResource = new Service_Resource__c(Name = 'Replacement Doctor', Active__c = true);
+        insert replacementResource;
+        Schema.Location replacementLocation = new Schema.Location(
+            Name = 'Replacement Location', LocationType = 'Site',
+            Scheduler_Managed__c = true, Scheduler_Active__c = true
+        );
+        insert replacementLocation;
+        insert new Scheduler_Location_Resource__c(
+            Location__c = replacementLocation.Id, Service_Resource__c = replacementResource.Id,
+            Active__c = true, Location_Resource_Key__c = replacementLocation.Id + ':' + replacementResource.Id
+        );
+        Date replacementDate = target.addDays(1);
+        String replacementWeekday = Datetime.newInstance(replacementDate, Time.newInstance(12, 0, 0, 0)).format('EEEE');
+        LadminAIAppointmentAvailabilityService.saveAvailabilityAtLocation(
+            replacementResource.Id, replacementLocation.Id,
+            new List<Map<String, Object>>{ new Map<String, Object>{
+                'Day_Of_Week__c' => replacementWeekday, 'Start_Time__c' => '13:00',
+                'End_Time__c' => '15:00', 'Is_Active__c' => true
+            }}
+        );
+        LadminAIAppointmentCommandService.rescheduleTo(
+            appointment.Id, replacementLocation.Id, replacementResource.Id,
+            replacementDate, '13:00'
+        );
+        ServiceAppointment__c reassigned = [
+            SELECT Location__c,Scheduled_Start__c,Scheduled_End__c
+            FROM ServiceAppointment__c WHERE Id = :appointment.Id
+        ];
+        Assigned_Resource__c reassignedResource = [
+            SELECT Service_Resource__c FROM Assigned_Resource__c
+            WHERE Service_Appointment__c = :appointment.Id LIMIT 1
+        ];
+        Event synchronizedEvent = [SELECT StartDateTime,EndDateTime FROM Event WHERE Id = :eventRow.Id];
+        System.assertEquals(replacementLocation.Id, reassigned.Location__c);
+        System.assertEquals(replacementResource.Id, reassignedResource.Service_Resource__c);
+        System.assertEquals(reassigned.Scheduled_Start__c, synchronizedEvent.StartDateTime);
+        System.assertEquals(reassigned.Scheduled_End__c, synchronizedEvent.EndDateTime);
         LadminAIAppointmentAnalyticsService.Snapshot analytics = LadminAIAppointmentAnalyticsService.getSnapshot();
         System.assertEquals(1, analytics.appointmentsThisMonth >= 0 ? 1 : 0);
         System.assertNotEquals(null, analytics.statusMetrics);
