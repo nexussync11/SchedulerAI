@@ -1,0 +1,14 @@
+<template>
+    <section class="page" aria-labelledby="health-heading">
+        <header><div><p class="eyebrow">Administration</p><h1 id="health-heading" tabindex="-1">Operational Health</h1><p>Review scheduling readiness, data integrity indicators and your effective app permissions.</p></div><div class="actions"><lightning-button label="Export CSV" icon-name="utility:download" onclick={exportCsv}></lightning-button><lightning-button variant="brand" label="Run checks" icon-name="utility:refresh" onclick={load}></lightning-button></div></header>
+        <template lwc:if={loading}><lightning-spinner alternative-text="Checking operational health"></lightning-spinner></template>
+        <template lwc:elseif={error}><div class="error" role="alert">{error}</div></template>
+        <template lwc:else>
+            <div class={bannerClass} role="status"><lightning-icon icon-name={bannerIcon} size="small"></lightning-icon><div><strong>{bannerText}</strong><span>Business timezone: {snapshot.businessTimezone}</span></div></div>
+            <div class="layout">
+                <section class="card"><h2>Configuration &amp; data checks</h2><template for:each={checks} for:item="row"><article key={row.label} class={row.className}><lightning-icon icon-name={row.icon} size="x-small"></lightning-icon><div><strong>{row.label}</strong><span>{row.guidance}</span></div><b>{row.value}</b></article></template></section>
+                <aside class="card"><h2>Effective permissions</h2><template for:each={permissions} for:item="row"><div key={row.label} class={row.className}><lightning-icon icon-name={row.icon} size="x-small"></lightning-icon><span>{row.label}</span><strong>{row.value}</strong></div></template><div class="metric"><span>Appointments in last 30 days</span><strong>{snapshot.appointmentsLast30Days}</strong></div><p class="note">Checks are read-only. Export contains counts and configuration status, not patient or Lead data.</p></aside>
+            </div>
+        </template>
+    </section>
+</template>

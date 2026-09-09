@@ -37,6 +37,7 @@
             <template lwc:elseif={isServices}><c-ladmin-ai-service-catalog></c-ladmin-ai-service-catalog></template>
             <template lwc:elseif={isLocations}><c-ladmin-ai-location-directory></c-ladmin-ai-location-directory></template>
             <template lwc:elseif={isReports}><section class="page"><h1 tabindex="-1">Reports &amp; Dashboard</h1><p class="page-intro">Appointment analytics in one governed experience.</p><c-ladmin-ai-appointment-dashboard></c-ladmin-ai-appointment-dashboard></section></template>
+            <template lwc:elseif={isHealth}><c-ladmin-ai-operational-health></c-ladmin-ai-operational-health></template>
             <template lwc:elseif={isSettings}><c-ladmin-ai-appointment-settings></c-ladmin-ai-appointment-settings></template>
         </main>
     </div>
