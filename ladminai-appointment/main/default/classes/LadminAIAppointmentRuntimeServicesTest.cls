@@ -212,6 +212,14 @@ private class LadminAIAppointmentRuntimeServicesTest {
         } catch (AuraHandledException expected) {}
     }
 
+    @IsTest static void parsesResponsesApiMessageAfterReasoningItem() {
+        String responseBody = '{"output":[{"type":"reasoning","content":[]},{"type":"message","content":[{"type":"output_text","text":"Insight one"},{"type":"output_text","text":"Insight two"}]}]}';
+        System.assertEquals(
+            'Insight one\nInsight two',
+            LadminAIAppointmentAIInsightsService.extractText(responseBody)
+        );
+    }
+
     @IsTest static void locationTimezoneOverridesBusinessDefault() {
         Schema.Location location = new Schema.Location(
             Name = 'Timezone Location', LocationType = 'Site',
