@@ -34,6 +34,11 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(0, LadminAIAppointmentLocationService.getDoctorsForLocation(null).size());
         System.assertEquals('Site', LadminAIAppointmentLocationService.getLocationTypes()[0]);
         LadminAIAppointmentLocationService.assertActiveAssociation(c.location.Id, c.resource.Id);
+        LadminAIAppointmentLocationService.saveLocation(
+            c.location.Id, c.location.Name, 'Site', 'Updated', true,
+            new List<Id>{ c.resource.Id }, 'UTC'
+        );
+        LadminAIAppointmentLocationService.assertActiveAssociation(c.location.Id, c.resource.Id);
 
         Schema.Location history = new Schema.Location(
             Name = 'History', LocationType = 'Site', Scheduler_Managed__c = true,

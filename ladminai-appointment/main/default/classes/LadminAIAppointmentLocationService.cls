@@ -46,7 +46,7 @@ public with sharing class LadminAIAppointmentLocationService {
         return output;
     }
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<LocationOption> getActiveLocations() {
         assertReadAccess();
         List<LocationOption> output = new List<LocationOption>();
@@ -69,7 +69,7 @@ public with sharing class LadminAIAppointmentLocationService {
         return output;
     }
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<Service_Resource__c> getDoctorsForLocation(Id locationId) {
         if (locationId == null || locationId.getSObjectType() != Schema.Location.SObjectType) {
             return new List<Service_Resource__c>();
@@ -183,7 +183,7 @@ public with sharing class LadminAIAppointmentLocationService {
         Map<Id, Scheduler_Location_Resource__c> existing =
             new Map<Id, Scheduler_Location_Resource__c>();
         for (Scheduler_Location_Resource__c row : [
-            SELECT Id, Service_Resource__c, Active__c
+            SELECT Id, Service_Resource__c, Active__c, Location_Resource_Key__c
             FROM Scheduler_Location_Resource__c
             WHERE Location__c = :locationId
             WITH USER_MODE
