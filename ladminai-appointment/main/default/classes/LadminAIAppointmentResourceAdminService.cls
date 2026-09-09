@@ -19,7 +19,7 @@ public with sharing class LadminAIAppointmentResourceAdminService {
         @AuraEnabled public String status { get; set; }
     }
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<ResourceRow> getResources() {
         assertReadAccess();
         List<Service_Resource__c> resources = [

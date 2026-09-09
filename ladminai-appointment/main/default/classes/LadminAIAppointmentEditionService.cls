@@ -4,7 +4,7 @@ public without sharing class LadminAIAppointmentEditionService {
     public static final String RESOURCE_LIMIT_MESSAGE =
         'Additional active service resources are not available in this edition.';
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static EditionLimits getLimits() {
         EditionLimits output = new EditionLimits();
         output.maxActiveLocations = configuredLimit(true);

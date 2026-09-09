@@ -2,7 +2,7 @@ public with sharing class LadminAIAppointmentLocationService {
     private static final String SCHEDULER_LOCATION_TYPE = 'Site';
     @TestVisible private static Boolean forceAccessDenied = false;
 
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<LocationRow> getLocations() {
         assertReadAccess();
         Map<Id, Integer> doctorCounts = aggregateDoctors();
