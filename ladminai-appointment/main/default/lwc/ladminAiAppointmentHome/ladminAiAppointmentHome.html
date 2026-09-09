@@ -1,7 +1,10 @@
 <template>
     <div class="app-shell">
         <aside class="sidebar" aria-label="LadminAI Smart Appointment navigation">
-            <div class="brand"><img src={productLogo} alt="LadminAI Smart Appointments" /></div>
+            <div class="brand">
+                <img src={productLogo} alt="" />
+                <div class="brand-copy"><strong>LadminAI</strong><span>Smart Appointments</span></div>
+            </div>
             <nav>
                 <template for:each={navigationItems} for:item="item">
                     <button key={item.id} class={item.className} data-view={item.id} aria-current={item.ariaCurrent} onclick={handleNavigate}>

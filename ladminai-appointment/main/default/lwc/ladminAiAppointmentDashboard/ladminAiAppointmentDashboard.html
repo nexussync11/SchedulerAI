@@ -12,9 +12,15 @@
                 <article><strong>{data.noShowRate}%</strong><span>No-show rate</span></article>
             </div>
             <div class="breakdowns">
-                <section class="panel" aria-labelledby="status-heading"><h2 id="status-heading">By status</h2><template for:each={statusRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
-                <section class="panel" aria-labelledby="resource-heading"><h2 id="resource-heading">By resource</h2><template for:each={resourceRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
-                <section class="panel" aria-labelledby="location-heading"><h2 id="location-heading">By location</h2><template for:each={locationRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
+                <section class="panel status-panel" aria-labelledby="status-heading">
+                    <h2 id="status-heading">Appointment status</h2>
+                    <div class="donut-layout">
+                        <div class="donut" style={statusPieStyle} role="img" aria-label={statusChartLabel}><div><strong>{statusTotal}</strong><span>Total</span></div></div>
+                        <div class="legend"><template for:each={statusRows} for:item="row"><div class="legend-row" key={row.label}><i style={row.swatchStyle}></i><span>{row.label}</span><strong>{row.value}</strong></div></template></div>
+                    </div>
+                </section>
+                <section class="panel" aria-labelledby="resource-heading"><h2 id="resource-heading">Appointments by resource</h2><template for:each={resourceRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
+                <section class="panel" aria-labelledby="location-heading"><h2 id="location-heading">Appointments by location</h2><template for:each={locationRows} for:item="row"><div class="bar-row" key={row.label}><div><span>{row.label}</span><strong>{row.value}</strong></div><div class="track"><span style={row.style}></span></div></div></template></section>
             </div>
         </template>
         <c-ladmin-ai-smart-insights></c-ladmin-ai-smart-insights>
