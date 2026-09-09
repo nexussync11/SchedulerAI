@@ -33,4 +33,5 @@
     <tabSettings><tab>LadminAI_Book_Appointment</tab><visibility>Visible</visibility></tabSettings>
     <tabSettings><tab>LadminAI_Calendar</tab><visibility>Visible</visibility></tabSettings>
     <tabSettings><tab>ServiceAppointment__c</tab><visibility>Visible</visibility></tabSettings>
+    <tabSettings><tab>LadminAI_Smart_Appointment</tab><visibility>Visible</visibility></tabSettings>
 </PermissionSet>

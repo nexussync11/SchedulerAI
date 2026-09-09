@@ -1,13 +1,42 @@
 <template>
-    <lightning-card title="LadminAI Smart Appointment" icon-name="standard:event">
-        <div class="slds-var-p-horizontal_medium slds-var-p-vertical_small">
-            <img class="product-logo" src={productLogo} alt="LadminAI Smart Appointments" />
-            <p class="slds-text-heading_small">Appointment workspace</p>
-            <p class="slds-var-m-top_x-small">
-                Manage resources, availability, and appointments from one
-                scheduling workspace.
-            </p>
-        </div>
-        <c-ladmin-ai-appointment-booking></c-ladmin-ai-appointment-booking>
-    </lightning-card>
+    <div class="app-shell">
+        <aside class="sidebar" aria-label="LadminAI Smart Appointment navigation">
+            <div class="brand"><img src={productLogo} alt="LadminAI Smart Appointments" /></div>
+            <nav>
+                <template for:each={navigationItems} for:item="item">
+                    <button key={item.id} class={item.className} data-view={item.id} aria-current={item.ariaCurrent} onclick={handleNavigate}>
+                        <lightning-icon icon-name={item.icon} size="x-small" alternative-text=""></lightning-icon>
+                        <span>{item.label}</span>
+                    </button>
+                </template>
+            </nav>
+            <div class="timezone">
+                <lightning-icon icon-name="utility:world" size="xx-small" alternative-text=""></lightning-icon>
+                <span>Business timezone<br /><strong>{businessTimezone}</strong></span>
+            </div>
+        </aside>
+        <main class="workspace">
+            <template lwc:if={isHome}>
+                <section class="page home">
+                    <div class="hero">
+                        <div><p class="eyebrow">LadminAI Smart Appointments</p><h1 tabindex="-1">Appointment Home</h1><p>Book appointments, review schedules and manage service-resource availability.</p></div>
+                        <lightning-button variant="brand" label="Book appointment" data-view="booking" onclick={handleNavigate}></lightning-button>
+                    </div>
+                    <div class="home-grid">
+                        <button class="feature-card" data-view="booking" onclick={handleNavigate}><lightning-icon icon-name="utility:event" size="small"></lightning-icon><strong>Appointment Booking</strong><span>Book a new appointment.</span></button>
+                        <button class="feature-card" data-view="schedule" onclick={handleNavigate}><lightning-icon icon-name="utility:date_time" size="small"></lightning-icon><strong>Appointment Schedule</strong><span>Review and manage scheduled appointments.</span></button>
+                        <template lwc:if={canManageAdministration}><button class="feature-card" data-view="availability" onclick={handleNavigate}><lightning-icon icon-name="utility:clock" size="small"></lightning-icon><strong>Resource Availability</strong><span>Maintain weekly schedules and breaks.</span></button></template>
+                    </div>
+                    <section class="home-overview" aria-labelledby="home-overview"><h2 id="home-overview">Appointment overview</h2><c-ladmin-ai-appointment-dashboard></c-ladmin-ai-appointment-dashboard></section>
+                </section>
+            </template>
+            <template lwc:elseif={isBooking}><c-ladmin-ai-appointment-booking></c-ladmin-ai-appointment-booking></template>
+            <template lwc:elseif={isSchedule}><c-ladmin-ai-appointment-calendar></c-ladmin-ai-appointment-calendar></template>
+            <template lwc:elseif={isAvailability}><c-ladmin-ai-availability-manager></c-ladmin-ai-availability-manager></template>
+            <template lwc:elseif={isResources}><c-ladmin-ai-resource-directory></c-ladmin-ai-resource-directory></template>
+            <template lwc:elseif={isLocations}><c-ladmin-ai-location-directory></c-ladmin-ai-location-directory></template>
+            <template lwc:elseif={isReports}><section class="page"><h1 tabindex="-1">Reports &amp; Dashboard</h1><p class="page-intro">Appointment analytics in one governed experience.</p><c-ladmin-ai-appointment-dashboard></c-ladmin-ai-appointment-dashboard></section></template>
+            <template lwc:elseif={isSettings}><c-ladmin-ai-appointment-settings></c-ladmin-ai-appointment-settings></template>
+        </main>
+    </div>
 </template>
