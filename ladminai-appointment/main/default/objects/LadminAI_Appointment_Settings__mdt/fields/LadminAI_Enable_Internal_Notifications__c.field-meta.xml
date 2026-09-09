@@ -1,0 +1,2 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata"><fullName>LadminAI_Enable_Internal_Notifications__c</fullName><defaultValue>false</defaultValue><description>Sends operational appointment emails to the Salesforce user who booked the appointment. Notification failures never block scheduling.</description><label>Enable Internal Notifications</label><type>Checkbox</type></CustomField>

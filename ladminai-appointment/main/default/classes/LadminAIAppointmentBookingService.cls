@@ -184,6 +184,7 @@ public with sharing class LadminAIAppointmentBookingService {
             result.assignedResourceId = assignmentSave.getId();
             result.bookingReference = bookingReference;
             result.userMessage = 'Appointment booked successfully.';
+            LadminAINotificationService.notifyAsync(appointment.Id, 'booked');
             return result;
         } catch (Exception exceptionValue) {
             Database.rollback(bookingSavepoint);

@@ -3,6 +3,7 @@
     <classAccesses><apexClass>LadminAIAppointmentBookingController</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAIAppointmentBookingService</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAIAppointmentCommandService</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>LadminAINotificationService</apexClass><enabled>true</enabled></classAccesses>
     <customPermissions><enabled>true</enabled><name>LadminAI_Book_Appointment</name></customPermissions>
     <fieldPermissions><editable>true</editable><field>Assigned_Resource__c.Service_Resource__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Address__c</field><readable>true</readable></fieldPermissions>
