@@ -6,6 +6,7 @@ import saveLocation from '@salesforce/apex/LadminAIAppointmentLocationService.sa
 import setActive from '@salesforce/apex/LadminAIAppointmentLocationService.setActive';
 import getResources from '@salesforce/apex/LadminAIAppointmentResourceAdminService.getResources';
 import getLimits from '@salesforce/apex/LadminAIAppointmentEditionService.getLimits';
+import getTimezoneSettings from '@salesforce/apex/LadminAIAppointmentTimezoneService.getSettings';
 
 export default class LadminAiLocationDirectory extends LightningElement {
     locations = [];
@@ -19,10 +20,12 @@ export default class LadminAiLocationDirectory extends LightningElement {
     showEditor = false;
     editor = this.blankEditor();
     limits;
+    timezoneOptions = [];
+    businessTimezone = 'UTC';
 
     connectedCallback() { this.load(); }
     blankEditor() {
-        return { id: null, name: '', locationType: '', description: '', active: true, doctorIds: [] };
+        return { id: null, name: '', locationType: '', description: '', active: true, doctorIds: [], timezoneSidKey: this.businessTimezone };
     }
     get statusOptions() {
         return [
@@ -63,13 +66,15 @@ export default class LadminAiLocationDirectory extends LightningElement {
         this.loading = true;
         this.error = null;
         try {
-            const [locations, types, doctors, limits] = await Promise.all([
-                getLocations(), getLocationTypes(), getResources(), getLimits()
+            const [locations, types, doctors, limits, timezoneSettings] = await Promise.all([
+                getLocations(), getLocationTypes(), getResources(), getLimits(), getTimezoneSettings()
             ]);
             this.locations = locations || [];
             this.locationTypes = types || [];
             this.doctors = doctors || [];
             this.limits = limits;
+            this.timezoneOptions = (timezoneSettings?.options || []).map((option) => ({ label: option.label, value: option.value }));
+            this.businessTimezone = timezoneSettings?.businessTimezone || 'UTC';
         } catch (error) {
             this.error = 'Locations could not be loaded. Check your access.';
         } finally { this.loading = false; }
@@ -90,7 +95,8 @@ export default class LadminAiLocationDirectory extends LightningElement {
             locationType: row.locationType || '',
             description: row.description || '',
             active: row.active,
-            doctorIds: row.doctorIds || []
+            doctorIds: row.doctorIds || [],
+            timezoneSidKey: row.timezoneSidKey || this.businessTimezone
         };
         this.showEditor = true;
     }
@@ -115,7 +121,8 @@ export default class LadminAiLocationDirectory extends LightningElement {
                 locationType: this.editor.locationType,
                 description: this.editor.description,
                 active: this.editor.active,
-                doctorIds: this.editor.doctorIds
+                doctorIds: this.editor.doctorIds,
+                timezoneSidKey: this.editor.timezoneSidKey
             });
             this.showEditor = false;
             await this.load();

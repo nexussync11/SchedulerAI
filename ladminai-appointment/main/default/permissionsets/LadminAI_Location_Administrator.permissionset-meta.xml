@@ -6,6 +6,7 @@
     <customPermissions><enabled>true</enabled><name>LadminAI_Manage_Resources</name></customPermissions>
     <fieldPermissions><editable>true</editable><field>Location.Scheduler_Active__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>Location.Scheduler_Managed__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>true</editable><field>Location.Scheduler_Time_Zone__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>Scheduler_Location_Resource__c.Active__c</field><readable>true</readable></fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>LadminAI Location Administrator</label>

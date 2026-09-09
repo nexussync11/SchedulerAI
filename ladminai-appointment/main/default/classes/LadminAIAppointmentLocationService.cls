@@ -10,7 +10,7 @@ public with sharing class LadminAIAppointmentLocationService {
         Map<Id, Integer> availabilityCounts = aggregateAvailability();
         List<LocationRow> output = new List<LocationRow>();
         for (Schema.Location location : [
-            SELECT Id, Name, LocationType, Description, Scheduler_Active__c
+            SELECT Id, Name, LocationType, Description, Scheduler_Active__c, Scheduler_Time_Zone__c
             FROM Location
             WHERE Scheduler_Managed__c = true
             WITH USER_MODE
@@ -23,6 +23,8 @@ public with sharing class LadminAIAppointmentLocationService {
             row.locationType = location.LocationType;
             row.description = location.Description;
             row.active = location.Scheduler_Active__c;
+            row.timezoneSidKey = String.isBlank(location.Scheduler_Time_Zone__c)
+                ? LadminAIAppointmentSettingsService.businessTimeZone() : location.Scheduler_Time_Zone__c;
             row.doctorCount = valueOrZero(doctorCounts, location.Id);
             row.appointmentCount = valueOrZero(appointmentCounts, location.Id);
             row.availabilityCount = valueOrZero(availabilityCounts, location.Id);
@@ -49,7 +51,7 @@ public with sharing class LadminAIAppointmentLocationService {
         assertReadAccess();
         List<LocationOption> output = new List<LocationOption>();
         for (Schema.Location row : [
-            SELECT Id, Name
+            SELECT Id, Name, Scheduler_Time_Zone__c
             FROM Location
             WHERE Scheduler_Managed__c = true
               AND Scheduler_Active__c = true
@@ -60,6 +62,8 @@ public with sharing class LadminAIAppointmentLocationService {
             LocationOption option = new LocationOption();
             option.Id = row.Id;
             option.Name = row.Name;
+            option.TimezoneSidKey = String.isBlank(row.Scheduler_Time_Zone__c)
+                ? LadminAIAppointmentSettingsService.businessTimeZone() : row.Scheduler_Time_Zone__c;
             output.add(option);
         }
         return output;
@@ -100,7 +104,8 @@ public with sharing class LadminAIAppointmentLocationService {
         String locationType,
         String description,
         Boolean active,
-        List<Id> doctorIds
+        List<Id> doctorIds,
+        String timezoneSidKey
     ) {
         Savepoint start = Database.setSavepoint();
         try {
@@ -120,6 +125,8 @@ public with sharing class LadminAIAppointmentLocationService {
             row.Description = String.isBlank(description) ? null : description.trim();
             row.Scheduler_Active__c = active == null ? true : active;
             row.Scheduler_Managed__c = true;
+            row.Scheduler_Time_Zone__c = String.isBlank(timezoneSidKey)
+                ? LadminAIAppointmentSettingsService.businessTimeZone() : timezoneSidKey;
             if (creating) Database.insert(row, AccessLevel.USER_MODE);
             else Database.update(row, AccessLevel.USER_MODE);
             saveAssociations(row.Id, doctorIds);
@@ -284,6 +291,7 @@ public with sharing class LadminAIAppointmentLocationService {
         @AuraEnabled public String locationType { get; set; }
         @AuraEnabled public String description { get; set; }
         @AuraEnabled public Boolean active { get; set; }
+        @AuraEnabled public String timezoneSidKey { get; set; }
         @AuraEnabled public Integer doctorCount { get; set; }
         @AuraEnabled public Integer appointmentCount { get; set; }
         @AuraEnabled public Integer availabilityCount { get; set; }
@@ -292,6 +300,7 @@ public with sharing class LadminAIAppointmentLocationService {
     public class LocationOption {
         @AuraEnabled public Id Id { get; set; }
         @AuraEnabled public String Name { get; set; }
+        @AuraEnabled public String TimezoneSidKey { get; set; }
     }
     public class LocationException extends Exception {}
 }

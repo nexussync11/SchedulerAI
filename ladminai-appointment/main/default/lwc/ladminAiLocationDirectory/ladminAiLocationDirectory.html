@@ -17,6 +17,7 @@
                     <article key={location.id}>
                         <div class="title"><div><h2>{location.name}</h2><span>{location.locationType}</span></div><span class={location.statusClass}>{location.statusLabel}</span></div>
                         <p>{location.description}</p>
+                        <p><strong>Timezone:</strong> {location.timezoneSidKey}</p>
                         <dl>
                             <div><dt>Doctors</dt><dd>{location.doctorCount}</dd></div>
                             <div><dt>Availability rows</dt><dd>{location.availabilityCount}</dd></div>
@@ -41,6 +42,7 @@
                 <lightning-input label="Location name" value={editor.name} data-field="name" required onchange={handleField}></lightning-input>
                 <lightning-combobox label="Location type" value={editor.locationType} options={typeOptions} data-field="locationType" required onchange={handleField}></lightning-combobox>
                 <lightning-textarea label="Description" value={editor.description} data-field="description" onchange={handleField}></lightning-textarea>
+                <lightning-combobox label="Location timezone" value={editor.timezoneSidKey} options={timezoneOptions} data-field="timezoneSidKey" required onchange={handleField}></lightning-combobox>
                 <lightning-input type="checkbox" label="Active for Scheduler" checked={editor.active} data-field="active" onchange={handleField}></lightning-input>
                 <lightning-dual-listbox name="doctors" label="Doctors at this location" source-label="Available doctors" selected-label="Assigned doctors" options={doctorOptions} value={editor.doctorIds} onchange={handleDoctors}></lightning-dual-listbox>
                 <footer><lightning-button label="Cancel" onclick={handleClose}></lightning-button><lightning-button variant="brand" label="Save Location" disabled={saveDisabled} onclick={handleSave}></lightning-button></footer>

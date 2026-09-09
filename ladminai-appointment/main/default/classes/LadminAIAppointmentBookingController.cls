@@ -39,7 +39,7 @@ public with sharing class LadminAIAppointmentBookingController {
             return invalidSlotResult();
         }
         Datetime requestedStart =
-            LadminAIAppointmentBusinessTimeService.toUtc(appointmentDate, localTime);
+            LadminAIAppointmentBusinessTimeService.toUtc(appointmentDate, localTime, locationId);
         Integer durationMinutes = 30;
         LadminAI_Appointment_Settings__mdt settings =
             LadminAI_Appointment_Settings__mdt.getInstance('Default');

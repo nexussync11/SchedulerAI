@@ -217,8 +217,8 @@ public with sharing class LadminAIAppointmentAvailabilityService {
             slotMinutes = settings.LadminAI_Default_Slot_Minutes__c.intValue();
         }
         Resource_Availability__c window = windows[0];
-        Datetime rangeStart = LadminAIAppointmentBusinessTimeService.toUtc(targetDate, window.Start_Time__c);
-        Datetime rangeEnd = LadminAIAppointmentBusinessTimeService.toUtc(targetDate, window.End_Time__c);
+        Datetime rangeStart = LadminAIAppointmentBusinessTimeService.toUtc(targetDate, window.Start_Time__c, locationId);
+        Datetime rangeEnd = LadminAIAppointmentBusinessTimeService.toUtc(targetDate, window.End_Time__c, locationId);
         List<Assigned_Resource__c> occupied = [
             SELECT Service_Appointment__r.Scheduled_Start__c,
                    Service_Appointment__r.Scheduled_End__c,
@@ -235,9 +235,9 @@ public with sharing class LadminAIAppointmentAvailabilityService {
              slotStart = slotStart.addMinutes(slotMinutes)) {
             Datetime slotEnd = slotStart.addMinutes(slotMinutes);
             LadminAIAppointmentBusinessTimeService.LocalWallClock localStart =
-                LadminAIAppointmentBusinessTimeService.toLocalWallClock(slotStart);
+                LadminAIAppointmentBusinessTimeService.toLocalWallClock(slotStart, locationId);
             LadminAIAppointmentBusinessTimeService.LocalWallClock localEnd =
-                LadminAIAppointmentBusinessTimeService.toLocalWallClock(slotEnd);
+                LadminAIAppointmentBusinessTimeService.toLocalWallClock(slotEnd, locationId);
             if (window.Break_Start__c != null && window.Break_End__c != null &&
                 localStart.localTime < window.Break_End__c && localEnd.localTime > window.Break_Start__c) {
                 continue;

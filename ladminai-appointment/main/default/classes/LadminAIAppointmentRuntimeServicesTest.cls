@@ -159,4 +159,24 @@ private class LadminAIAppointmentRuntimeServicesTest {
             System.assert(false);
         } catch (AuraHandledException expected) {}
     }
+
+    @IsTest static void locationTimezoneOverridesBusinessDefault() {
+        Schema.Location location = new Schema.Location(
+            Name = 'Timezone Location', LocationType = 'Site',
+            Scheduler_Managed__c = true, Scheduler_Active__c = false,
+            Scheduler_Time_Zone__c = 'Asia/Kolkata'
+        );
+        insert location;
+        Date target = Date.newInstance(2026, 1, 15);
+        Datetime utcValue = LadminAIAppointmentBusinessTimeService.toUtc(
+            target, Time.newInstance(9, 0, 0, 0), location.Id
+        );
+        System.assertEquals(
+            Datetime.newInstanceGmt(2026, 1, 15, 3, 30, 0), utcValue
+        );
+        LadminAIAppointmentBusinessTimeService.LocalWallClock local =
+            LadminAIAppointmentBusinessTimeService.toLocalWallClock(utcValue, location.Id);
+        System.assertEquals(target, local.localDate);
+        System.assertEquals(Time.newInstance(9, 0, 0, 0), local.localTime);
+    }
 }

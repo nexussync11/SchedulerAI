@@ -80,6 +80,11 @@ export default class LadminAiAvailabilityManager extends LightningElement {
         );
     }
 
+    get selectedTimezone() {
+        return this.locations.find((location) => location.Id === this.locationId)
+            ?.TimezoneSidKey || 'Select a location';
+    }
+
     get activeDayCount() {
         return this.days.filter((day) => day.isActive).length;
     }
