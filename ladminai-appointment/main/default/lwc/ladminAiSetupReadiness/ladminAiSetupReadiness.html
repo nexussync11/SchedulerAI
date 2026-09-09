@@ -1,0 +1,13 @@
+<template>
+    <section class="readiness" aria-labelledby="readiness-heading">
+        <div class="heading"><div><p class="eyebrow">GET STARTED</p><h2 id="readiness-heading">Scheduling readiness</h2><p>{summary}</p></div><lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh readiness" onclick={load}></lightning-button-icon></div>
+        <template lwc:if={loading}><lightning-spinner size="small" alternative-text="Checking setup"></lightning-spinner></template>
+        <template lwc:elseif={error}><div class="error" role="alert">{error}</div></template>
+        <template lwc:else>
+            <div class={statusClass} role="status"><lightning-icon icon-name={statusIcon} size="small"></lightning-icon><strong>{statusText}</strong></div>
+            <ol>
+                <template for:each={steps} for:item="step"><li key={step.label} class={step.className}><lightning-icon icon-name={step.icon} size="x-small"></lightning-icon><span><strong>{step.label}</strong><small>{step.detail}</small></span></li></template>
+            </ol>
+        </template>
+    </section>
+</template>

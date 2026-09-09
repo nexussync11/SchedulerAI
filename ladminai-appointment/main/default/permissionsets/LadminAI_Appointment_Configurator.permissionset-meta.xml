@@ -1,1 +1,16 @@
-<?xml version="1.0" encoding="UTF-8"?><PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata"><applicationVisibilities><application>LadminAI_Appointment</application><visible>true</visible></applicationVisibilities><classAccesses><apexClass>LadminAIAppointmentTimezoneService</apexClass><enabled>true</enabled></classAccesses><classAccesses><apexClass>LadminAISettingsDeployCallback</apexClass><enabled>true</enabled></classAccesses><customPermissions><enabled>true</enabled><name>LadminAI_Configure_Appointment</name></customPermissions><hasActivationRequired>false</hasActivationRequired><label>LadminAI Appointment Configurator</label><tabSettings><tab>LadminAI_Settings</tab><visibility>Visible</visibility></tabSettings><tabSettings><tab>LadminAI_Smart_Appointment</tab><visibility>Visible</visibility></tabSettings><userPermissions><enabled>true</enabled><name>ManageCustomPermissions</name></userPermissions><userPermissions><enabled>true</enabled><name>ViewRoles</name></userPermissions><userPermissions><enabled>true</enabled><name>ViewSetup</name></userPermissions><userPermissions><enabled>true</enabled><name>CustomizeApplication</name></userPermissions></PermissionSet>
+<?xml version="1.0" encoding="UTF-8"?>
+<PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
+    <applicationVisibilities><application>LadminAI_Appointment</application><visible>true</visible></applicationVisibilities>
+    <classAccesses><apexClass>LadminAIAppointmentTimezoneService</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>LadminAISettingsDeployCallback</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>LadminAIAppointmentReadinessService</apexClass><enabled>true</enabled></classAccesses>
+    <customPermissions><enabled>true</enabled><name>LadminAI_Configure_Appointment</name></customPermissions>
+    <hasActivationRequired>false</hasActivationRequired>
+    <label>LadminAI Appointment Configurator</label>
+    <tabSettings><tab>LadminAI_Settings</tab><visibility>Visible</visibility></tabSettings>
+    <tabSettings><tab>LadminAI_Smart_Appointment</tab><visibility>Visible</visibility></tabSettings>
+    <userPermissions><enabled>true</enabled><name>ManageCustomPermissions</name></userPermissions>
+    <userPermissions><enabled>true</enabled><name>ViewRoles</name></userPermissions>
+    <userPermissions><enabled>true</enabled><name>ViewSetup</name></userPermissions>
+    <userPermissions><enabled>true</enabled><name>CustomizeApplication</name></userPermissions>
+</PermissionSet>
