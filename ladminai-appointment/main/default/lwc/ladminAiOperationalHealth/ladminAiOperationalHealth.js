@@ -24,6 +24,7 @@ export default class LadminAiOperationalHealth extends LightningElement {
             this.check('Appointments missing Events', s.appointmentsMissingEvents === 0, s.appointmentsMissingEvents, 'Review appointments without Salesforce calendar projections.'),
             this.check('Overlapping appointments', s.overlappingAppointments === 0, s.overlappingAppointments, 'Review concurrent appointments assigned to the same resource.'),
             this.check('Event synchronization mismatches', s.eventSynchronizationMismatches === 0, s.eventSynchronizationMismatches, 'Review linked Events whose start or end differs from the appointment.')
+            ,this.check('Failed internal notifications', s.failedNotifications === 0, s.failedNotifications, 'Review appointments whose internal notification failed after retry.')
         ];
     }
     get permissions() {

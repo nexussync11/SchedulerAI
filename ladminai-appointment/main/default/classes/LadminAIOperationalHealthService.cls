@@ -13,6 +13,7 @@ public with sharing class LadminAIOperationalHealthService {
         snapshot.activeAvailabilityRows = [SELECT COUNT() FROM Resource_Availability__c WHERE Is_Active__c=true WITH USER_MODE];
         snapshot.appointmentsLast30Days = [SELECT COUNT() FROM ServiceAppointment__c WHERE Scheduled_Start__c=LAST_N_DAYS:30 WITH USER_MODE];
         snapshot.appointmentsMissingEvents = [SELECT COUNT() FROM ServiceAppointment__c WHERE LadminAI_Event__c=null AND Status__c NOT IN ('Cancelled','Cancel') WITH USER_MODE];
+        snapshot.failedNotifications = [SELECT COUNT() FROM ServiceAppointment__c WHERE Notification_Status__c='Failed' WITH USER_MODE];
         Set<Id> scheduledResourceIds = new Set<Id>();
         for (Resource_Availability__c row : [SELECT Service_Resource__c FROM Resource_Availability__c WHERE Is_Active__c=true AND Service_Resource__c != null WITH USER_MODE]) scheduledResourceIds.add(row.Service_Resource__c);
         snapshot.activeResourcesWithoutAvailability = [SELECT COUNT() FROM Service_Resource__c WHERE Active__c=true AND Id NOT IN :scheduledResourceIds WITH USER_MODE];
@@ -41,7 +42,7 @@ public with sharing class LadminAIOperationalHealthService {
             Event linkedEvent = eventsById.get(assignment.Service_Appointment__r.LadminAI_Event__c);
             if (linkedEvent != null && (linkedEvent.StartDateTime != startAt || linkedEvent.EndDateTime != endAt)) snapshot.eventSynchronizationMismatches++;
         }
-        snapshot.healthy = snapshot.canConfigure && snapshot.activeLocations > 0 && snapshot.activeResources > 0 && snapshot.activeAssignments > 0 && snapshot.activeAvailabilityRows > 0 && snapshot.activeResourcesWithoutAvailability == 0 && snapshot.overlappingAppointments == 0 && snapshot.eventSynchronizationMismatches == 0;
+        snapshot.healthy = snapshot.canConfigure && snapshot.activeLocations > 0 && snapshot.activeResources > 0 && snapshot.activeAssignments > 0 && snapshot.activeAvailabilityRows > 0 && snapshot.activeResourcesWithoutAvailability == 0 && snapshot.overlappingAppointments == 0 && snapshot.eventSynchronizationMismatches == 0 && snapshot.failedNotifications == 0;
         return snapshot;
     }
     public class HealthSnapshot {
@@ -60,6 +61,7 @@ public with sharing class LadminAIOperationalHealthService {
         @AuraEnabled public Integer activeResourcesWithoutAvailability;
         @AuraEnabled public Integer overlappingAppointments;
         @AuraEnabled public Integer eventSynchronizationMismatches;
+        @AuraEnabled public Integer failedNotifications;
         @AuraEnabled public Boolean integrityScanLimited;
     }
 }

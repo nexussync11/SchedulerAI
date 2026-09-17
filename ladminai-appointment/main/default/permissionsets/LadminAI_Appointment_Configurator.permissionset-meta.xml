@@ -6,6 +6,10 @@
     <classAccesses><apexClass>LadminAISettingsDeployCallback</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAIAppointmentReadinessService</apexClass><enabled>true</enabled></classAccesses>
     <customPermissions><enabled>true</enabled><name>LadminAI_Configure_Appointment</name></customPermissions>
+    <fieldPermissions><editable>false</editable><field>ServiceAppointment__c.Notification_Status__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>ServiceAppointment__c.Notification_Last_Attempt__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>ServiceAppointment__c.Notification_Attempts__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>ServiceAppointment__c.Notification_Error__c</field><readable>true</readable></fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>LadminAI Appointment Configurator</label>
     <tabSettings><tab>LadminAI_Settings</tab><visibility>Visible</visibility></tabSettings>

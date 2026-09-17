@@ -33,6 +33,10 @@
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.Status_Changed_By__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.No_Show_At__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>true</editable><field>ServiceAppointment__c.No_Show_By__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>ServiceAppointment__c.Notification_Status__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>ServiceAppointment__c.Notification_Last_Attempt__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>ServiceAppointment__c.Notification_Attempts__c</field><readable>true</readable></fieldPermissions>
+    <fieldPermissions><editable>false</editable><field>ServiceAppointment__c.Notification_Error__c</field><readable>true</readable></fieldPermissions>
     <fieldPermissions><editable>false</editable><field>Service_Resource__c.Active__c</field><readable>true</readable></fieldPermissions>
     <hasActivationRequired>false</hasActivationRequired>
     <label>LadminAI Smart Appointment Booker</label>
