@@ -211,11 +211,16 @@ public with sharing class LadminAIAppointmentAvailabilityService {
         if (windows.isEmpty()) return new List<List<String>>();
 
         Integer slotMinutes = 30;
+        Integer minimumLeadMinutes = 0;
         LadminAI_Appointment_Settings__mdt settings =
             LadminAI_Appointment_Settings__mdt.getInstance('Default');
         if (settings?.LadminAI_Default_Slot_Minutes__c != null) {
             slotMinutes = settings.LadminAI_Default_Slot_Minutes__c.intValue();
         }
+        if (settings?.LadminAI_Minimum_Lead_Time_Minutes__c != null) {
+            minimumLeadMinutes = settings.LadminAI_Minimum_Lead_Time_Minutes__c.intValue();
+        }
+        Datetime earliestBookableStart = Datetime.now().addMinutes(minimumLeadMinutes);
         Resource_Availability__c window = windows[0];
         Datetime rangeStart = LadminAIAppointmentBusinessTimeService.toUtc(targetDate, window.Start_Time__c, locationId);
         Datetime rangeEnd = LadminAIAppointmentBusinessTimeService.toUtc(targetDate, window.End_Time__c, locationId);
@@ -234,6 +239,7 @@ public with sharing class LadminAIAppointmentAvailabilityService {
         for (Datetime slotStart = rangeStart; slotStart.addMinutes(slotMinutes) <= rangeEnd;
              slotStart = slotStart.addMinutes(slotMinutes)) {
             Datetime slotEnd = slotStart.addMinutes(slotMinutes);
+            if (slotStart < earliestBookableStart) continue;
             LadminAIAppointmentBusinessTimeService.LocalWallClock localStart =
                 LadminAIAppointmentBusinessTimeService.toLocalWallClock(slotStart, locationId);
             LadminAIAppointmentBusinessTimeService.LocalWallClock localEnd =

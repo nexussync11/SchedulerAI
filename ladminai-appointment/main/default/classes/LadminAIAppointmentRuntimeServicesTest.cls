@@ -118,6 +118,28 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assert(Limits.getQueries() - queriesBefore < 15, 'Timezone resolution must not query once per slot.');
     }
 
+    @IsTest static void sameDayAvailabilityNeverReturnsPastSlots() {
+        Context c = setupContext();
+        Date target = Date.today();
+        String weekday = Datetime.newInstance(target, Time.newInstance(12, 0, 0, 0)).format('EEEE');
+        LadminAIAppointmentAvailabilityService.saveAvailabilityAtLocation(
+            c.resource.Id, c.location.Id,
+            new List<Map<String, Object>>{ new Map<String, Object>{
+                'Day_Of_Week__c' => weekday, 'Start_Time__c' => '00:00',
+                'End_Time__c' => '23:59', 'Is_Active__c' => true
+            }}
+        );
+        Datetime checkedAt = Datetime.now();
+        for (List<String> slot : LadminAIAppointmentAvailabilityService.getAvailableSlots(
+            c.resource.Id, c.location.Id, target
+        )) {
+            List<String> parts = slot[0].split(':');
+            Time startTime = Time.newInstance(Integer.valueOf(parts[0]), Integer.valueOf(parts[1]), 0, 0);
+            Datetime startUtc = LadminAIAppointmentBusinessTimeService.toUtc(target, startTime, c.location.Id);
+            System.assert(startUtc >= checkedAt, 'Same-day availability must not include a past slot.');
+        }
+    }
+
     @IsTest static void appointmentCommandsAnalyticsAndAiFallback() {
         Context c = setupContext();
         Date target = Date.today().addDays(7);
