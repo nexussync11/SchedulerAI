@@ -5,6 +5,7 @@
     <label>Cancellation Reason</label>
     <length>255</length>
     <required>false</required>
+    <trackHistory>true</trackHistory>
     <trackFeedHistory>false</trackFeedHistory>
     <trackTrending>false</trackTrending>
     <type>Text</type>

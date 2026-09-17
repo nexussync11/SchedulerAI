@@ -3,6 +3,7 @@
     <fullName>Scheduled_Start__c</fullName>
     <label>Scheduled Start</label>
     <required>false</required>
+    <trackHistory>true</trackHistory>
     <trackFeedHistory>false</trackFeedHistory>
     <trackTrending>false</trackTrending>
     <type>DateTime</type>
