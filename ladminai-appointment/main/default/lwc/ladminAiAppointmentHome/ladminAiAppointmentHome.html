@@ -13,12 +13,36 @@
                     </button>
                 </template>
             </nav>
+            <button class="guide-link" onclick={openGuidance}><lightning-icon icon-name="utility:trail" size="xx-small" alternative-text=""></lightning-icon><span>Getting started guide</span></button>
             <div class="timezone">
                 <lightning-icon icon-name="utility:world" size="xx-small" alternative-text=""></lightning-icon>
                 <span>Business timezone<br /><strong>{businessTimezone}</strong></span>
             </div>
         </aside>
         <main class="workspace">
+            <template lwc:if={showGuidance}>
+                <section class="guidance" aria-labelledby="getting-started-heading">
+                    <div class="guidance-heading"><div><p class="eyebrow">New here?</p><h2 id="getting-started-heading" tabindex="-1">Get started with Smart Appointments</h2><p>Follow these steps to configure and use scheduling.</p></div><lightning-button-icon icon-name="utility:close" alternative-text="Dismiss getting started guide" title="Dismiss guide" onclick={dismissGuidance}></lightning-button-icon></div>
+                    <div class="guidance-steps">
+                        <template lwc:if={canManageAdministration}>
+                            <button data-view="settings" onclick={handleNavigate}><strong>1</strong><span>Set timezone</span></button>
+                            <button data-view="locations" onclick={handleNavigate}><strong>2</strong><span>Add location</span></button>
+                            <button data-view="resources" onclick={handleNavigate}><strong>3</strong><span>Add resource</span></button>
+                            <button data-view="availability" onclick={handleNavigate}><strong>4</strong><span>Set availability</span></button>
+                        </template>
+                        <template lwc:if={canManageAdministration}>
+                            <button data-view="booking" onclick={handleNavigate}><strong>5</strong><span>Book appointment</span></button>
+                            <button data-view="schedule" onclick={handleNavigate}><strong>6</strong><span>Manage schedule</span></button>
+                            <button data-view="reports" onclick={handleNavigate}><strong>7</strong><span>Review reports</span></button>
+                        </template>
+                        <template lwc:else>
+                            <button data-view="booking" onclick={handleNavigate}><strong>1</strong><span>Book appointment</span></button>
+                            <button data-view="schedule" onclick={handleNavigate}><strong>2</strong><span>Manage schedule</span></button>
+                            <button data-view="reports" onclick={handleNavigate}><strong>3</strong><span>Review reports</span></button>
+                        </template>
+                    </div>
+                </section>
+            </template>
             <template lwc:if={isHome}>
                 <section class="page home">
                     <div class="hero">

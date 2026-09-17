@@ -99,6 +99,25 @@ private class LadminAIAppointmentRuntimeServicesTest {
         );
     }
 
+    @IsTest static void fullDayAvailabilityDoesNotExhaustQueries() {
+        Context c = setupContext();
+        Date target = Date.today().addDays(8);
+        String weekday = Datetime.newInstance(target, Time.newInstance(12, 0, 0, 0)).format('EEEE');
+        LadminAIAppointmentAvailabilityService.saveAvailabilityAtLocation(
+            c.resource.Id, c.location.Id,
+            new List<Map<String, Object>>{ new Map<String, Object>{
+                'Day_Of_Week__c' => weekday, 'Start_Time__c' => '00:00',
+                'End_Time__c' => '23:30', 'Is_Active__c' => true
+            }}
+        );
+        Integer queriesBefore = Limits.getQueries();
+        List<List<String>> slots = LadminAIAppointmentAvailabilityService.getAvailableSlots(
+            c.resource.Id, c.location.Id, target
+        );
+        System.assert(slots.size() > 20, 'A full day should return many available slots.');
+        System.assert(Limits.getQueries() - queriesBefore < 15, 'Timezone resolution must not query once per slot.');
+    }
+
     @IsTest static void appointmentCommandsAnalyticsAndAiFallback() {
         Context c = setupContext();
         Date target = Date.today().addDays(7);

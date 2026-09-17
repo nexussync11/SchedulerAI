@@ -12,7 +12,12 @@ export default class LadminAiAppointmentHome extends NavigationMixin(LightningEl
     canManageAdministration = canManageAdministration;
     activeView = 'home';
     businessTimezone = 'Salesforce default';
-    connectedCallback() { this.loadTimezone(); }
+    showGuidance = true;
+    connectedCallback() {
+        this.loadTimezone();
+        try { this.showGuidance = window.localStorage.getItem('ladminaiGettingStartedDismissed') !== 'true'; }
+        catch (error) { this.showGuidance = true; }
+    }
     async loadTimezone() {
         try { const settings = await getSettings(); this.businessTimezone = settings?.businessTimezone || 'Salesforce default'; }
         catch (error) { this.businessTimezone = 'Salesforce default'; }
@@ -32,6 +37,15 @@ export default class LadminAiAppointmentHome extends NavigationMixin(LightningEl
     get isInsights() { return this.activeView === 'insights'; }
     get isSettings() { return this.activeView === 'settings'; }
     get isHealth() { return this.activeView === 'health'; }
+    dismissGuidance() {
+        this.showGuidance = false;
+        try { window.localStorage.setItem('ladminaiGettingStartedDismissed', 'true'); }
+        catch (error) { /* Guidance remains dismissed for this session. */ }
+    }
+    openGuidance() {
+        this.showGuidance = true;
+        requestAnimationFrame(() => this.template.querySelector('.guidance h2')?.focus());
+    }
     handleNavigate(event) {
         const target = event.currentTarget.dataset.view;
         if (target === 'salesforceCalendar') {

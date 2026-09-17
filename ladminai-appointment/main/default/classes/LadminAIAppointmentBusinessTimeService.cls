@@ -1,5 +1,7 @@
 public with sharing class LadminAIAppointmentBusinessTimeService {
     public class InvalidBusinessTimeException extends Exception {}
+    private static Map<Id, TimeZone> locationZones = new Map<Id, TimeZone>();
+    private static TimeZone defaultZone;
 
     public static Datetime toUtc(Date localDate, Time localTime) {
         return toUtc(localDate, localTime, null);
@@ -32,17 +34,24 @@ public with sharing class LadminAIAppointmentBusinessTimeService {
     }
 
     private static TimeZone configuredZone(Id locationId) {
-        String timezoneSidKey;
         if (locationId != null && locationId.getSObjectType() == Schema.Location.SObjectType) {
+            if (locationZones.containsKey(locationId)) return locationZones.get(locationId);
             List<Schema.Location> locations = [
                 SELECT Scheduler_Time_Zone__c FROM Location WHERE Id = :locationId LIMIT 1
             ];
-            if (!locations.isEmpty()) timezoneSidKey = locations[0].Scheduler_Time_Zone__c;
+            String timezoneSidKey = locations.isEmpty() ? null : locations[0].Scheduler_Time_Zone__c;
+            TimeZone zone = String.isBlank(timezoneSidKey) ? configuredDefaultZone() : TimeZone.getTimeZone(timezoneSidKey);
+            locationZones.put(locationId, zone);
+            return zone;
         }
-        if (String.isBlank(timezoneSidKey)) {
-            timezoneSidKey = LadminAIAppointmentSettingsService.businessTimeZone();
+        return configuredDefaultZone();
+    }
+
+    private static TimeZone configuredDefaultZone() {
+        if (defaultZone == null) {
+            defaultZone = TimeZone.getTimeZone(LadminAIAppointmentSettingsService.businessTimeZone());
         }
-        return TimeZone.getTimeZone(timezoneSidKey);
+        return defaultZone;
     }
 
     public class LocalWallClock {
