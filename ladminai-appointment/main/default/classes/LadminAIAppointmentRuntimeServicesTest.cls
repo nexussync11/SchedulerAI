@@ -190,6 +190,27 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertNotEquals(null, LadminAIAppointmentTimezoneService.getSettings().options);
     }
 
+    @IsTest static void analyticsDrilldownsReturnActualAppointments() {
+        Context c = setupContext();
+        Datetime startAt = System.now().addDays(1);
+        ServiceAppointment__c appointment = new ServiceAppointment__c(
+            Name='Drilldown Appointment', Subject__c='Consultation', Parent_Record1__c=c.lead.Id,
+            Location__c=c.location.Id, Scheduled_Start__c=startAt, Scheduled_End__c=startAt.addMinutes(30),
+            Status__c='Booked', Appointment_Mode__c='Website'
+        );
+        insert appointment;
+        insert new Assigned_Resource__c(Service_Appointment__c=appointment.Id, Service_Resource__c=c.resource.Id);
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('all', null).size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('upcoming', null).size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('status', 'Booked').size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('location', 'Runtime Location').size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('resource', 'Runtime Doctor').size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('user', 'Unattributed / historical').size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('service', 'No service selected').size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('source', 'Website').size());
+        System.assertEquals(0, LadminAIAppointmentAnalyticsService.getDrilldown('status', 'Completed').size());
+    }
+
     @IsTest static void validationBranchesRemainSafe() {
         Context c = setupContext();
         try {

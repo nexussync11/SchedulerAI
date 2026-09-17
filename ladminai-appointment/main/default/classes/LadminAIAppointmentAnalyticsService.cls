@@ -1,5 +1,37 @@
 public with sharing class LadminAIAppointmentAnalyticsService {
     @AuraEnabled(cacheable=true)
+    public static List<DetailRow> getDrilldown(String dimension, String value) {
+        Date first = Date.today().toStartOfMonth();
+        Datetime fromUtc = LadminAIAppointmentBusinessTimeService.toUtc(first, Time.newInstance(0,0,0,0));
+        Datetime toUtc = LadminAIAppointmentBusinessTimeService.toUtc(first.addMonths(1), Time.newInstance(0,0,0,0));
+        if (dimension == 'upcoming') { fromUtc = System.now(); toUtc = fromUtc.addDays(7); }
+        List<ServiceAppointment__c> records = [SELECT Id,Name,Subject__c,Status__c,Scheduled_Start__c,Scheduled_End__c,Location__r.Name,Parent_Record1__r.Name,Booked_By_User__r.Name,Appointment_Service__r.Name,Appointment_Mode__c FROM ServiceAppointment__c WHERE Scheduled_Start__c>=:fromUtc AND Scheduled_Start__c<:toUtc WITH USER_MODE ORDER BY Scheduled_Start__c DESC LIMIT 5000];
+        Set<Id> appointmentIds = new Map<Id,ServiceAppointment__c>(records).keySet();
+        Map<Id,String> resources = new Map<Id,String>();
+        if (!appointmentIds.isEmpty()) for (Assigned_Resource__c assignment : [SELECT Service_Appointment__c,Service_Resource__r.Name FROM Assigned_Resource__c WHERE Service_Appointment__c IN :appointmentIds WITH USER_MODE]) resources.put(assignment.Service_Appointment__c, assignment.Service_Resource__r?.Name);
+        List<DetailRow> output = new List<DetailRow>();
+        for (ServiceAppointment__c recordValue : records) {
+            String status = String.isBlank(recordValue.Status__c) ? 'Unspecified' : recordValue.Status__c;
+            String locationName = recordValue.Location__r?.Name;
+            String resourceName = resources.get(recordValue.Id);
+            String bookingUser = String.isBlank(recordValue.Booked_By_User__r?.Name) ? 'Unattributed / historical' : recordValue.Booked_By_User__r.Name;
+            String serviceName = String.isBlank(recordValue.Appointment_Service__r?.Name) ? 'No service selected' : recordValue.Appointment_Service__r.Name;
+            String source = String.isBlank(recordValue.Appointment_Mode__c) ? 'Unspecified' : recordValue.Appointment_Mode__c;
+            Boolean includeRow = dimension == null || dimension == 'all' || dimension == 'upcoming';
+            if (dimension == 'status') includeRow = value == 'Cancelled' ? new Set<String>{'Cancel','Cancelled'}.contains(status) : status == value;
+            if (dimension == 'location') includeRow = locationName == value;
+            if (dimension == 'resource') includeRow = resourceName == value;
+            if (dimension == 'user') includeRow = bookingUser == value;
+            if (dimension == 'service') includeRow = serviceName == value;
+            if (dimension == 'source') includeRow = source == value;
+            if (!includeRow) continue;
+            DetailRow row = new DetailRow();
+            row.id=recordValue.Id; row.name=recordValue.Name; row.subject=recordValue.Subject__c; row.customer=recordValue.Parent_Record1__r?.Name; row.resource=resourceName; row.location=locationName; row.bookedBy=bookingUser; row.service=serviceName; row.source=source; row.startUtc=recordValue.Scheduled_Start__c; row.endUtc=recordValue.Scheduled_End__c; row.status=status;
+            output.add(row);
+        }
+        return output;
+    }
+    @AuraEnabled(cacheable=true)
     public static Snapshot getSnapshot() {
         Date first = Date.today().toStartOfMonth();
         Datetime fromUtc = LadminAIAppointmentBusinessTimeService.toUtc(first, Time.newInstance(0,0,0,0));
@@ -45,5 +77,11 @@ public with sharing class LadminAIAppointmentAnalyticsService {
         @AuraEnabled public Decimal cancellationRate; @AuraEnabled public Decimal completionRate; @AuraEnabled public Decimal noShowRate;
         @AuraEnabled public Map<String,Integer> locationMetrics; @AuraEnabled public Map<String,Integer> resourceMetrics; @AuraEnabled public Map<String,Integer> statusMetrics;
         @AuraEnabled public Map<String,Integer> bookingUserMetrics; @AuraEnabled public Map<String,Integer> serviceMetrics; @AuraEnabled public Map<String,Integer> bookingSourceMetrics;
+    }
+    public class DetailRow {
+        @AuraEnabled public Id id; @AuraEnabled public String name; @AuraEnabled public String subject;
+        @AuraEnabled public String customer; @AuraEnabled public String resource; @AuraEnabled public String location;
+        @AuraEnabled public String bookedBy; @AuraEnabled public String service; @AuraEnabled public String source;
+        @AuraEnabled public Datetime startUtc; @AuraEnabled public Datetime endUtc; @AuraEnabled public String status;
     }
 }
