@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <PermissionSet xmlns="http://soap.sforce.com/2006/04/metadata">
     <classAccesses><apexClass>LadminAIAppointmentBookingController</apexClass><enabled>true</enabled></classAccesses>
+    <classAccesses><apexClass>LadminAIAppointmentBookingResult</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAIAppointmentBookingService</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAIAppointmentCommandService</apexClass><enabled>true</enabled></classAccesses>
     <classAccesses><apexClass>LadminAIAppointmentLocationService</apexClass><enabled>true</enabled></classAccesses>
