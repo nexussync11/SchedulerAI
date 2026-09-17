@@ -6,14 +6,14 @@
         <template lwc:if={result}><div class="message success" role="status">Appointment {result.bookingReference} was booked successfully.</div></template>
         <template lwc:if={loading}><lightning-spinner alternative-text="Loading booking options"></lightning-spinner></template>
         <div class="form">
-            <template lwc:if={needsLeadPicker}><lightning-record-picker label="Lead" object-api-name="Lead" onchange={handleLead} required></lightning-record-picker></template>
-            <lightning-combobox label="Location" value={locationId} options={locationOptions} onchange={handleLocation} required></lightning-combobox>
-            <lightning-combobox name="resourceId" label="Doctor or resource" value={resourceId} options={resourceOptions} onchange={handleInput} required></lightning-combobox>
-            <lightning-input name="appointmentDate" type="date" label="Date" value={appointmentDate} min={minimumDate} onchange={handleInput} required></lightning-input>
-            <lightning-input label="Subject" value={subject} onchange={handleSubject} required></lightning-input>
-            <lightning-button label="Check Availability" onclick={checkAvailability} disabled={checkDisabled}></lightning-button>
-            <lightning-combobox label="Available time" value={selectedSlot} options={slotOptions} onchange={handleSlot} required></lightning-combobox>
-            <lightning-button variant="brand" label="Book Appointment" onclick={book} disabled={saveDisabled}></lightning-button>
+            <template lwc:if={needsLeadPicker}><lightning-record-picker data-testid="booking-lead" label="Lead" object-api-name="Lead" onchange={handleLead} required></lightning-record-picker></template>
+            <lightning-combobox data-testid="booking-location" label="Location" value={locationId} options={locationOptions} onchange={handleLocation} required></lightning-combobox>
+            <lightning-combobox data-testid="booking-resource" name="resourceId" label="Doctor or resource" value={resourceId} options={resourceOptions} onchange={handleInput} required></lightning-combobox>
+            <lightning-input data-testid="booking-date" name="appointmentDate" type="date" label="Date" value={appointmentDate} min={minimumDate} onchange={handleInput} required></lightning-input>
+            <lightning-input data-testid="booking-subject" label="Subject" value={subject} onchange={handleSubject} required></lightning-input>
+            <lightning-button data-testid="check-availability" label="Check Availability" onclick={checkAvailability} disabled={checkDisabled}></lightning-button>
+            <lightning-combobox data-testid="booking-slot" label="Available time" value={selectedSlot} options={slotOptions} onchange={handleSlot} required></lightning-combobox>
+            <lightning-button data-testid="book-appointment" variant="brand" label="Book Appointment" onclick={book} disabled={saveDisabled}></lightning-button>
         </div>
     </section>
 </template>

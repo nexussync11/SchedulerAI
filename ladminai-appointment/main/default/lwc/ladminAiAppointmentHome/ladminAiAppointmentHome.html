@@ -57,7 +57,7 @@
                     <section class="home-overview" aria-labelledby="home-overview"><h2 id="home-overview">Appointment overview</h2><c-ladmin-ai-appointment-dashboard></c-ladmin-ai-appointment-dashboard></section>
                 </section>
             </template>
-            <template lwc:elseif={isBooking}><c-ladmin-ai-appointment-booking></c-ladmin-ai-appointment-booking></template>
+            <template lwc:elseif={isBooking}><c-ladmin-ai-appointment-booking record-id={bookingLeadId}></c-ladmin-ai-appointment-booking></template>
             <template lwc:elseif={isSchedule}><c-ladmin-ai-appointment-calendar></c-ladmin-ai-appointment-calendar></template>
             <template lwc:elseif={isAvailability}><c-ladmin-ai-availability-manager></c-ladmin-ai-availability-manager></template>
             <template lwc:elseif={isResources}><c-ladmin-ai-resource-directory></c-ladmin-ai-resource-directory></template>

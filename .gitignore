@@ -12,3 +12,6 @@ auth/
 *.pem
 *.p12
 *.pfx
+.pnpm-store/
+node_modules/
+test-results/

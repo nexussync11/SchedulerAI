@@ -70,6 +70,8 @@ public with sharing class LadminAIAppointmentTimezoneService {
         addValue(record, 'LadminAI_Default_Slot_Minutes__c', current.LadminAI_Default_Slot_Minutes__c);
         addValue(record, 'LadminAI_Booking_Horizon_Days__c', current.LadminAI_Booking_Horizon_Days__c);
         addValue(record, 'LadminAI_Minimum_Lead_Time_Minutes__c', current.LadminAI_Minimum_Lead_Time_Minutes__c);
+        addValue(record, 'LadminAI_Cancellation_Cutoff_Minutes__c', current.LadminAI_Cancellation_Cutoff_Minutes__c);
+        addValue(record, 'LadminAI_Reschedule_Cutoff_Minutes__c', current.LadminAI_Reschedule_Cutoff_Minutes__c);
         addValue(record, 'LadminAI_Create_Salesforce_Event__c', current.LadminAI_Create_Salesforce_Event__c);
         addValue(record, 'LadminAI_Default_Booking_Status__c', current.LadminAI_Default_Booking_Status__c);
         addValue(record, 'LadminAI_Enable_Parent_Adapter__c', current.LadminAI_Enable_Parent_Adapter__c);

@@ -33,7 +33,13 @@ export default class LadminAiAppointmentBooking extends LightningElement {
 
     async loadLocations() {
         this.loading = true;
-        try { this.locations = await getLocations(); }
+        try {
+            this.locations = await getLocations();
+            if (this.locations.length === 1) {
+                this.locationId = this.locations[0].Id;
+                await this.loadResources();
+            }
+        }
         catch (e) { this.error = this.message(e, 'Locations could not be loaded.'); }
         finally { this.loading = false; }
     }
@@ -43,7 +49,13 @@ export default class LadminAiAppointmentBooking extends LightningElement {
         this.resourceId = null;
         this.resources = [];
         this.resetSlots();
-        try { this.resources = await getResources({ locationId: this.locationId }); }
+        await this.loadResources();
+    }
+    async loadResources() {
+        try {
+            this.resources = await getResources({ locationId: this.locationId });
+            if (this.resources.length === 1) this.resourceId = this.resources[0].Id;
+        }
         catch (e) { this.error = this.message(e, 'Resources could not be loaded.'); }
     }
     handleInput(event) { this[event.target.name] = event.detail?.value ?? event.target.value; this.resetSlots(); }
@@ -58,6 +70,11 @@ export default class LadminAiAppointmentBooking extends LightningElement {
         finally { this.checking = false; }
     }
     handleSlot(event) { this.selectedSlot = event.detail.value; }
+    @api selectFirstAvailableSlot() {
+        if (!this.slots.length) throw new Error('No available appointment slot can be selected.');
+        this.selectedSlot = this.slots[0][0];
+        return this.selectedSlot;
+    }
     async book() {
         this.saving = true; this.error = null;
         try {

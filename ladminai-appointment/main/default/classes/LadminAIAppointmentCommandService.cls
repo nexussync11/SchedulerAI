@@ -19,13 +19,13 @@ public with sharing class LadminAIAppointmentCommandService {
     }
     @AuraEnabled public static void reschedule(Id appointmentId,Date targetDate,String startTime){
         ServiceAppointment__c r = locked(appointmentId);
-        LadminAIAppointmentLifecyclePolicy.assertCanReschedule(r.Status__c);
+        LadminAIAppointmentLifecyclePolicy.assertCanReschedule(r.Status__c, r.Scheduled_Start__c);
         rescheduleTo(appointmentId, r.Location__c, resourceFor(appointmentId), targetDate, startTime);
     }
     @AuraEnabled public static void rescheduleTo(Id appointmentId, Id locationId, Id resourceId, Date targetDate, String startTime) {
         if (locationId == null || resourceId == null || targetDate == null || String.isBlank(startTime)) throw safe('Select an active location, service resource, date and time.');
         ServiceAppointment__c r = locked(appointmentId);
-        LadminAIAppointmentLifecyclePolicy.assertCanReschedule(r.Status__c);
+        LadminAIAppointmentLifecyclePolicy.assertCanReschedule(r.Status__c, r.Scheduled_Start__c);
         List<List<String>> slots = LadminAIAppointmentAvailabilityService.getAvailableSlots(resourceId, locationId, targetDate);
         Boolean available = false;
         for (List<String> slot : slots) if (slot[0] == startTime) available = true;
@@ -48,7 +48,7 @@ public with sharing class LadminAIAppointmentCommandService {
         syncEvent(r, false);
         LadminAINotificationService.notifyAsync(r.Id, 'rescheduled');
     }
-    @AuraEnabled public static void cancel(Id appointmentId,String reason){ServiceAppointment__c r=locked(appointmentId);LadminAIAppointmentLifecyclePolicy.assertCanCancel(r.Status__c);r.Status__c='Cancelled';r.Cancellation_Reason__c=reason;r.Cancelled_At__c=System.now();r.Cancelled_By__c=UserInfo.getUserId();r.Status_Changed_At__c=System.now();r.Status_Changed_By__c=UserInfo.getUserId();Database.update(r,AccessLevel.USER_MODE);syncEvent(r,true);LadminAINotificationService.notifyAsync(r.Id,'cancelled');}
+    @AuraEnabled public static void cancel(Id appointmentId,String reason){if(String.isBlank(reason))throw safe('Enter a cancellation reason.');ServiceAppointment__c r=locked(appointmentId);LadminAIAppointmentLifecyclePolicy.assertCanCancel(r.Status__c,r.Scheduled_Start__c);r.Status__c='Cancelled';r.Cancellation_Reason__c=reason.trim();r.Cancelled_At__c=System.now();r.Cancelled_By__c=UserInfo.getUserId();r.Status_Changed_At__c=System.now();r.Status_Changed_By__c=UserInfo.getUserId();Database.update(r,AccessLevel.USER_MODE);syncEvent(r,true);LadminAINotificationService.notifyAsync(r.Id,'cancelled');}
     @AuraEnabled public static void updateStatus(Id appointmentId,String status){Set<String>allowed=new Set<String>{'Booked','Confirmed','Checked In','In Progress','Arrived','Completed','No Show'};if(!allowed.contains(status))throw safe('Select a supported appointment status.');ServiceAppointment__c r=locked(appointmentId);LadminAIAppointmentLifecyclePolicy.assertTransition(r.Status__c,status);r.Status__c=status;r.Status_Changed_At__c=System.now();r.Status_Changed_By__c=UserInfo.getUserId();if(status=='No Show'){r.No_Show_At__c=System.now();r.No_Show_By__c=UserInfo.getUserId();}Database.update(r,AccessLevel.USER_MODE);}
     private static ServiceAppointment__c locked(Id id){if(id==null)throw safe('An appointment is required.');return[SELECT Id,Scheduled_Start__c,Scheduled_End__c,Status__c,Location__c,LadminAI_Event__c FROM ServiceAppointment__c WHERE Id=:id WITH USER_MODE LIMIT 1 FOR UPDATE];}
     private static Assigned_Resource__c assignmentFor(Id id){return[SELECT Id,Service_Resource__c FROM Assigned_Resource__c WHERE Service_Appointment__c=:id WITH USER_MODE LIMIT 1 FOR UPDATE];}

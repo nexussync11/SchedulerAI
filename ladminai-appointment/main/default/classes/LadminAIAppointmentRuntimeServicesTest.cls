@@ -301,4 +301,62 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(target, local.localDate);
         System.assertEquals(Time.newInstance(9, 0, 0, 0), local.localTime);
     }
+
+    @IsTest static void rejectsNonexistentDaylightSavingWallClockTime() {
+        Schema.Location location = new Schema.Location(
+            Name = 'DST Location', LocationType = 'Site',
+            Scheduler_Managed__c = true, Scheduler_Active__c = false,
+            Scheduler_Time_Zone__c = 'America/New_York'
+        );
+        insert location;
+        try {
+            LadminAIAppointmentBusinessTimeService.toUtc(
+                Date.newInstance(2026, 3, 8), Time.newInstance(2, 30, 0, 0), location.Id
+            );
+            System.assert(false, 'Spring-forward times that do not exist must be rejected.');
+        } catch (LadminAIAppointmentBusinessTimeService.InvalidBusinessTimeException expected) {
+            System.assert(expected.getMessage().contains('does not exist'));
+        }
+    }
+
+    @IsTest static void preservesLocalDateAcrossUtcMidnightBoundary() {
+        Schema.Location location = new Schema.Location(
+            Name = 'Midnight Boundary Location', LocationType = 'Site',
+            Scheduler_Managed__c = true, Scheduler_Active__c = false,
+            Scheduler_Time_Zone__c = 'Pacific/Auckland'
+        );
+        insert location;
+        Date localDate = Date.newInstance(2026, 7, 15);
+        Time localTime = Time.newInstance(0, 15, 0, 0);
+        Datetime utcValue = LadminAIAppointmentBusinessTimeService.toUtc(localDate, localTime, location.Id);
+        LadminAIAppointmentBusinessTimeService.LocalWallClock roundTrip =
+            LadminAIAppointmentBusinessTimeService.toLocalWallClock(utcValue, location.Id);
+        System.assertEquals(localDate, roundTrip.localDate);
+        System.assertEquals(localTime, roundTrip.localTime);
+        System.assertNotEquals(localDate, utcValue.dateGmt(), 'This case must exercise a UTC date boundary.');
+    }
+
+    @IsTest static void lifecycleCutoffsAreCentrallyEnforced() {
+        LadminAIAppointmentSettingsService.rescheduleCutoffOverride = 120;
+        LadminAIAppointmentSettingsService.cancellationCutoffOverride = 60;
+        try {
+            LadminAIAppointmentLifecyclePolicy.assertCanReschedule('Booked', System.now().addMinutes(90));
+            System.assert(false, 'Rescheduling inside the configured cutoff must be rejected.');
+        } catch (AuraHandledException expected) {
+            System.assert(expected.getMessage().contains('cutoff window'));
+        }
+        try {
+            LadminAIAppointmentLifecyclePolicy.assertCanCancel('Confirmed', System.now().addMinutes(30));
+            System.assert(false, 'Cancellation inside the configured cutoff must be rejected.');
+        } catch (AuraHandledException expected) {
+            System.assert(expected.getMessage().contains('cutoff window'));
+        }
+        LadminAIAppointmentLifecyclePolicy.assertCanCancel('Confirmed', System.now().addMinutes(90));
+        try {
+            LadminAIAppointmentLifecyclePolicy.assertCanReschedule('Booked', System.now().addMinutes(-1));
+            System.assert(false, 'Past appointments cannot be rescheduled.');
+        } catch (AuraHandledException expected) {
+            System.assert(expected.getMessage().contains('already started'));
+        }
+    }
 }

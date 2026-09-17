@@ -12,9 +12,12 @@ export default class LadminAiAppointmentHome extends NavigationMixin(LightningEl
     canManageAdministration = canManageAdministration;
     activeView = 'home';
     businessTimezone = 'Salesforce default';
+    bookingLeadId;
     showGuidance = true;
     connectedCallback() {
         this.loadTimezone();
+        try { this.bookingLeadId = new URL(window.location.href).searchParams.get('c__leadId') || undefined; }
+        catch (error) { this.bookingLeadId = undefined; }
         try { this.showGuidance = window.localStorage.getItem('ladminaiGettingStartedDismissed') !== 'true'; }
         catch (error) { this.showGuidance = true; }
     }
