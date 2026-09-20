@@ -1,4 +1,5 @@
 import { test, expect } from '@playwright/test';
+import AxeBuilder from '@axe-core/playwright';
 import { mkdirSync, writeFileSync } from 'node:fs';
 
 const loginUrl = process.env.SF_LOGIN_URL;
@@ -95,5 +96,16 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
     await expect(page.getByRole('heading', { name: /Appointments this month/ })).toBeVisible();
     await expect(page.locator('.details tbody tr').first()).toBeVisible();
     mark('report-drilldown-passed');
+    for (const pageName of ['Home', 'Appointment Booking', 'Appointment Schedule', 'Reports & Dashboard']) {
+      await page.getByRole('button', { name: pageName, exact: true }).click();
+      await expect(page.locator('c-ladmin-ai-appointment-home main')).toBeVisible();
+      const results = await new AxeBuilder({ page })
+        .include('c-ladmin-ai-appointment-home')
+        .withTags(['wcag2a', 'wcag2aa', 'wcag21a', 'wcag21aa'])
+        .analyze();
+      const blocking = results.violations.filter((violation) => ['serious', 'critical'].includes(violation.impact));
+      expect(blocking, `${pageName} accessibility violations:\n${JSON.stringify(blocking, null, 2)}`).toEqual([]);
+    }
+    mark('accessibility-passed');
   });
 });

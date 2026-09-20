@@ -5,6 +5,7 @@ public with sharing class LadminAIAppointmentAvailabilityService {
             SELECT Id, Name, Active__c
             FROM Service_Resource__c
             WHERE Active__c = true
+            WITH USER_MODE
             ORDER BY Name
             LIMIT 200
         ];
@@ -23,6 +24,7 @@ public with sharing class LadminAIAppointmentAvailabilityService {
             FROM Resource_Availability__c
             WHERE Service_Resource__c = :serviceResourceId
               AND Override_Date__c = null
+            WITH USER_MODE
             ORDER BY Day_Of_Week__c
         ];
     }
@@ -46,6 +48,7 @@ public with sharing class LadminAIAppointmentAvailabilityService {
             WHERE Service_Resource__c = :serviceResourceId
               AND Location__c = :locationId
               AND Override_Date__c = null
+            WITH USER_MODE
             ORDER BY Day_Of_Week__c
         ];
     }
@@ -308,6 +311,7 @@ public with sharing class LadminAIAppointmentAvailabilityService {
             SELECT Id, Name
             FROM Service_Resource__c
             WHERE Id = :serviceResourceId
+            WITH USER_MODE
             LIMIT 1
         ];
 
@@ -315,6 +319,7 @@ public with sharing class LadminAIAppointmentAvailabilityService {
             SELECT Id, Name, Service_Resource1__c
             FROM Resource_Availability_Schedule__c
             WHERE Service_Resource1__c = :serviceResourceId
+            WITH USER_MODE
             LIMIT 1
         ];
         Resource_Availability_Schedule__c schedule;
@@ -323,7 +328,7 @@ public with sharing class LadminAIAppointmentAvailabilityService {
                 Name = resource.Name,
                 Service_Resource1__c = resource.Id
             );
-            insert schedule;
+            Database.insert(schedule, AccessLevel.USER_MODE);
         } else {
             schedule = schedules[0];
         }
@@ -340,6 +345,7 @@ public with sharing class LadminAIAppointmentAvailabilityService {
             WHERE Service_Resource__c = :serviceResourceId
               AND Location__c = :locationId
               AND Override_Date__c = null
+            WITH USER_MODE
         ]) {
             existingByDay.put(row.Day_Of_Week__c, row);
         }
@@ -379,10 +385,10 @@ public with sharing class LadminAIAppointmentAvailabilityService {
             }
         }
         if (!rowsToUpdate.isEmpty()) {
-            update rowsToUpdate;
+            Database.update(rowsToUpdate, AccessLevel.USER_MODE);
         }
         if (!rowsToInsert.isEmpty()) {
-            insert rowsToInsert;
+            Database.insert(rowsToInsert, AccessLevel.USER_MODE);
         }
         return schedule.Id;
     }

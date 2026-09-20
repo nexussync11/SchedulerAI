@@ -359,4 +359,46 @@ private class LadminAIAppointmentRuntimeServicesTest {
             System.assert(expected.getMessage().contains('already started'));
         }
     }
+
+    @IsTest static void scheduleAndAnalyticsRemainBoundedWithBulkData() {
+        Context c = setupContext();
+        Datetime baseStart = LadminAIAppointmentBusinessTimeService.toUtc(
+            Date.today(), Time.newInstance(0, 0, 0, 0)
+        );
+        List<ServiceAppointment__c> appointments = new List<ServiceAppointment__c>();
+        for (Integer index = 0; index < 200; index++) {
+            Datetime startsAt = baseStart.addMinutes(index * 5);
+            appointments.add(new ServiceAppointment__c(
+                Name = 'Bulk ' + index,
+                Subject__c = 'Bulk performance validation',
+                Parent_Record1__c = c.lead.Id,
+                Location__c = c.location.Id,
+                Scheduled_Start__c = startsAt,
+                Scheduled_End__c = startsAt.addMinutes(30),
+                Status__c = 'Booked'
+            ));
+        }
+        insert appointments;
+        List<Assigned_Resource__c> assignments = new List<Assigned_Resource__c>();
+        for (ServiceAppointment__c appointment : appointments) {
+            assignments.add(new Assigned_Resource__c(
+                Service_Appointment__c = appointment.Id,
+                Service_Resource__c = c.resource.Id
+            ));
+        }
+        insert assignments;
+
+        Test.startTest();
+        Integer queriesBefore = Limits.getQueries();
+        List<LadminAIAppointmentCommandService.AppointmentRow> schedule =
+            LadminAIAppointmentCommandService.getAppointments(Date.today(), Date.today());
+        LadminAIAppointmentAnalyticsService.Snapshot analytics =
+            LadminAIAppointmentAnalyticsService.getSnapshot();
+        Integer queriesUsed = Limits.getQueries() - queriesBefore;
+        Test.stopTest();
+
+        System.assertEquals(200, schedule.size());
+        System.assertEquals(200, analytics.statusMetrics.get('Booked'));
+        System.assert(queriesUsed <= 12, 'Schedule and dashboard queries must remain bounded as data volume grows.');
+    }
 }
