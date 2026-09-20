@@ -86,6 +86,8 @@ private class LadminAIAppointmentBookingServiceTest {
             System.assertEquals(false, result.success);
             System.assertEquals('SLOT_CONFLICT', result.errorCode);
             System.assertEquals(1, result.conflicts.size());
+            System.assertEquals(null, result.conflicts[0].appointmentId);
+            System.assertEquals(null, result.conflicts[0].scheduledStart);
             System.assertEquals(1, [SELECT COUNT() FROM ServiceAppointment__c]);
         }
     }

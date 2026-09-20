@@ -54,7 +54,8 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
     await page.locator('[data-testid="check-availability"] button').click();
     mark('availability-requested');
     await expect(page.locator('[data-testid="check-availability"] button')).toBeEnabled();
-    await page.locator('c-ladmin-ai-appointment-booking').evaluate((component) => { component.selectFirstAvailableSlot(); });
+    await page.locator('[data-testid="booking-slot"] button[role="combobox"]').click();
+    await page.getByRole('option').first().click();
     await expect(page.locator('[data-testid="booking-slot"] button[role="combobox"]')).not.toContainText('Select an Option');
     mark('slot-selected');
     await page.locator('[data-testid="book-appointment"] button').click();
@@ -67,10 +68,12 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
     await row.getByTitle('Reschedule').click();
     const rescheduleDate = new Date(date); rescheduleDate.setDate(date.getDate() + 1);
     const rescheduleDateInput = page.locator('[data-testid="reschedule-date"] input');
+    await expect(rescheduleDateInput).toBeEnabled();
     await rescheduleDateInput.fill(salesforceDate(rescheduleDate));
     await rescheduleDateInput.press('Tab');
     await expect.poll(() => page.locator('c-ladmin-ai-appointment-calendar').evaluate((component) => component.hasRescheduleSlots())).toBe(true);
-    await page.locator('c-ladmin-ai-appointment-calendar').evaluate((component) => { component.selectFirstRescheduleSlot(); });
+    await page.locator('[data-testid="reschedule-slot"] button[role="combobox"]').click();
+    await page.getByRole('option').first().click();
     await expect(page.locator('[data-testid="reschedule-slot"] button[role="combobox"]')).not.toContainText('Select an available time');
     await page.locator('[data-testid="dialog-save"] button').click();
     await expect(page.getByRole('heading', { name: 'Reschedule Appointment' })).toBeHidden();
@@ -79,7 +82,8 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
     const refreshedRow = page.locator('[data-testid="schedule-row"]').filter({ hasText: subject });
     await refreshedRow.getByRole('button', { name: 'More appointment actions' }).click();
     await page.getByRole('menuitem', { name: 'Update status' }).click();
-    await page.locator('c-ladmin-ai-appointment-calendar').evaluate((component) => { component.selectDialogStatus('Confirmed'); });
+    await page.locator('[data-testid="status-choice"] button[role="combobox"]').click();
+    await page.getByRole('option', { name: 'Confirmed' }).click();
     await page.locator('[data-testid="dialog-save"] button').click();
     await expect(refreshedRow).toContainText('Confirmed');
     mark('status-change-passed');

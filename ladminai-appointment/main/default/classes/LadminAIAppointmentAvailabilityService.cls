@@ -227,16 +227,8 @@ public with sharing class LadminAIAppointmentAvailabilityService {
         Resource_Availability__c window = windows[0];
         Datetime rangeStart = LadminAIAppointmentBusinessTimeService.toUtc(targetDate, window.Start_Time__c, locationId);
         Datetime rangeEnd = LadminAIAppointmentBusinessTimeService.toUtc(targetDate, window.End_Time__c, locationId);
-        List<Assigned_Resource__c> occupied = [
-            SELECT Service_Appointment__r.Scheduled_Start__c,
-                   Service_Appointment__r.Scheduled_End__c,
-                   Service_Appointment__r.Status__c
-            FROM Assigned_Resource__c
-            WHERE Service_Resource__c = :serviceResourceId
-              AND Service_Appointment__r.Scheduled_Start__c < :rangeEnd
-              AND Service_Appointment__r.Scheduled_End__c > :rangeStart
-            WITH USER_MODE
-        ];
+        List<Assigned_Resource__c> occupied =
+            LadminAIAppointmentOccupancyService.forResource(serviceResourceId, rangeStart, rangeEnd);
         Set<String> nonBlocking = new Set<String>{ 'Cancel', 'Cancelled', 'No Show', 'DNA' };
         List<List<String>> output = new List<List<String>>();
         for (Datetime slotStart = rangeStart; slotStart.addMinutes(slotMinutes) <= rangeEnd;

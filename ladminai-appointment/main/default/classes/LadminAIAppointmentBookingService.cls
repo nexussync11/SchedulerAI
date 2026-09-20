@@ -1,8 +1,8 @@
 /**
  * Secure transactional booking service for the existing scheduler data model.
  *
- * Gate 2 performs a normal overlap query. It does not provide the row-locking
- * concurrency guarantee planned for Gate 3.
+ * Booking locks the target resource before checking overlaps so concurrent
+ * requests for that resource cannot both pass the availability check.
  */
 public with sharing class LadminAIAppointmentBookingService {
     private static final Integer MAX_BATCH_REQUESTS = 4;
@@ -64,7 +64,7 @@ public with sharing class LadminAIAppointmentBookingService {
                 FROM Service_Resource__c
                 WHERE Id = :request.serviceResourceId
                 WITH USER_MODE
-                LIMIT 1
+                LIMIT 1 FOR UPDATE
             ];
             if (
                 resources.isEmpty() ||
@@ -77,27 +77,17 @@ public with sharing class LadminAIAppointmentBookingService {
                 );
             }
 
-            List<Assigned_Resource__c> overlapRows = [
-                SELECT Service_Appointment__c,
-                    Service_Appointment__r.Scheduled_Start__c,
-                    Service_Appointment__r.Scheduled_End__c,
-                    Service_Appointment__r.Status__c
-                FROM Assigned_Resource__c
-                WHERE Service_Resource__c = :request.serviceResourceId
-                    AND Service_Appointment__r.Scheduled_Start__c < :request.requestedEnd
-                    AND Service_Appointment__r.Scheduled_End__c > :request.requestedStart
-                WITH USER_MODE
-                LIMIT 50
-            ];
+            List<Assigned_Resource__c> overlapRows =
+                LadminAIAppointmentOccupancyService.forResource(
+                    request.serviceResourceId, request.requestedStart, request.requestedEnd
+                );
             List<LadminAIAppointmentConflict> conflicts =
                 new List<LadminAIAppointmentConflict>();
             for (Assigned_Resource__c row : overlapRows) {
                 if (!NON_BLOCKING_STATUSES.contains(row.Service_Appointment__r.Status__c)) {
-                    conflicts.add(new LadminAIAppointmentConflict(
-                        row.Service_Appointment__c,
-                        row.Service_Appointment__r.Scheduled_Start__c,
-                        row.Service_Appointment__r.Scheduled_End__c
-                    ));
+                    // Do not disclose another user's appointment ID or time.
+                    conflicts.add(new LadminAIAppointmentConflict(null, null, null));
+                    break;
                 }
             }
             if (!conflicts.isEmpty()) {

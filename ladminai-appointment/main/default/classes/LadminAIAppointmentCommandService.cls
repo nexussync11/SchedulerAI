@@ -26,6 +26,12 @@ public with sharing class LadminAIAppointmentCommandService {
         if (locationId == null || resourceId == null || targetDate == null || String.isBlank(startTime)) throw safe('Select an active location, service resource, date and time.');
         ServiceAppointment__c r = locked(appointmentId);
         LadminAIAppointmentLifecyclePolicy.assertCanReschedule(r.Status__c, r.Scheduled_Start__c);
+        // Use the same resource lock as booking before checking live slots.
+        List<Service_Resource__c> targetResources = [
+            SELECT Id FROM Service_Resource__c WHERE Id = :resourceId
+            WITH USER_MODE LIMIT 1 FOR UPDATE
+        ];
+        if (targetResources.isEmpty()) throw safe('The selected resource is unavailable.');
         List<List<String>> slots = LadminAIAppointmentAvailabilityService.getAvailableSlots(resourceId, locationId, targetDate);
         Boolean available = false;
         for (List<String> slot : slots) if (slot[0] == startTime) available = true;
