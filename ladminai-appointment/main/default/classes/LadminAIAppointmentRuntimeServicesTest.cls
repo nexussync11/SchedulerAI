@@ -252,6 +252,54 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(0, LadminAIAppointmentAnalyticsService.getDrilldown('status', 'Completed').size());
     }
 
+    @IsTest static void analyticsSeparatesBookingUsersAndMatchesDrilldowns() {
+        User currentUser = [
+            SELECT Id, Name, ProfileId, TimeZoneSidKey, LocaleSidKey,
+                EmailEncodingKey, LanguageLocaleKey
+            FROM User WHERE Id = :UserInfo.getUserId()
+        ];
+        User otherUser = new User(
+            Alias = 'lairpt', LastName = 'LadminAI Reporter',
+            Email = 'ladminai-reporter@example.test',
+            Username = 'ladminai-reporter-' + String.valueOf(Crypto.getRandomLong()).replace('-', '0') + '@example.test',
+            ProfileId = currentUser.ProfileId,
+            TimeZoneSidKey = currentUser.TimeZoneSidKey,
+            LocaleSidKey = currentUser.LocaleSidKey,
+            EmailEncodingKey = currentUser.EmailEncodingKey,
+            LanguageLocaleKey = currentUser.LanguageLocaleKey
+        );
+        insert otherUser;
+        otherUser = [SELECT Id, Name FROM User WHERE Id = :otherUser.Id];
+        System.runAs(currentUser) {
+            Context c = setupContext();
+            Date reportDate = Date.today().toStartOfMonth().addDays(1);
+            Datetime startAt = LadminAIAppointmentBusinessTimeService.toUtc(
+                reportDate, Time.newInstance(10, 0, 0, 0)
+            );
+            insert new List<ServiceAppointment__c>{
+                new ServiceAppointment__c(
+                    Name = 'Booked by current user', Subject__c = 'Current user booking',
+                    Parent_Record1__c = c.lead.Id, Location__c = c.location.Id,
+                    Scheduled_Start__c = startAt, Scheduled_End__c = startAt.addMinutes(30),
+                    Status__c = 'Booked', Booked_By_User__c = currentUser.Id
+                ),
+                new ServiceAppointment__c(
+                    Name = 'Booked by other user', Subject__c = 'Other user booking',
+                    Parent_Record1__c = c.lead.Id, Location__c = c.location.Id,
+                    Scheduled_Start__c = startAt.addMinutes(60), Scheduled_End__c = startAt.addMinutes(90),
+                    Status__c = 'Booked', Booked_By_User__c = otherUser.Id
+                )
+            };
+            LadminAIAppointmentAnalyticsService.Snapshot snapshot =
+                LadminAIAppointmentAnalyticsService.getSnapshot();
+            System.assertEquals(2, snapshot.appointmentsThisMonth);
+            System.assertEquals(1, snapshot.bookingUserMetrics.get(currentUser.Name));
+            System.assertEquals(1, snapshot.bookingUserMetrics.get(otherUser.Name));
+            System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('user', currentUser.Name).size());
+            System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('user', otherUser.Name).size());
+        }
+    }
+
     @IsTest static void validationBranchesRemainSafe() {
         Context c = setupContext();
         try {
