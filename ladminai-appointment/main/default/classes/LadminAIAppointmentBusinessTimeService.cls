@@ -37,7 +37,7 @@ public with sharing class LadminAIAppointmentBusinessTimeService {
         if (locationId != null && locationId.getSObjectType() == Schema.Location.SObjectType) {
             if (locationZones.containsKey(locationId)) return locationZones.get(locationId);
             List<Schema.Location> locations = [
-                SELECT Scheduler_Time_Zone__c FROM Location WHERE Id = :locationId LIMIT 1
+                SELECT Scheduler_Time_Zone__c FROM Location WHERE Id = :locationId WITH USER_MODE LIMIT 1
             ];
             String timezoneSidKey = locations.isEmpty() ? null : locations[0].Scheduler_Time_Zone__c;
             TimeZone zone = String.isBlank(timezoneSidKey) ? configuredDefaultZone() : TimeZone.getTimeZone(timezoneSidKey);

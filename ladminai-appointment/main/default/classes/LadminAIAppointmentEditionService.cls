@@ -1,4 +1,6 @@
 public without sharing class LadminAIAppointmentEditionService {
+    // Edition counts and activation checks must see every org record, including
+    // records hidden from the current user, or the active limits can be bypassed.
     public static final String LOCATION_LIMIT_MESSAGE =
         'Additional active locations are not available in this edition.';
     public static final String RESOURCE_LIMIT_MESSAGE =
