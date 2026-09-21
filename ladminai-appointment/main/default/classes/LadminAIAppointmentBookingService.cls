@@ -341,15 +341,15 @@ public with sharing class LadminAIAppointmentBookingService {
             );
         }
         if (
-            !Lead.SObjectType.getDescribe().isAccessible() ||
-            !User.SObjectType.getDescribe().isAccessible() ||
-            !Service_Resource__c.SObjectType.getDescribe().isAccessible() ||
-            !ServiceAppointment__c.SObjectType.getDescribe().isAccessible() ||
-            !ServiceAppointment__c.SObjectType.getDescribe().isCreateable() ||
-            !Assigned_Resource__c.SObjectType.getDescribe().isAccessible() ||
-            !Assigned_Resource__c.SObjectType.getDescribe().isCreateable() ||
-            !Event.SObjectType.getDescribe().isAccessible() ||
-            !Event.SObjectType.getDescribe().isCreateable()
+            !Lead.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isAccessible() ||
+            !User.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isAccessible() ||
+            !Service_Resource__c.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isAccessible() ||
+            !ServiceAppointment__c.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isAccessible() ||
+            !ServiceAppointment__c.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable() ||
+            !Assigned_Resource__c.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isAccessible() ||
+            !Assigned_Resource__c.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable() ||
+            !Event.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isAccessible() ||
+            !Event.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isCreateable()
         ) {
             return failure(
                 'OBJECT_ACCESS_REQUIRED',

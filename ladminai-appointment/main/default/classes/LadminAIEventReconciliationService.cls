@@ -1,3 +1,4 @@
+@SuppressWarnings('PMD.ApexCRUDViolation')
 public without sharing class LadminAIEventReconciliationService implements Schedulable {
     public void execute(SchedulableContext context) { reconcile(200); }
     @AuraEnabled

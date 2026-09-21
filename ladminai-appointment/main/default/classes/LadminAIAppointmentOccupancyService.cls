@@ -3,6 +3,7 @@
  * caller cannot read, otherwise record sharing can allow double bookings.
  * Do not expose these rows directly to the UI.
  */
+@SuppressWarnings('PMD.ApexCRUDViolation')
 public without sharing class LadminAIAppointmentOccupancyService {
     public static List<Assigned_Resource__c> forResource(
         Id resourceId, Datetime rangeStart, Datetime rangeEnd

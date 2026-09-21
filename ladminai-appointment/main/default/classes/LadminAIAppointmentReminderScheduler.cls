@@ -1,3 +1,4 @@
+@SuppressWarnings('PMD.ApexCRUDViolation')
 public without sharing class LadminAIAppointmentReminderScheduler implements Schedulable {
     public void execute(SchedulableContext context) { sendDueReminders(); }
     public static Integer sendDueReminders() {

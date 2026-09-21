@@ -253,7 +253,7 @@ public with sharing class LadminAIAppointmentLocationService {
         return values.containsKey(key) ? values.get(key) : 0;
     }
     private static void assertReadAccess() {
-        if (forceAccessDenied || !Schema.Location.SObjectType.getDescribe().isAccessible()) {
+        if (forceAccessDenied || !Schema.Location.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isAccessible()) {
             forceAccessDenied = false;
             throw new AuraHandledException('Locations are unavailable or you do not have access.');
         }
@@ -263,7 +263,7 @@ public with sharing class LadminAIAppointmentLocationService {
             forceAccessDenied = false;
             throw new LocationException('You do not have permission to manage locations.');
         }
-        Schema.DescribeSObjectResult locationDescribe = Schema.Location.SObjectType.getDescribe();
+        Schema.DescribeSObjectResult locationDescribe = Schema.Location.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED);
         if ((creating && !locationDescribe.isCreateable()) || (!creating && !locationDescribe.isUpdateable())) {
             throw new LocationException('You do not have permission to manage locations.');
         }

@@ -200,14 +200,14 @@ public with sharing class LadminAIAppointmentResourceAdminService {
     }
 
     private static void assertReadAccess() {
-        if (forceAccessDenied || !Service_Resource__c.SObjectType.getDescribe().isAccessible()) {
+        if (forceAccessDenied || !Service_Resource__c.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED).isAccessible()) {
             throw safeException('You do not have access to resource administration.');
         }
     }
 
     private static void assertWriteAccess(Boolean creating) {
         Schema.DescribeSObjectResult objectDescribe =
-            Service_Resource__c.SObjectType.getDescribe();
+            Service_Resource__c.SObjectType.getDescribe(SObjectDescribeOptions.DEFERRED);
         if (
             forceAccessDenied ||
             (creating && !objectDescribe.isCreateable()) ||

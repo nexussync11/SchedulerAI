@@ -1,3 +1,4 @@
+@SuppressWarnings('PMD.ApexCRUDViolation')
 public without sharing class LadminAIAppointmentEditionService {
     // Edition counts and activation checks must see every org record, including
     // records hidden from the current user, or the active limits can be bypassed.

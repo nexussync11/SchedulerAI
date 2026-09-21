@@ -13,7 +13,7 @@ export default class LadminAiSmartInsights extends LightningElement {
         try {
             const result = await getInsights();
             this.message = result?.message || 'No insights were returned. Refresh to try again.';
-        } catch (error) {
+        } catch {
             this.message = 'AI Smart Insights are temporarily unavailable. Appointment analytics and scheduling are unaffected.';
         } finally {
             this.loading = false;

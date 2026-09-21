@@ -174,7 +174,7 @@ export default class LadminAiAvailabilityManager extends LightningElement {
         this.errorMessage = null;
         try {
             this.locations = await getLocations();
-        } catch (error) {
+        } catch {
             this.errorMessage =
                 'Locations could not be loaded. Check your Salesforce access.';
         } finally {
@@ -194,7 +194,7 @@ export default class LadminAiAvailabilityManager extends LightningElement {
         this.isLoading = true;
         try {
             this.resources = await getResources({ locationId: this.locationId });
-        } catch (error) {
+        } catch {
             this.errorMessage = 'Doctors could not be loaded for this location.';
         } finally {
             this.isLoading = false;
@@ -231,7 +231,7 @@ export default class LadminAiAvailabilityManager extends LightningElement {
             });
             this.specialDates = specialDates || [];
             this.isDirty = false;
-        } catch (error) {
+        } catch {
             this.days = emptyRows();
             this.errorMessage =
                 'Availability could not be loaded for this doctor.';
@@ -457,7 +457,7 @@ export default class LadminAiAvailabilityManager extends LightningElement {
                 key: slot.join('-'),
                 label: `${slot[0]} – ${slot[1]}`
             }));
-        } catch (error) {
+        } catch {
             this.previewSlots = [];
             this.errorMessage =
                 'The existing booking service could not preview slots.';

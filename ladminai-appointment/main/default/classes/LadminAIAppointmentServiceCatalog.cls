@@ -19,8 +19,8 @@ public with sharing class LadminAIAppointmentServiceCatalog {
     }
     public static void assertEligible(Id serviceId,Id locationId,Id resourceId){
         if(serviceId==null)return;
-        Integer resourceRules=[SELECT COUNT() FROM Service_Resource_Eligibility__c WHERE Service__c=:serviceId];if(resourceRules>0&&[SELECT COUNT() FROM Service_Resource_Eligibility__c WHERE Service__c=:serviceId AND Resource__c=:resourceId]==0)throw safe('The selected resource does not provide this service.');
-        Integer locationRules=[SELECT COUNT() FROM Service_Location_Eligibility__c WHERE Service__c=:serviceId];if(locationRules>0&&[SELECT COUNT() FROM Service_Location_Eligibility__c WHERE Service__c=:serviceId AND Location__c=:locationId]==0)throw safe('The selected service is not available at this location.');
+        Integer resourceRules=[SELECT COUNT() FROM Service_Resource_Eligibility__c WHERE Service__c=:serviceId WITH USER_MODE];if(resourceRules>0&&[SELECT COUNT() FROM Service_Resource_Eligibility__c WHERE Service__c=:serviceId AND Resource__c=:resourceId WITH USER_MODE]==0)throw safe('The selected resource does not provide this service.');
+        Integer locationRules=[SELECT COUNT() FROM Service_Location_Eligibility__c WHERE Service__c=:serviceId WITH USER_MODE];if(locationRules>0&&[SELECT COUNT() FROM Service_Location_Eligibility__c WHERE Service__c=:serviceId AND Location__c=:locationId WITH USER_MODE]==0)throw safe('The selected service is not available at this location.');
     }
     @AuraEnabled(cacheable=true) public static List<Service_Resource__c> getEligibleResources(Id serviceId,Id locationId){
         Set<Id> locationResources=new Set<Id>();for(Scheduler_Location_Resource__c row:[SELECT Service_Resource__c FROM Scheduler_Location_Resource__c WHERE Location__c=:locationId AND Active__c=true WITH USER_MODE])locationResources.add(row.Service_Resource__c);
