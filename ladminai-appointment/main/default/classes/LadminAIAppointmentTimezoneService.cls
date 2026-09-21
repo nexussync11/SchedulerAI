@@ -11,6 +11,7 @@ public with sharing class LadminAIAppointmentTimezoneService {
         output.userTimezone = currentUser.TimeZoneSidKey;
         LadminAI_Appointment_Settings__mdt current = LadminAI_Appointment_Settings__mdt.getInstance('Default');
         output.internalNotificationsEnabled = current?.LadminAI_Enable_Internal_Notifications__c == true;
+        output.customerNotificationsEnabled = current?.LadminAI_Enable_Customer_Notifications__c == true;
         output.aiInsightsEnabled = current?.LadminAI_Enable_AI_Insights__c == true;
         output.options = getOptions();
         return output;
@@ -61,8 +62,15 @@ public with sharing class LadminAIAppointmentTimezoneService {
         LadminAI_Appointment_Settings__mdt current = LadminAI_Appointment_Settings__mdt.getInstance('Default');
         return deploySettings(current, current.LadminAI_Default_Time_Zone__c, current.LadminAI_Enable_Internal_Notifications__c, enabled == true);
     }
+    @AuraEnabled
+    public static String saveCustomerNotifications(Boolean enabled) {
+        if (!FeatureManagement.checkPermission('LadminAI_Configure_Appointment')) throw safeException('You do not have permission to configure appointment settings.');
+        LadminAI_Appointment_Settings__mdt current = LadminAI_Appointment_Settings__mdt.getInstance('Default');
+        return deploySettings(current, current.LadminAI_Default_Time_Zone__c, current.LadminAI_Enable_Internal_Notifications__c, current.LadminAI_Enable_AI_Insights__c, enabled == true);
+    }
 
-    private static String deploySettings(LadminAI_Appointment_Settings__mdt current, String timezoneSidKey, Boolean notificationsEnabled, Boolean aiInsightsEnabled) {
+    private static String deploySettings(LadminAI_Appointment_Settings__mdt current, String timezoneSidKey, Boolean notificationsEnabled, Boolean aiInsightsEnabled) { return deploySettings(current, timezoneSidKey, notificationsEnabled, aiInsightsEnabled, current.LadminAI_Enable_Customer_Notifications__c); }
+    private static String deploySettings(LadminAI_Appointment_Settings__mdt current, String timezoneSidKey, Boolean notificationsEnabled, Boolean aiInsightsEnabled, Boolean customerNotificationsEnabled) {
         Metadata.CustomMetadata record = new Metadata.CustomMetadata();
         record.fullName = 'LadminAI_Appointment_Settings.Default';
         record.label = 'Default';
@@ -78,6 +86,8 @@ public with sharing class LadminAIAppointmentTimezoneService {
         addValue(record, 'LadminAI_Enable_Compatibility_Aura__c', current.LadminAI_Enable_Compatibility_Aura__c);
         addValue(record, 'LadminAI_Enable_AI_Insights__c', aiInsightsEnabled);
         addValue(record, 'LadminAI_Enable_Internal_Notifications__c', notificationsEnabled);
+        addValue(record, 'LadminAI_Enable_Customer_Notifications__c', customerNotificationsEnabled);
+        addValue(record, 'LadminAI_Reminder_Lead_Hours__c', current.LadminAI_Reminder_Lead_Hours__c);
         addValue(record, 'LadminAI_OpenAI_Named_Credential__c', current.LadminAI_OpenAI_Named_Credential__c);
         addValue(record, 'LadminAI_Max_Active_Locations__c', current.LadminAI_Max_Active_Locations__c);
         addValue(record, 'LadminAI_Max_Active_Service_Resources__c', current.LadminAI_Max_Active_Service_Resources__c);
@@ -117,6 +127,7 @@ public with sharing class LadminAIAppointmentTimezoneService {
         @AuraEnabled public String businessTimezone { get; set; }
         @AuraEnabled public String userTimezone { get; set; }
         @AuraEnabled public Boolean internalNotificationsEnabled { get; set; }
+        @AuraEnabled public Boolean customerNotificationsEnabled { get; set; }
         @AuraEnabled public Boolean aiInsightsEnabled { get; set; }
         @AuraEnabled public List<TimezoneOption> options { get; set; }
     }

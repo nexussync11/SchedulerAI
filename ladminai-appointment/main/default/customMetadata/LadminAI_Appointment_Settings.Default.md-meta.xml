@@ -11,6 +11,8 @@
     <values><field>LadminAI_Enable_AI_Insights__c</field><value xsi:type="xsd:boolean">false</value></values>
     <values><field>LadminAI_OpenAI_Named_Credential__c</field><value xsi:type="xsd:string">LadminAI_OpenAI</value></values>
     <values><field>LadminAI_Enable_Internal_Notifications__c</field><value xsi:type="xsd:boolean">false</value></values>
+    <values><field>LadminAI_Enable_Customer_Notifications__c</field><value xsi:type="xsd:boolean">false</value></values>
+    <values><field>LadminAI_Reminder_Lead_Hours__c</field><value xsi:type="xsd:double">24</value></values>
     <values><field>LadminAI_Enable_Parent_Adapter__c</field><value xsi:type="xsd:boolean">false</value></values>
     <values><field>LadminAI_Minimum_Lead_Time_Minutes__c</field><value xsi:type="xsd:double">0</value></values>
     <values><field>LadminAI_Cancellation_Cutoff_Minutes__c</field><value xsi:type="xsd:double">0</value></values>

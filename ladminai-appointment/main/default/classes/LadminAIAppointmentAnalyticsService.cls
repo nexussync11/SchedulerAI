@@ -2,8 +2,15 @@ public with sharing class LadminAIAppointmentAnalyticsService {
     @AuraEnabled(cacheable=true)
     public static List<DetailRow> getDrilldown(String dimension, String value) {
         Date first = Date.today().toStartOfMonth();
+        return getDrilldownForRange(dimension, value, first, first.addMonths(1).addDays(-1));
+    }
+    @AuraEnabled(cacheable=true)
+    public static List<DetailRow> getDrilldownForRange(String dimension, String value, Date startDate, Date endDate) {
+        Date first = startDate == null ? Date.today().toStartOfMonth() : startDate;
+        Date last = endDate == null ? first.addMonths(1).addDays(-1) : endDate;
+        if (last < first || first.daysBetween(last) > 366) throw new AuraHandledException('Select a date range of 367 days or less.');
         Datetime fromUtc = LadminAIAppointmentBusinessTimeService.toUtc(first, Time.newInstance(0,0,0,0));
-        Datetime toUtc = LadminAIAppointmentBusinessTimeService.toUtc(first.addMonths(1), Time.newInstance(0,0,0,0));
+        Datetime toUtc = LadminAIAppointmentBusinessTimeService.toUtc(last.addDays(1), Time.newInstance(0,0,0,0));
         if (dimension == 'upcoming') { fromUtc = System.now(); toUtc = fromUtc.addDays(7); }
         List<ServiceAppointment__c> records = [SELECT Id,Name,Subject__c,Status__c,Scheduled_Start__c,Scheduled_End__c,Location__r.Name,Parent_Record1__r.Name,Booked_By_User__r.Name,Appointment_Service__r.Name,Appointment_Mode__c FROM ServiceAppointment__c WHERE Scheduled_Start__c>=:fromUtc AND Scheduled_Start__c<:toUtc WITH USER_MODE ORDER BY Scheduled_Start__c DESC LIMIT 5000];
         Set<Id> appointmentIds = new Map<Id,ServiceAppointment__c>(records).keySet();
@@ -34,8 +41,15 @@ public with sharing class LadminAIAppointmentAnalyticsService {
     @AuraEnabled(cacheable=true)
     public static Snapshot getSnapshot() {
         Date first = Date.today().toStartOfMonth();
+        return getSnapshotForRange(first, first.addMonths(1).addDays(-1));
+    }
+    @AuraEnabled(cacheable=true)
+    public static Snapshot getSnapshotForRange(Date startDate, Date endDate) {
+        Date first = startDate == null ? Date.today().toStartOfMonth() : startDate;
+        Date last = endDate == null ? first.addMonths(1).addDays(-1) : endDate;
+        if (last < first || first.daysBetween(last) > 366) throw new AuraHandledException('Select a date range of 367 days or less.');
         Datetime fromUtc = LadminAIAppointmentBusinessTimeService.toUtc(first, Time.newInstance(0,0,0,0));
-        Datetime toUtc = LadminAIAppointmentBusinessTimeService.toUtc(first.addMonths(1), Time.newInstance(0,0,0,0));
+        Datetime toUtc = LadminAIAppointmentBusinessTimeService.toUtc(last.addDays(1), Time.newInstance(0,0,0,0));
         List<ServiceAppointment__c> rows = [SELECT Id,Status__c,Scheduled_Start__c,Location__r.Name,Booked_By_User__r.Name,Appointment_Service__r.Name,Appointment_Mode__c FROM ServiceAppointment__c WHERE Scheduled_Start__c>=:fromUtc AND Scheduled_Start__c<:toUtc WITH USER_MODE ORDER BY Scheduled_Start__c LIMIT 5000];
         Snapshot snapshot = new Snapshot();
         snapshot.appointmentsThisMonth = rows.size(); snapshot.cancelled = 0; snapshot.completed = 0; snapshot.noShows = 0;
@@ -66,6 +80,10 @@ public with sharing class LadminAIAppointmentAnalyticsService {
         Datetime nowValue = System.now();
         Datetime sevenDays = nowValue.addDays(7);
         snapshot.upcomingNext7Days = [SELECT COUNT() FROM ServiceAppointment__c WHERE Scheduled_Start__c>=:nowValue AND Scheduled_Start__c<:sevenDays AND Status__c NOT IN ('Cancelled','Cancel','Completed','No Show') WITH USER_MODE];
+        Integer days = first.daysBetween(last) + 1;
+        Datetime previousFrom = LadminAIAppointmentBusinessTimeService.toUtc(first.addDays(-days), Time.newInstance(0,0,0,0));
+        snapshot.previousPeriodAppointments = [SELECT COUNT() FROM ServiceAppointment__c WHERE Scheduled_Start__c>=:previousFrom AND Scheduled_Start__c<:fromUtc WITH USER_MODE];
+        snapshot.periodChangePercent = snapshot.previousPeriodAppointments == 0 ? (rows.isEmpty() ? 0 : 100) : Decimal.valueOf((rows.size() - snapshot.previousPeriodAppointments) * 100).divide(snapshot.previousPeriodAppointments, 1);
         snapshot.cancellationRate = rate(snapshot.cancelled, rows.size()); snapshot.completionRate = rate(snapshot.completed, rows.size()); snapshot.noShowRate = rate(snapshot.noShows, rows.size());
         return snapshot;
     }
@@ -73,6 +91,7 @@ public with sharing class LadminAIAppointmentAnalyticsService {
     private static Decimal rate(Integer count, Integer total) { return total == 0 ? 0 : Decimal.valueOf(count * 100).divide(total, 1); }
     public class Snapshot {
         @AuraEnabled public Integer appointmentsThisMonth; @AuraEnabled public Integer upcomingNext7Days;
+        @AuraEnabled public Integer previousPeriodAppointments; @AuraEnabled public Decimal periodChangePercent;
         @AuraEnabled public Integer cancelled; @AuraEnabled public Integer completed; @AuraEnabled public Integer noShows;
         @AuraEnabled public Decimal cancellationRate; @AuraEnabled public Decimal completionRate; @AuraEnabled public Decimal noShowRate;
         @AuraEnabled public Map<String,Integer> locationMetrics; @AuraEnabled public Map<String,Integer> resourceMetrics; @AuraEnabled public Map<String,Integer> statusMetrics;

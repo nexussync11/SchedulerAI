@@ -449,4 +449,21 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(200, analytics.statusMetrics.get('Booked'));
         System.assert(queriesUsed <= 12, 'Schedule and dashboard queries must remain bounded as data volume grows.');
     }
+
+    @IsTest static void reconcilesMissingAndModifiedEvents() {
+        Context c = setupContext();
+        Datetime startAt = System.now().addDays(2);
+        Event modified = new Event(Subject='Wrong',WhoId=c.lead.Id,StartDateTime=startAt.addHours(1),EndDateTime=startAt.addHours(2));
+        insert modified;
+        insert new List<ServiceAppointment__c>{
+            new ServiceAppointment__c(Name='Missing Event',Subject__c='Missing',Parent_Record1__c=c.lead.Id,Location__c=c.location.Id,Scheduled_Start__c=startAt,Scheduled_End__c=startAt.addMinutes(30),Status__c='Booked'),
+            new ServiceAppointment__c(Name='Modified Event',Subject__c='Correct',Parent_Record1__c=c.lead.Id,Location__c=c.location.Id,Scheduled_Start__c=startAt.addHours(3),Scheduled_End__c=startAt.addHours(4),Status__c='Booked',LadminAI_Event__c=modified.Id)
+        };
+        LadminAIEventReconciliationService.ReconciliationResult result = LadminAIEventReconciliationService.reconcile(200);
+        System.assertEquals(1,result.recreated);
+        System.assertEquals(1,result.repaired);
+        System.assertEquals(0,result.failed);
+        System.assertEquals(2,[SELECT COUNT() FROM ServiceAppointment__c WHERE Event_Sync_Status__c='Synchronized']);
+        System.assertEquals(0,LadminAIAppointmentReminderScheduler.sendDueReminders());
+    }
 }

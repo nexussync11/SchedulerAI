@@ -1,13 +1,15 @@
 import { LightningElement } from 'lwc';
 import getSnapshot from '@salesforce/apex/LadminAIAppointmentAnalyticsService.getSnapshot';
 import getDrilldown from '@salesforce/apex/LadminAIAppointmentAnalyticsService.getDrilldown';
+import getSnapshotForRange from '@salesforce/apex/LadminAIAppointmentAnalyticsService.getSnapshotForRange';
+import getDrilldownForRange from '@salesforce/apex/LadminAIAppointmentAnalyticsService.getDrilldownForRange';
 export default class LadminAiAppointmentDashboard extends LightningElement {
     palette = ['#08a88a', '#1769e0', '#7c4dff', '#f59e0b', '#e94f64', '#06a6d7', '#84bd00', '#ed6a2c'];
-    data; error; loading = true; detailLoading = false; detailError; detailRows = []; detailTitle = 'Appointment details'; page = 1; pageSize = 10;
+    data; error; loading = true; detailLoading = false; detailError; detailRows = []; detailTitle = 'Appointment details'; page = 1; pageSize = 10; startDate; endDate;
     connectedCallback() { this.load(); }
     async load() {
         this.loading = true; this.error = null;
-        try { this.data = await getSnapshot(); }
+        try { this.data = this.startDate&&this.endDate ? await getSnapshotForRange({startDate:this.startDate,endDate:this.endDate}) : await getSnapshot(); }
         catch (error) { this.error = error?.body?.message || 'Analytics could not be loaded.'; }
         finally { this.loading = false; }
     }
@@ -26,12 +28,17 @@ export default class LadminAiAppointmentDashboard extends LightningElement {
     async drilldown(event) {
         const {dimension,value,label}=event.currentTarget.dataset;
         this.detailLoading=true; this.detailError=null; this.page=1;
-        try { this.detailRows=await getDrilldown({dimension,value:value||null}); this.detailTitle=`${label} (${this.detailRows.length})`; }
+        try { this.detailRows=this.startDate&&this.endDate ? await getDrilldownForRange({dimension,value:value||null,startDate:this.startDate,endDate:this.endDate}) : await getDrilldown({dimension,value:value||null}); this.detailTitle=`${label} (${this.detailRows.length})`; }
         catch(error){ this.detailError=error?.body?.message||'Appointment details could not be loaded.'; this.detailRows=[]; }
         finally { this.detailLoading=false; requestAnimationFrame(()=>this.template.querySelector('.details')?.scrollIntoView({behavior:'smooth',block:'start'})); }
     }
     previousPage(){if(this.page>1)this.page-=1;}
     nextPage(){if(this.page<this.totalPages)this.page+=1;}
+    changeDate(event){this[event.target.dataset.field]=event.target.value;}
+    applyDates(){this.detailRows=[];this.page=1;this.load();}
+    exportCsv(){if(!this.detailRows.length)return;const fields=['name','subject','customer','resource','location','service','bookedBy','source','startUtc','endUtc','status'];const quote=value=>`"${String(value??'').replaceAll('"','""')}"`;const csv=[fields.join(','),...this.detailRows.map(row=>fields.map(field=>quote(row[field])).join(','))].join('\r\n');const link=document.createElement('a');link.href=`data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`;link.download='appointment-report.csv';link.click();}
+    get exportDisabled(){return !this.detailRows.length;}
+    get comparisonLabel(){const value=this.data?.periodChangePercent||0;return `${value>=0?'+':''}${value}% vs previous period`;}
     get statusTotal() { return this.statusRows.reduce((total, row) => total + row.value, 0); }
     get statusChartLabel() { return `Appointment status distribution. ${this.statusRows.map(row => `${row.label}: ${row.value}`).join(', ')}`; }
     get statusPieStyle() {

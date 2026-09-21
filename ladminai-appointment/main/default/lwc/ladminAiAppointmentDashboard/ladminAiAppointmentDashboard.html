@@ -1,11 +1,12 @@
 <template>
     <section aria-labelledby="analytics-heading">
-        <header><div><h1 id="analytics-heading">Appointment Dashboard</h1><p>Operational performance for the current calendar month. Select any result to inspect its appointments.</p></div><lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh appointment analytics" onclick={load}></lightning-button-icon></header>
+        <header><div><h1 id="analytics-heading">Appointment Dashboard</h1><p>Operational performance for the selected period. Select any result to inspect its appointments.</p></div><lightning-button-icon icon-name="utility:refresh" alternative-text="Refresh appointment analytics" onclick={load}></lightning-button-icon></header>
+        <div class="date-filters"><lightning-input type="date" label="From" data-field="startDate" value={startDate} onchange={changeDate}></lightning-input><lightning-input type="date" label="To" data-field="endDate" value={endDate} onchange={changeDate}></lightning-input><lightning-button label="Apply dates" variant="brand" onclick={applyDates}></lightning-button><lightning-button label="Export selected report" onclick={exportCsv} disabled={exportDisabled}></lightning-button></div>
         <template lwc:if={loading}><div class="loading"><lightning-spinner size="small" alternative-text="Loading appointment analytics"></lightning-spinner></div></template>
         <template lwc:elseif={error}><p class="error" role="alert">{error}</p></template>
         <template lwc:else>
             <div class="grid" aria-label="Appointment key performance indicators">
-                <button class="kpi" data-dimension="all" data-label="Appointments this month" onclick={drilldown}><strong>{data.appointmentsThisMonth}</strong><span>Appointments this month</span></button>
+                <button class="kpi" data-dimension="all" data-label="Appointments in period" onclick={drilldown}><strong>{data.appointmentsThisMonth}</strong><span>Appointments in period</span><small>{comparisonLabel}</small></button>
                 <button class="kpi" data-dimension="upcoming" data-label="Upcoming next 7 days" onclick={drilldown}><strong>{data.upcomingNext7Days}</strong><span>Upcoming next 7 days</span></button>
                 <button class="kpi" data-dimension="status" data-value="Completed" data-label="Completed appointments" onclick={drilldown}><strong>{data.completionRate}%</strong><span>Completion rate</span></button>
                 <button class="kpi" data-dimension="status" data-value="Cancelled" data-label="Cancelled appointments" onclick={drilldown}><strong>{data.cancellationRate}%</strong><span>Cancellation rate</span></button>
