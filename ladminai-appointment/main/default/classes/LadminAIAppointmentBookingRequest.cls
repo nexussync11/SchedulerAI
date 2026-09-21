@@ -5,6 +5,7 @@ public class LadminAIAppointmentBookingRequest {
     @AuraEnabled public Id parentRecordId { get; set; }
     @AuraEnabled public Id serviceResourceId { get; set; }
     @AuraEnabled public Id locationId { get; set; }
+    @AuraEnabled public Id serviceId { get; set; }
     @AuraEnabled public Date appointmentDate { get; set; }
     @AuraEnabled public Datetime requestedStart { get; set; }
     @AuraEnabled public Datetime requestedEnd { get; set; }

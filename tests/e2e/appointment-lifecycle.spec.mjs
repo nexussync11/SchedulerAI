@@ -5,9 +5,25 @@ import { mkdirSync, writeFileSync } from 'node:fs';
 const loginUrl = process.env.SF_LOGIN_URL;
 
 function salesforceDate(value) {
+  const year = value.getFullYear();
+  const month = String(value.getMonth() + 1).padStart(2, '0');
   const day = String(value.getDate()).padStart(2, '0');
-  const month = value.toLocaleString('en-GB', { month: 'short' });
-  return `${day}-${month}-${value.getFullYear()}`;
+  return `${year}-${month}-${day}`;
+}
+
+async function selectSalesforceDate(page, testId, value) {
+  const field = page.locator(`[data-testid="${testId}"]`);
+  await field.getByRole('button', { name: /Select a date/ }).click();
+  await page.locator(`[data-value="${salesforceDate(value)}"]`).click();
+}
+
+async function typeSalesforceDate(page, testId, value) {
+  const month = value.toLocaleString('en-US', { month: 'short' });
+  const displayValue = `${month} ${value.getDate()}, ${value.getFullYear()}`;
+  const input = page.locator(`[data-testid="${testId}"] input`);
+  await input.clear();
+  await input.pressSequentially(displayValue);
+  await input.press('Tab');
 }
 
 const milestones = [];
@@ -28,7 +44,22 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
 
   test.beforeEach(async ({ page }) => {
     await page.goto(loginUrl);
-    await expect(page.getByText('LadminAI', { exact: true }).first()).toBeVisible();
+    const changePassword = page.getByRole('heading', { name: 'Change Your Password' });
+    const appBrand = page.getByText('LadminAI', { exact: true }).first();
+    await expect(changePassword.or(appBrand)).toBeVisible({ timeout: 30000 });
+    if (await changePassword.isVisible()) {
+      if (!process.env.SF_CURRENT_PASSWORD || !process.env.SF_NEW_PASSWORD) {
+        throw new Error('The persona requires a first-login password change, but password environment variables are unavailable.');
+      }
+      await page.getByRole('textbox', { name: '* Current Password', exact: true }).pressSequentially(process.env.SF_CURRENT_PASSWORD);
+      await page.getByRole('textbox', { name: '* New Password', exact: true }).pressSequentially(process.env.SF_NEW_PASSWORD);
+      await page.getByRole('textbox', { name: '* Confirm New Password', exact: true }).pressSequentially(process.env.SF_NEW_PASSWORD);
+      await page.getByRole('textbox', { name: '* New Answer', exact: true }).pressSequentially('LadminAI');
+      await page.getByRole('textbox', { name: '* New Answer', exact: true }).press('Tab');
+      await expect(page.getByRole('button', { name: 'Change Password' })).toBeEnabled();
+      await page.getByRole('button', { name: 'Change Password' }).click();
+    }
+    await expect(appBrand).toBeVisible({ timeout: 30000 });
   });
 
   test('books, reschedules, changes status, cancels, and drills into reports', async ({ page }) => {
@@ -41,7 +72,7 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
     await expect(page.locator('[data-testid="booking-resource"] button[role="combobox"]')).not.toContainText('Select an Option');
     mark('single-location-resource-selected');
     const date = new Date(); date.setDate(date.getDate() + 2);
-    await page.locator('[data-testid="booking-date"] input').fill(salesforceDate(date));
+    await selectSalesforceDate(page, 'booking-date', date);
     mark('booking-date-filled');
     await page.locator('[data-testid="booking-subject"] input').fill(subject);
     mark('booking-subject-filled');
@@ -69,8 +100,7 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
     const rescheduleDate = new Date(date); rescheduleDate.setDate(date.getDate() + 1);
     const rescheduleDateInput = page.locator('[data-testid="reschedule-date"] input');
     await expect(rescheduleDateInput).toBeEnabled();
-    await rescheduleDateInput.fill(salesforceDate(rescheduleDate));
-    await rescheduleDateInput.press('Tab');
+    await typeSalesforceDate(page, 'reschedule-date', rescheduleDate);
     await expect.poll(() => page.locator('c-ladmin-ai-appointment-calendar').evaluate((component) => component.hasRescheduleSlots())).toBe(true);
     await page.locator('[data-testid="reschedule-slot"] button[role="combobox"]').click();
     await page.getByRole('option').first().click();
@@ -90,14 +120,15 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
 
     await refreshedRow.getByRole('button', { name: 'More appointment actions' }).click();
     await page.getByRole('menuitem', { name: 'Cancel appointment' }).click();
-    await page.locator('[data-testid="cancel-reason"] textarea').fill('Automated lifecycle validation');
+    await page.locator('[data-testid="cancel-reason"] button[role="combobox"]').click();
+    await page.getByRole('option', { name: 'Other' }).click();
     await page.locator('[data-testid="dialog-save"] button').click();
     await expect(refreshedRow).toContainText('Cancelled');
     mark('cancellation-passed');
 
     await page.getByRole('button', { name: 'Reports & Dashboard', exact: true }).click();
-    await page.getByRole('button', { name: /Appointments this month/ }).click();
-    await expect(page.getByRole('heading', { name: /Appointments this month/ })).toBeVisible();
+    await page.getByRole('button', { name: /Appointments in period/ }).click();
+    await expect(page.getByRole('heading', { name: /Appointments in period/ })).toBeVisible();
     await expect(page.locator('.details tbody tr').first()).toBeVisible();
     mark('report-drilldown-passed');
     for (const pageName of ['Home', 'Appointment Booking', 'Appointment Schedule', 'Reports & Dashboard']) {

@@ -4,11 +4,15 @@ import getLocations from '@salesforce/apex/LadminAIAppointmentLocationService.ge
 import getResources from '@salesforce/apex/LadminAIAppointmentLocationService.getDoctorsForLocation';
 import getSlots from '@salesforce/apex/LadminAIAppointmentAvailabilityService.getAvailableSlots';
 import bookFromSlot from '@salesforce/apex/LadminAIAppointmentBookingController.bookFromSlot';
+import getActiveServices from '@salesforce/apex/LadminAIAppointmentServiceCatalog.getActiveServices';
+import getEligibleResources from '@salesforce/apex/LadminAIAppointmentServiceCatalog.getEligibleResources';
 
 export default class LadminAiAppointmentBooking extends LightningElement {
     @api recordId;
     locations = [];
     resources = [];
+    services = [];
+    serviceId;
     locationId;
     resourceId;
     appointmentDate;
@@ -26,6 +30,7 @@ export default class LadminAiAppointmentBooking extends LightningElement {
     get needsLeadPicker() { return !this.recordId; }
     get locationOptions() { return this.locations.map((v) => ({ label: v.Name, value: v.Id })); }
     get resourceOptions() { return this.resources.map((v) => ({ label: v.Name, value: v.Id })); }
+    get serviceOptions() { return this.services.map((v) => ({ label: v.Name, value: v.Id })); }
     get slotOptions() { return this.slots.map((v) => ({ label: `${v[0]} – ${v[1]}`, value: v[0] })); }
     get minimumDate() { return new Date().toISOString().slice(0, 10); }
     get checkDisabled() { return this.checking || !this.leadId || !this.locationId || !this.resourceId || !this.appointmentDate; }
@@ -34,7 +39,8 @@ export default class LadminAiAppointmentBooking extends LightningElement {
     async loadLocations() {
         this.loading = true;
         try {
-            this.locations = await getLocations();
+            [this.locations,this.services] = await Promise.all([getLocations(),getActiveServices()]);
+            if(this.services.length===1)this.serviceId=this.services[0].Id;
             if (this.locations.length === 1) {
                 this.locationId = this.locations[0].Id;
                 await this.loadResources();
@@ -53,12 +59,13 @@ export default class LadminAiAppointmentBooking extends LightningElement {
     }
     async loadResources() {
         try {
-            this.resources = await getResources({ locationId: this.locationId });
+            this.resources = this.serviceId ? await getEligibleResources({serviceId:this.serviceId,locationId:this.locationId}) : await getResources({ locationId: this.locationId });
             if (this.resources.length === 1) this.resourceId = this.resources[0].Id;
         }
         catch (e) { this.error = this.message(e, 'Resources could not be loaded.'); }
     }
     handleInput(event) { this[event.target.name] = event.detail?.value ?? event.target.value; this.resetSlots(); }
+    async handleService(event){this.serviceId=event.detail.value;this.resourceId=null;this.resetSlots();await this.loadResources();}
     handleSubject(event) { this.subject = event.target.value; }
     resetSlots() { this.slots = []; this.selectedSlot = null; this.result = null; }
     async checkAvailability() {
@@ -80,7 +87,7 @@ export default class LadminAiAppointmentBooking extends LightningElement {
         try {
             const response = await bookFromSlot({
                 leadId: this.leadId, locationId: this.locationId,
-                serviceResourceId: this.resourceId, appointmentDate: this.appointmentDate,
+                serviceResourceId: this.resourceId, serviceId:this.serviceId, appointmentDate: this.appointmentDate,
                 startTime: this.selectedSlot, subject: this.subject.trim()
             });
             if (!response?.success) throw new Error(response?.userMessage || 'The appointment could not be booked.');

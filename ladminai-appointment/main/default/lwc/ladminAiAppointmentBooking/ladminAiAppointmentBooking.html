@@ -8,6 +8,7 @@
         <div class="form">
             <template lwc:if={needsLeadPicker}><lightning-record-picker data-testid="booking-lead" label="Lead" object-api-name="Lead" onchange={handleLead} required></lightning-record-picker></template>
             <lightning-combobox data-testid="booking-location" label="Location" value={locationId} options={locationOptions} onchange={handleLocation} required></lightning-combobox>
+            <lightning-combobox data-testid="booking-service" label="Service" value={serviceId} options={serviceOptions} onchange={handleService}></lightning-combobox>
             <lightning-combobox data-testid="booking-resource" name="resourceId" label="Doctor or resource" value={resourceId} options={resourceOptions} onchange={handleInput} required></lightning-combobox>
             <lightning-input data-testid="booking-date" name="appointmentDate" type="date" label="Date" value={appointmentDate} min={minimumDate} onchange={handleInput} required></lightning-input>
             <lightning-input data-testid="booking-subject" label="Subject" value={subject} onchange={handleSubject} required></lightning-input>

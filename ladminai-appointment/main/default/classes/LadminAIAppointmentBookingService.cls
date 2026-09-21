@@ -106,6 +106,7 @@ public with sharing class LadminAIAppointmentBookingService {
             LadminAIAppointmentLocationService.assertActiveAssociation(
                 request.locationId, request.serviceResourceId
             );
+            LadminAIAppointmentServiceCatalog.assertEligible(request.serviceId, request.locationId, request.serviceResourceId);
 
             ServiceAppointment__c appointment = new ServiceAppointment__c(
                 Name = bookingReference,
@@ -118,6 +119,7 @@ public with sharing class LadminAIAppointmentBookingService {
                 Location__c = request.locationId,
                 Booked_By_User__c = UserInfo.getUserId(),
                 Service_Resource_Name__c = abbreviate(resource.Name, 40),
+                Appointment_Service__c = request.serviceId,
                 LadminAI_Idempotency_Key__c = request.idempotencyKey.trim(),
                 LadminAI_Booking_Reference__c = bookingReference
             );

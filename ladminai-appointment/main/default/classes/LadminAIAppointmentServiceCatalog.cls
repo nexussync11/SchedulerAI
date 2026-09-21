@@ -17,6 +17,16 @@ public with sharing class LadminAIAppointmentServiceCatalog {
         List<Service_Resource_Eligibility__c> resources=new List<Service_Resource_Eligibility__c>();for(Id resourceId:resourceIds==null?new List<Id>():resourceIds)resources.add(new Service_Resource_Eligibility__c(Service__c=serviceId,Resource__c=resourceId,Eligibility_Key__c=serviceId+':'+resourceId));if(!resources.isEmpty())insert as user resources;
         List<Service_Location_Eligibility__c> locations=new List<Service_Location_Eligibility__c>();for(Id locationId:locationIds==null?new List<Id>():locationIds)locations.add(new Service_Location_Eligibility__c(Service__c=serviceId,Location__c=locationId,Eligibility_Key__c=serviceId+':'+locationId));if(!locations.isEmpty())insert as user locations;
     }
+    public static void assertEligible(Id serviceId,Id locationId,Id resourceId){
+        if(serviceId==null)return;
+        Integer resourceRules=[SELECT COUNT() FROM Service_Resource_Eligibility__c WHERE Service__c=:serviceId];if(resourceRules>0&&[SELECT COUNT() FROM Service_Resource_Eligibility__c WHERE Service__c=:serviceId AND Resource__c=:resourceId]==0)throw safe('The selected resource does not provide this service.');
+        Integer locationRules=[SELECT COUNT() FROM Service_Location_Eligibility__c WHERE Service__c=:serviceId];if(locationRules>0&&[SELECT COUNT() FROM Service_Location_Eligibility__c WHERE Service__c=:serviceId AND Location__c=:locationId]==0)throw safe('The selected service is not available at this location.');
+    }
+    @AuraEnabled(cacheable=true) public static List<Service_Resource__c> getEligibleResources(Id serviceId,Id locationId){
+        Set<Id> locationResources=new Set<Id>();for(Scheduler_Location_Resource__c row:[SELECT Service_Resource__c FROM Scheduler_Location_Resource__c WHERE Location__c=:locationId AND Active__c=true WITH USER_MODE])locationResources.add(row.Service_Resource__c);
+        if(serviceId!=null){List<Service_Resource_Eligibility__c> rules=[SELECT Resource__c FROM Service_Resource_Eligibility__c WHERE Service__c=:serviceId WITH USER_MODE];if(!rules.isEmpty()){Set<Id> eligible=new Set<Id>();for(Service_Resource_Eligibility__c rule:rules)eligible.add(rule.Resource__c);locationResources.retainAll(eligible);}}
+        return[SELECT Id,Name FROM Service_Resource__c WHERE Id IN :locationResources AND Active__c=true WITH USER_MODE ORDER BY Name];
+    }
     @AuraEnabled public static ImportResult importServices(List<ServiceImportRow> inputRows) {
         ImportResult output = new ImportResult(); output.imported = 0; output.errors = new List<String>();
         if (inputRows == null || inputRows.isEmpty()) { output.errors.add('The CSV does not contain any service rows.'); return output; }

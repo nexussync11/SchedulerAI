@@ -21,6 +21,7 @@ public with sharing class LadminAIAppointmentBookingController {
         Id leadId,
         Id locationId,
         Id serviceResourceId,
+        Id serviceId,
         Date appointmentDate,
         String startTime,
         String subject
@@ -41,6 +42,11 @@ public with sharing class LadminAIAppointmentBookingController {
         Datetime requestedStart =
             LadminAIAppointmentBusinessTimeService.toUtc(appointmentDate, localTime, locationId);
         Integer durationMinutes = 30;
+        if (serviceId != null) {
+            List<Appointment_Service__c> services = [SELECT Duration_Minutes__c FROM Appointment_Service__c WHERE Id=:serviceId AND Active__c=true WITH USER_MODE LIMIT 1];
+            if (services.isEmpty()) return invalidSlotResult();
+            durationMinutes = services[0].Duration_Minutes__c.intValue();
+        }
         LadminAI_Appointment_Settings__mdt settings =
             LadminAI_Appointment_Settings__mdt.getInstance('Default');
         if (settings?.LadminAI_Default_Slot_Minutes__c != null) {
@@ -51,6 +57,7 @@ public with sharing class LadminAIAppointmentBookingController {
         request.parentRecordId = leadId;
         request.locationId = locationId;
         request.serviceResourceId = serviceResourceId;
+        request.serviceId = serviceId;
         request.appointmentDate = appointmentDate;
         request.requestedStart = requestedStart;
         request.requestedEnd = requestedStart.addMinutes(durationMinutes);
