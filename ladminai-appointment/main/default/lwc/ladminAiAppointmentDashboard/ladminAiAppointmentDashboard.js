@@ -5,7 +5,7 @@ import getSnapshotForRange from '@salesforce/apex/LadminAIAppointmentAnalyticsSe
 import getDrilldownForRange from '@salesforce/apex/LadminAIAppointmentAnalyticsService.getDrilldownForRange';
 export default class LadminAiAppointmentDashboard extends LightningElement {
     palette = ['#08a88a', '#1769e0', '#7c4dff', '#f59e0b', '#e94f64', '#06a6d7', '#84bd00', '#ed6a2c'];
-    data; error; loading = true; detailLoading = false; detailError; detailRows = []; detailTitle = 'Appointment details'; page = 1; pageSize = 10; startDate; endDate;
+    data; error; loading = true; detailLoading = false; detailError; detailRows = []; detailTitle = 'Appointment details'; page = 1; pageSize = 10; startDate; endDate; draftStartDate; draftEndDate; showCustomDates = false; dateError;
     connectedCallback() { this.load(); }
     async load() {
         this.loading = true; this.error = null;
@@ -34,10 +34,14 @@ export default class LadminAiAppointmentDashboard extends LightningElement {
     }
     previousPage(){if(this.page>1)this.page-=1;}
     nextPage(){if(this.page<this.totalPages)this.page+=1;}
-    changeDate(event){this[event.target.dataset.field]=event.target.value;}
-    applyDates(){this.detailRows=[];this.page=1;this.load();}
+    toggleCustomDates(){this.showCustomDates=!this.showCustomDates;this.dateError=null;if(this.showCustomDates){this.draftStartDate=this.startDate;this.draftEndDate=this.endDate;}}
+    cancelCustomDates(){this.showCustomDates=false;this.dateError=null;}
+    changeDate(event){this[event.target.dataset.field]=event.target.value;this.dateError=null;}
+    applyDates(){if(!this.draftStartDate||!this.draftEndDate){this.dateError='Select both From and To dates.';return;}if(this.draftStartDate>this.draftEndDate){this.dateError='From date must be on or before To date.';return;}this.startDate=this.draftStartDate;this.endDate=this.draftEndDate;this.showCustomDates=false;this.detailRows=[];this.page=1;this.load();}
+    clearDates(){this.startDate=null;this.endDate=null;this.draftStartDate=null;this.draftEndDate=null;this.showCustomDates=false;this.dateError=null;this.detailRows=[];this.page=1;this.load();}
     exportCsv(){if(!this.detailRows.length)return;const fields=['name','subject','customer','resource','location','service','bookedBy','source','startUtc','endUtc','status'];const quote=value=>`"${String(value??'').replaceAll('"','""')}"`;const csv=[fields.join(','),...this.detailRows.map(row=>fields.map(field=>quote(row[field])).join(','))].join('\r\n');const link=document.createElement('a');link.href=`data:text/csv;charset=utf-8,${encodeURIComponent(csv)}`;link.download='appointment-report.csv';link.click();}
     get exportDisabled(){return !this.detailRows.length;}
+    get customDateButtonLabel(){return this.startDate&&this.endDate?`${this.startDate} – ${this.endDate}`:'Custom dates';}
     get comparisonLabel(){const value=this.data?.periodChangePercent||0;return `${value>=0?'+':''}${value}% vs previous period`;}
     get statusTotal() { return this.statusRows.reduce((total, row) => total + row.value, 0); }
     get statusChartLabel() { return `Appointment status distribution. ${this.statusRows.map(row => `${row.label}: ${row.value}`).join(', ')}`; }

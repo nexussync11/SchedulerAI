@@ -94,6 +94,8 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
     mark('booking-passed');
 
     await page.getByRole('button', { name: 'Appointment Schedule', exact: true }).click();
+    await expect(page.getByText('Bulk status', { exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Apply to selected' })).toBeVisible();
     const row = page.locator('[data-testid="schedule-row"]').filter({ hasText: subject });
     await expect(row).toBeVisible();
     await row.getByTitle('Reschedule').click();
@@ -127,6 +129,12 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
     mark('cancellation-passed');
 
     await page.getByRole('button', { name: 'Reports & Dashboard', exact: true }).click();
+    await expect(page.getByLabel('Custom date range')).toHaveCount(0);
+    await page.getByRole('button', { name: 'Custom dates' }).click();
+    await expect(page.getByLabel('Custom date range')).toBeVisible();
+    await page.getByRole('button', { name: 'Cancel', exact: true }).click();
+    await expect(page.getByLabel('Custom date range')).toHaveCount(0);
+    mark('dashboard-date-filter-passed');
     await page.getByRole('button', { name: /Appointments in period/ }).click();
     await expect(page.getByRole('heading', { name: /Appointments in period/ })).toBeVisible();
     await expect(page.locator('.details tbody tr').first()).toBeVisible();
