@@ -97,6 +97,27 @@ private class LadminAIAppointmentRuntimeServicesTest {
             c.resource.Id, c.location.Id, customHours, target.addDays(2), 'Custom Hours',
             '13:30', '15:30', null, null
         );
+        Integer holidayCount =
+            LadminAIAppointmentAvailabilityService.saveSpecialDateRangeAtLocation(
+                c.resource.Id, c.location.Id, target.addDays(3), target.addDays(5),
+                'Unavailable', null, null, null, null
+            );
+        System.assertEquals(3, holidayCount);
+        System.assertEquals(
+            4,
+            LadminAIAppointmentAvailabilityService.getSpecialDatesAtLocation(
+                c.resource.Id, c.location.Id
+            ).size(),
+            'A three-day holiday range and the custom-hours date should be active.'
+        );
+        System.assertEquals(
+            3,
+            LadminAIAppointmentAvailabilityService.saveSpecialDateRangeAtLocation(
+                c.resource.Id, c.location.Id, target.addDays(3), target.addDays(5),
+                'Unavailable', null, null, null, null
+            ),
+            'Saving the same range should update rather than duplicate its dates.'
+        );
     }
 
     @IsTest static void fullDayAvailabilityDoesNotExhaustQueries() {

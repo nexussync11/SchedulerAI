@@ -197,10 +197,20 @@
                     <lightning-input
                         type="date"
                         name="overrideDate"
-                        label="Date"
+                        label="Start date"
                         value={overrideDate}
                         onchange={handleOverrideInput}
                     ></lightning-input>
+                    <template lwc:if={isAddingOverride}>
+                        <lightning-input
+                            type="date"
+                            name="overrideEndDate"
+                            label="End date (optional)"
+                            value={overrideEndDate}
+                            min={overrideDate}
+                            onchange={handleOverrideInput}
+                        ></lightning-input>
+                    </template>
                     <lightning-combobox
                         name="overrideType"
                         label="Type"
@@ -216,7 +226,7 @@
                     </template>
                     <lightning-button
                         variant="brand"
-                        label="Save Special Date"
+                        label="Save Special Date(s)"
                         disabled={overrideSaveDisabled}
                         onclick={handleSaveOverride}
                     ></lightning-button>

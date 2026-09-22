@@ -138,6 +138,91 @@ public with sharing class LadminAIAppointmentAvailabilityService {
     }
 
     @AuraEnabled
+    public static Integer saveSpecialDateRangeAtLocation(
+        Id serviceResourceId,
+        Id locationId,
+        Date startDate,
+        Date endDate,
+        String overrideType,
+        String startTime,
+        String endTime,
+        String breakStart,
+        String breakEnd
+    ) {
+        if (serviceResourceId == null || locationId == null || startDate == null) {
+            throw new AuraHandledException('Doctor, location and start date are required.');
+        }
+        Date effectiveEndDate = endDate == null ? startDate : endDate;
+        if (effectiveEndDate < startDate) {
+            throw new AuraHandledException('End date must be on or after the start date.');
+        }
+        Integer dateCount = startDate.daysBetween(effectiveEndDate) + 1;
+        if (dateCount > 366) {
+            throw new AuraHandledException('Select a date range of 366 days or fewer.');
+        }
+        if (overrideType != 'Unavailable' && overrideType != 'Custom Hours') {
+            throw new AuraHandledException('Select a supported override type.');
+        }
+        LadminAIAppointmentLocationService.assertActiveAssociation(locationId, serviceResourceId);
+        Time parsedStart = parseTime(startTime);
+        Time parsedEnd = parseTime(endTime);
+        Time parsedBreakStart = parseTime(breakStart);
+        Time parsedBreakEnd = parseTime(breakEnd);
+        if (overrideType == 'Custom Hours') {
+            validateWindow(parsedStart, parsedEnd, parsedBreakStart, parsedBreakEnd);
+        } else {
+            parsedStart = null;
+            parsedEnd = null;
+            parsedBreakStart = null;
+            parsedBreakEnd = null;
+        }
+
+        Map<String, Date> datesByKey = new Map<String, Date>();
+        for (Integer offset = 0; offset < dateCount; offset++) {
+            Date overrideDate = startDate.addDays(offset);
+            datesByKey.put(
+                serviceResourceId + ':' + locationId + ':' + String.valueOf(overrideDate),
+                overrideDate
+            );
+        }
+        Map<String, Resource_Availability__c> existingByKey =
+            new Map<String, Resource_Availability__c>();
+        for (Resource_Availability__c existing : [
+            SELECT Id, Override_Key__c
+            FROM Resource_Availability__c
+            WHERE Override_Key__c IN :datesByKey.keySet()
+            WITH USER_MODE
+        ]) {
+            existingByKey.put(existing.Override_Key__c, existing);
+        }
+
+        List<Resource_Availability__c> inserts = new List<Resource_Availability__c>();
+        List<Resource_Availability__c> updates = new List<Resource_Availability__c>();
+        for (String overrideKey : datesByKey.keySet()) {
+            Date overrideDate = datesByKey.get(overrideKey);
+            Resource_Availability__c row = existingByKey.containsKey(overrideKey)
+                ? existingByKey.get(overrideKey)
+                : new Resource_Availability__c();
+            row.Name = 'Override - ' + String.valueOf(overrideDate);
+            row.Service_Resource__c = serviceResourceId;
+            row.Location__c = locationId;
+            row.Override_Date__c = overrideDate;
+            row.Override_Type__c = overrideType;
+            row.Override_Key__c = overrideKey;
+            row.Start_Time__c = parsedStart;
+            row.End_Time__c = parsedEnd;
+            row.Break_Start__c = parsedBreakStart;
+            row.Break_End__c = parsedBreakEnd;
+            row.Is_Active__c = true;
+            if (row.Id == null) inserts.add(row);
+            else updates.add(row);
+        }
+        if (!inserts.isEmpty()) Database.insert(inserts, AccessLevel.USER_MODE);
+        if (!updates.isEmpty()) Database.update(updates, AccessLevel.USER_MODE);
+        return dateCount;
+    }
+
+    @AuraEnabled
     public static void deleteSpecialDate(Id overrideId) {
         if (overrideId == null) return;
         List<Resource_Availability__c> rows = [

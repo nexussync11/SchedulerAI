@@ -6,6 +6,7 @@ import getAvailability from '@salesforce/apex/LadminAIAppointmentAvailabilitySer
 import saveAvailability from '@salesforce/apex/LadminAIAppointmentAvailabilityService.saveAvailabilityAtLocation';
 import getSpecialDates from '@salesforce/apex/LadminAIAppointmentAvailabilityService.getSpecialDatesAtLocation';
 import saveSpecialDate from '@salesforce/apex/LadminAIAppointmentAvailabilityService.saveSpecialDateAtLocation';
+import saveSpecialDateRange from '@salesforce/apex/LadminAIAppointmentAvailabilityService.saveSpecialDateRangeAtLocation';
 import deleteSpecialDate from '@salesforce/apex/LadminAIAppointmentAvailabilityService.deleteSpecialDate';
 import getSlots from '@salesforce/apex/LadminAIAppointmentAvailabilityService.getAvailableSlots';
 
@@ -47,6 +48,7 @@ export default class LadminAiAvailabilityManager extends LightningElement {
     copyTargetDays = [];
     specialDates = [];
     overrideDate;
+    overrideEndDate;
     overrideType = 'Unavailable';
     overrideStart = '';
     overrideEnd = '';
@@ -121,6 +123,10 @@ export default class LadminAiAvailabilityManager extends LightningElement {
 
     get isCustomHours() {
         return this.overrideType === 'Custom Hours';
+    }
+
+    get isAddingOverride() {
+        return !this.overrideId;
     }
 
     get overrideSaveDisabled() {
@@ -308,6 +314,7 @@ export default class LadminAiAvailabilityManager extends LightningElement {
     resetOverrideForm() {
         this.overrideId = null;
         this.overrideDate = null;
+        this.overrideEndDate = null;
         this.overrideType = 'Unavailable';
         this.overrideStart = '';
         this.overrideEnd = '';
@@ -322,6 +329,7 @@ export default class LadminAiAvailabilityManager extends LightningElement {
         if (!row) return;
         this.overrideId = row.Id;
         this.overrideDate = row.Override_Date__c;
+        this.overrideEndDate = null;
         this.overrideType = row.Override_Type__c;
         this.overrideStart = this.toInputTime(row.Start_Time__c);
         this.overrideEnd = this.toInputTime(row.End_Time__c);
@@ -337,25 +345,43 @@ export default class LadminAiAvailabilityManager extends LightningElement {
     }
 
     async handleSaveOverride() {
+        if (this.overrideEndDate && this.overrideEndDate < this.overrideDate) {
+            this.errorMessage = 'End date must be on or after the start date.';
+            return;
+        }
         this.isSavingOverride = true;
         this.errorMessage = null;
         try {
-            await saveSpecialDate({
+            const input = {
                 serviceResourceId: this.resourceId,
                 locationId: this.locationId,
-                overrideId: this.overrideId,
-                overrideDate: this.overrideDate,
                 overrideType: this.overrideType,
                 startTime: this.overrideStart || null,
                 endTime: this.overrideEnd || null,
                 breakStart: this.overrideBreakStart || null,
                 breakEnd: this.overrideBreakEnd || null
-            });
+            };
+            let savedCount = 1;
+            if (this.overrideId) {
+                await saveSpecialDate({
+                    ...input,
+                    overrideId: this.overrideId,
+                    overrideDate: this.overrideDate
+                });
+            } else {
+                savedCount = await saveSpecialDateRange({
+                    ...input,
+                    startDate: this.overrideDate,
+                    endDate: this.overrideEndDate || this.overrideDate
+                });
+            }
             await this.refreshSpecialDates();
             this.resetOverrideForm();
             this.dispatchEvent(new ShowToastEvent({
-                title: 'Special date saved',
-                message: 'The date-specific availability override was saved.',
+                title: savedCount === 1 ? 'Special date saved' : 'Special dates saved',
+                message: savedCount === 1
+                    ? 'The date-specific availability override was saved.'
+                    : `${savedCount} date-specific availability overrides were saved.`,
                 variant: 'success'
             }));
         } catch (error) {
