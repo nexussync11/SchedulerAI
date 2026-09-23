@@ -3,16 +3,20 @@
     {
       "path": "ladminai-appointment",
       "default": true,
-      "versionName": "Phase 0",
-      "versionNumber": "0.1.0.NEXT"
+      "package": "LadminAI_Appointment_Scheduler",
+      "versionName": "Initial Release",
+      "versionNumber": "1.0.0.NEXT"
     },
     {
       "path": "force-app",
       "default": false
     }
   ],
-  "name": "LadminAI Smart Appointment",
-  "namespace": "",
+  "name": "LadminAI Appointment Scheduler",
+  "namespace": "LadminAI",
   "sfdcLoginUrl": "https://test.salesforce.com",
-  "sourceApiVersion": "67.0"
+  "sourceApiVersion": "67.0",
+  "packageAliases": {
+    "LadminAI_Appointment_Scheduler": "0HoOS00000003Nh0AI"
+  }
 }
