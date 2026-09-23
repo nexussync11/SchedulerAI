@@ -75,8 +75,8 @@ export default class LadminAiLocationDirectory extends LightningElement {
             this.limits = limits;
             this.timezoneOptions = (timezoneSettings?.options || []).map((option) => ({ label: option.label, value: option.value }));
             this.businessTimezone = timezoneSettings?.businessTimezone || 'UTC';
-        } catch {
-            this.error = 'Locations could not be loaded. Check your access.';
+        } catch (error) {
+            this.error = error?.body?.message || 'Locations could not be loaded. Check your access.';
         } finally { this.loading = false; }
     }
     handleSearch(event) { this.search = event.target.value; }

@@ -17,13 +17,13 @@ export default class LadminAiAppointmentHome extends NavigationMixin(LightningEl
     connectedCallback() {
         this.loadTimezone();
         try { this.bookingLeadId = new URL(window.location.href).searchParams.get('c__leadId') || undefined; }
-        catch { this.bookingLeadId = undefined; }
+        catch (error) { if (!error) return; this.bookingLeadId = undefined; }
         try { this.showGuidance = window.localStorage.getItem('ladminaiGettingStartedDismissed') !== 'true'; }
-        catch { this.showGuidance = true; }
+        catch (error) { if (!error) return; this.showGuidance = true; }
     }
     async loadTimezone() {
         try { const settings = await getSettings(); this.businessTimezone = settings?.businessTimezone || 'Salesforce default'; }
-        catch { this.businessTimezone = 'Salesforce default'; }
+        catch (error) { if (!error) return; this.businessTimezone = 'Salesforce default'; }
     }
     get navigationItems() {
         const items = this.canManageAdministration ? [...STANDARD_NAVIGATION, ...ADMIN_NAVIGATION] : STANDARD_NAVIGATION;
@@ -43,7 +43,7 @@ export default class LadminAiAppointmentHome extends NavigationMixin(LightningEl
     dismissGuidance() {
         this.showGuidance = false;
         try { window.localStorage.setItem('ladminaiGettingStartedDismissed', 'true'); }
-        catch { /* Guidance remains dismissed for this session. */ }
+        catch (error) { if (!error) return; this.showGuidance = false; }
     }
     openGuidance() {
         this.showGuidance = true;
