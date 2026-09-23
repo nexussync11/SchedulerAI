@@ -135,6 +135,7 @@ p,
     border: 1px solid #dce6f2;
     border-radius: 0.75rem;
 }
+.override-guidance{display:flex;align-items:flex-start;gap:.7rem;margin-top:.8rem;padding:.8rem;border:1px solid #b8d8f5;border-radius:.6rem;background:#eef7ff;color:#17385f}.override-guidance lightning-icon{--slds-c-icon-color-foreground-default:#0b61b8;margin-top:.1rem}.override-guidance strong{display:block;margin-bottom:.3rem}.override-guidance ol{margin:0;padding-left:1.15rem;color:#405470}.override-validation{display:flex;align-items:center;gap:.5rem;margin-top:.7rem;padding:.65rem .75rem;border-left:4px solid #fe9339;border-radius:.35rem;background:#fff7e6;color:#5f3e00}.override-validation lightning-icon{--slds-c-icon-color-foreground-default:#b85d00}
 .override-form {
     display: flex;
     flex-wrap: wrap;
@@ -145,6 +146,7 @@ p,
     background: #f5f9fe;
     border-radius: 0.65rem;
 }
+.native-date-field{display:grid;gap:.3rem;color:#181818;font-size:.75rem;font-weight:400}.native-date-field input{width:14.75rem;height:2.5rem;box-sizing:border-box;padding:0 .75rem;border:1px solid #747474;border-radius:.25rem;background:#fff;color:#181818;font:inherit;font-size:.875rem}.native-date-field input:focus{border-color:#1b96ff;outline:0;box-shadow:0 0 3px #0176d3}
 .month-calendar,
 .month-group {
     display: grid;

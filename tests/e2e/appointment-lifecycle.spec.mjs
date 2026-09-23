@@ -139,6 +139,7 @@ test.describe.serial('Smart Appointment browser lifecycle', () => {
     await expect(page.getByRole('heading', { name: /Appointments in period/ })).toBeVisible();
     await expect(page.locator('.details tbody tr').first()).toBeVisible();
     mark('report-drilldown-passed');
+
     for (const pageName of ['Home', 'Appointment Booking', 'Appointment Schedule', 'Reports & Dashboard']) {
       await page.getByRole('button', { name: pageName, exact: true }).click();
       await expect(page.locator('c-ladmin-ai-appointment-home main')).toBeVisible();

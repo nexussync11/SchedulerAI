@@ -193,23 +193,47 @@
                         <p>Close one date or replace its weekly hours without changing the recurring schedule.</p>
                     </div>
                 </div>
+                <div class="override-guidance">
+                    <lightning-icon icon-name="utility:info" size="small" alternative-text=""></lightning-icon>
+                    <div>
+                        <strong>Block dates or set special hours</strong>
+                        <ol>
+                            <li>Select the location and doctor / service resource above.</li>
+                            <li>Select a start date. Use the optional end date for multiple days.</li>
+                            <li>Choose Unavailable / Holiday to block booking, or Custom Hours to replace normal hours.</li>
+                            <li>Save, then use Preview Available Times to confirm the result.</li>
+                        </ol>
+                    </div>
+                </div>
+                <template lwc:if={hasOverrideSelectionMessage}>
+                    <div class="override-validation" role="status">
+                        <lightning-icon icon-name="utility:warning" size="x-small" alternative-text=""></lightning-icon>
+                        <span>{overrideSelectionMessage}</span>
+                    </div>
+                </template>
                 <div class="override-form">
-                    <lightning-input
-                        type="date"
-                        name="overrideDate"
-                        label="Start date"
-                        value={overrideDate}
-                        onchange={handleOverrideInput}
-                    ></lightning-input>
-                    <template lwc:if={isAddingOverride}>
-                        <lightning-input
+                    <label class="native-date-field">
+                        <span>Start date</span>
+                        <input
                             type="date"
-                            name="overrideEndDate"
-                            label="End date (optional)"
-                            value={overrideEndDate}
-                            min={overrideDate}
-                            onchange={handleOverrideInput}
-                        ></lightning-input>
+                            data-field="overrideDate"
+                            value={overrideDate}
+                            onmousedown={prepareDatePicker}
+                            onchange={handleOverrideDateInput}
+                        />
+                    </label>
+                    <template lwc:if={isAddingOverride}>
+                        <label class="native-date-field">
+                            <span>End date (optional)</span>
+                            <input
+                                type="date"
+                                data-field="overrideEndDate"
+                                value={overrideEndDate}
+                                min={overrideDate}
+                                onmousedown={prepareDatePicker}
+                                onchange={handleOverrideDateInput}
+                            />
+                        </label>
                     </template>
                     <lightning-combobox
                         name="overrideType"

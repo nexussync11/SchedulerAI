@@ -28,7 +28,7 @@
                             <button data-view="settings" onclick={handleNavigate}><strong>1</strong><span>Set timezone</span></button>
                             <button data-view="locations" onclick={handleNavigate}><strong>2</strong><span>Add location</span></button>
                             <button data-view="resources" onclick={handleNavigate}><strong>3</strong><span>Add resource</span></button>
-                            <button data-view="availability" onclick={handleNavigate}><strong>4</strong><span>Set availability</span></button>
+                            <button data-view="availability" onclick={handleNavigate}><strong>4</strong><span>Set hours, breaks &amp; blocked dates</span></button>
                         </template>
                         <template lwc:if={canManageAdministration}>
                             <button data-view="booking" onclick={handleNavigate}><strong>5</strong><span>Book appointment</span></button>
@@ -52,7 +52,7 @@
                     <div class="home-grid">
                         <button class="feature-card" data-view="booking" onclick={handleNavigate}><lightning-icon icon-name="utility:event" size="small"></lightning-icon><strong>Appointment Booking</strong><span>Book a new appointment.</span></button>
                         <button class="feature-card" data-view="schedule" onclick={handleNavigate}><lightning-icon icon-name="utility:date_time" size="small"></lightning-icon><strong>Appointment Schedule</strong><span>Review and manage scheduled appointments.</span></button>
-                        <template lwc:if={canManageAdministration}><button class="feature-card" data-view="availability" onclick={handleNavigate}><lightning-icon icon-name="utility:clock" size="small"></lightning-icon><strong>Resource Availability</strong><span>Maintain weekly schedules and breaks.</span></button></template>
+                        <template lwc:if={canManageAdministration}><button class="feature-card" data-view="availability" onclick={handleNavigate}><lightning-icon icon-name="utility:clock" size="small"></lightning-icon><strong>Resource Availability</strong><span>Maintain weekly schedules, breaks, holidays and date overrides.</span></button></template>
                     </div>
                     <section class="home-overview" aria-labelledby="home-overview"><h2 id="home-overview">Appointment overview</h2><c-ladmin-ai-appointment-dashboard></c-ladmin-ai-appointment-dashboard></section>
                 </section>

@@ -131,7 +131,25 @@ export default class LadminAiAvailabilityManager extends LightningElement {
 
     get overrideSaveDisabled() {
         return !this.resourceId || !this.locationId || !this.overrideDate ||
+            (this.isCustomHours && (!this.overrideStart || !this.overrideEnd)) ||
             this.isSavingOverride;
+    }
+
+    get overrideSelectionMessage() {
+        if (!this.locationId || !this.resourceId) {
+            return 'Select a location and doctor / service resource before blocking availability dates.';
+        }
+        if (!this.overrideDate) {
+            return 'Select a start date. Add an end date to block multiple consecutive days.';
+        }
+        if (this.isCustomHours && (!this.overrideStart || !this.overrideEnd)) {
+            return 'Enter both start and end times for custom hours.';
+        }
+        return null;
+    }
+
+    get hasOverrideSelectionMessage() {
+        return Boolean(this.overrideSelectionMessage);
     }
 
     get specialDateRows() {
@@ -180,6 +198,10 @@ export default class LadminAiAvailabilityManager extends LightningElement {
         this.errorMessage = null;
         try {
             this.locations = await getLocations();
+            if (this.locations.length === 1) {
+                this.locationId = this.locations[0].Id;
+                await this.loadResourcesForSelectedLocation();
+            }
         } catch {
             this.errorMessage =
                 'Locations could not be loaded. Check your Salesforce access.';
@@ -197,9 +219,23 @@ export default class LadminAiAvailabilityManager extends LightningElement {
         this.resetOverrideForm();
         this.previewSlots = [];
         this.isDirty = false;
+        await this.loadResourcesForSelectedLocation();
+    }
+
+    async handleResourceChange(event) {
+        this.resourceId = event.detail.value;
+        await this.loadSelectedResource();
+    }
+
+    async loadResourcesForSelectedLocation() {
         this.isLoading = true;
+        this.errorMessage = null;
         try {
             this.resources = await getResources({ locationId: this.locationId });
+            if (this.resources.length === 1) {
+                this.resourceId = this.resources[0].Id;
+                await this.loadSelectedResource();
+            }
         } catch {
             this.errorMessage = 'Doctors could not be loaded for this location.';
         } finally {
@@ -207,8 +243,7 @@ export default class LadminAiAvailabilityManager extends LightningElement {
         }
     }
 
-    async handleResourceChange(event) {
-        this.resourceId = event.detail.value;
+    async loadSelectedResource() {
         this.isLoading = true;
         this.errorMessage = null;
         this.previewSlots = [];
@@ -244,6 +279,17 @@ export default class LadminAiAvailabilityManager extends LightningElement {
         } finally {
             this.isLoading = false;
         }
+    }
+
+    handleOverrideDateInput(event) {
+        this[event.target.dataset.field] = event.target.value;
+        this.errorMessage = null;
+    }
+
+    prepareDatePicker() {
+        this.template.querySelector('.special-card')?.scrollIntoView({
+            block: 'start'
+        });
     }
 
     toInputTime(value) {
