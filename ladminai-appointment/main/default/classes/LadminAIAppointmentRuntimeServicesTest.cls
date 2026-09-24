@@ -1,5 +1,14 @@
 @IsTest
 private class LadminAIAppointmentRuntimeServicesTest {
+    @TestSetup
+    static void createPermissionedUser() {
+        LadminAITestUserFactory.createSchedulerUser('runtime');
+    }
+
+    private static User schedulerUser() {
+        return [SELECT Id FROM User WHERE LastName = 'Scheduler runtime' LIMIT 1];
+    }
+
     private class Context {
         Service_Resource__c resource;
         Schema.Location location;
@@ -27,6 +36,7 @@ private class LadminAIAppointmentRuntimeServicesTest {
     }
 
     @IsTest static void locationAndResourceAdministration() {
+        System.runAs(schedulerUser()) {
         Context c = setupContext();
         System.assertEquals(1, LadminAIAppointmentLocationService.getLocations().size());
         System.assertEquals(1, LadminAIAppointmentLocationService.getActiveLocations().size());
@@ -57,9 +67,11 @@ private class LadminAIAppointmentRuntimeServicesTest {
             inactiveResource, 'History Doctor Updated', false, null
         );
         LadminAIAppointmentResourceAdminService.setActive(inactiveResource, false);
+        }
     }
 
     @IsTest static void availabilitySlotsBreaksAndOverrides() {
+        System.runAs(schedulerUser()) {
         Context c = setupContext();
         Date target = Date.today().addDays(7);
         String weekday = Datetime.newInstance(target, Time.newInstance(12, 0, 0, 0)).format('EEEE');
@@ -118,9 +130,11 @@ private class LadminAIAppointmentRuntimeServicesTest {
             ),
             'Saving the same range should update rather than duplicate its dates.'
         );
+        }
     }
 
     @IsTest static void fullDayAvailabilityDoesNotExhaustQueries() {
+        System.runAs(schedulerUser()) {
         Context c = setupContext();
         Date target = Date.today().addDays(8);
         String weekday = Datetime.newInstance(target, Time.newInstance(12, 0, 0, 0)).format('EEEE');
@@ -137,9 +151,11 @@ private class LadminAIAppointmentRuntimeServicesTest {
         );
         System.assert(slots.size() > 20, 'A full day should return many available slots.');
         System.assert(Limits.getQueries() - queriesBefore < 15, 'Timezone resolution must not query once per slot.');
+        }
     }
 
     @IsTest static void sameDayAvailabilityNeverReturnsPastSlots() {
+        System.runAs(schedulerUser()) {
         Context c = setupContext();
         Date target = Date.today();
         String weekday = Datetime.newInstance(target, Time.newInstance(12, 0, 0, 0)).format('EEEE');
@@ -159,9 +175,11 @@ private class LadminAIAppointmentRuntimeServicesTest {
             Datetime startUtc = LadminAIAppointmentBusinessTimeService.toUtc(target, startTime, c.location.Id);
             System.assert(startUtc >= checkedAt, 'Same-day availability must not include a past slot.');
         }
+        }
     }
 
     @IsTest static void appointmentCommandsAnalyticsAndAiFallback() {
+        System.runAs(schedulerUser()) {
         Context c = setupContext();
         Date target = Date.today().addDays(7);
         String weekday = Datetime.newInstance(target, Time.newInstance(12, 0, 0, 0)).format('EEEE');
@@ -250,9 +268,11 @@ private class LadminAIAppointmentRuntimeServicesTest {
             LadminAIAppointmentBusinessTimeService.toLocalWallClock(startAt);
         System.assertEquals(target, local.localDate);
         System.assertNotEquals(null, LadminAIAppointmentTimezoneService.getSettings().options);
+        }
     }
 
     @IsTest static void analyticsDrilldownsReturnActualAppointments() {
+        System.runAs(schedulerUser()) {
         Context c = setupContext();
         Datetime startAt = System.now().addDays(1);
         ServiceAppointment__c appointment = new ServiceAppointment__c(
@@ -271,13 +291,15 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('service', 'No service selected').size());
         System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('source', 'Website').size());
         System.assertEquals(0, LadminAIAppointmentAnalyticsService.getDrilldown('status', 'Completed').size());
+        }
     }
 
     @IsTest static void analyticsSeparatesBookingUsersAndMatchesDrilldowns() {
+        User authorizedUser = schedulerUser();
         User currentUser = [
             SELECT Id, Name, ProfileId, TimeZoneSidKey, LocaleSidKey,
                 EmailEncodingKey, LanguageLocaleKey
-            FROM User WHERE Id = :UserInfo.getUserId()
+            FROM User WHERE Id = :authorizedUser.Id
         ];
         User otherUser = new User(
             Alias = 'lairpt', LastName = 'LadminAI Reporter',
@@ -352,6 +374,7 @@ private class LadminAIAppointmentRuntimeServicesTest {
     }
 
     @IsTest static void locationTimezoneOverridesBusinessDefault() {
+        System.runAs(schedulerUser()) {
         Schema.Location location = new Schema.Location(
             Name = 'Timezone Location', LocationType = 'Site',
             Scheduler_Managed__c = true, Scheduler_Active__c = false,
@@ -369,9 +392,11 @@ private class LadminAIAppointmentRuntimeServicesTest {
             LadminAIAppointmentBusinessTimeService.toLocalWallClock(utcValue, location.Id);
         System.assertEquals(target, local.localDate);
         System.assertEquals(Time.newInstance(9, 0, 0, 0), local.localTime);
+        }
     }
 
     @IsTest static void rejectsNonexistentDaylightSavingWallClockTime() {
+        System.runAs(schedulerUser()) {
         Schema.Location location = new Schema.Location(
             Name = 'DST Location', LocationType = 'Site',
             Scheduler_Managed__c = true, Scheduler_Active__c = false,
@@ -386,9 +411,11 @@ private class LadminAIAppointmentRuntimeServicesTest {
         } catch (LadminAIAppointmentBusinessTimeService.InvalidBusinessTimeException expected) {
             System.assert(expected.getMessage().contains('does not exist'));
         }
+        }
     }
 
     @IsTest static void preservesLocalDateAcrossUtcMidnightBoundary() {
+        System.runAs(schedulerUser()) {
         Schema.Location location = new Schema.Location(
             Name = 'Midnight Boundary Location', LocationType = 'Site',
             Scheduler_Managed__c = true, Scheduler_Active__c = false,
@@ -403,6 +430,7 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(localDate, roundTrip.localDate);
         System.assertEquals(localTime, roundTrip.localTime);
         System.assertNotEquals(localDate, utcValue.dateGmt(), 'This case must exercise a UTC date boundary.');
+        }
     }
 
     @IsTest static void lifecycleCutoffsAreCentrallyEnforced() {
@@ -430,6 +458,7 @@ private class LadminAIAppointmentRuntimeServicesTest {
     }
 
     @IsTest static void scheduleAndAnalyticsRemainBoundedWithBulkData() {
+        System.runAs(schedulerUser()) {
         Context c = setupContext();
         Datetime baseStart = LadminAIAppointmentBusinessTimeService.toUtc(
             Date.today(), Time.newInstance(0, 0, 0, 0)
@@ -469,9 +498,11 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(200, schedule.size());
         System.assertEquals(200, analytics.statusMetrics.get('Booked'));
         System.assert(queriesUsed <= 12, 'Schedule and dashboard queries must remain bounded as data volume grows.');
+        }
     }
 
     @IsTest static void reconcilesMissingAndModifiedEvents() {
+        System.runAs(schedulerUser()) {
         Context c = setupContext();
         Datetime startAt = System.now().addDays(2);
         Event modified = new Event(Subject='Wrong',WhoId=c.lead.Id,StartDateTime=startAt.addHours(1),EndDateTime=startAt.addHours(2));
@@ -486,5 +517,6 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.assertEquals(0,result.failed);
         System.assertEquals(2,[SELECT COUNT() FROM ServiceAppointment__c WHERE Event_Sync_Status__c='Synchronized']);
         System.assertEquals(0,LadminAIAppointmentReminderScheduler.sendDueReminders());
+        }
     }
 }

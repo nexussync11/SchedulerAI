@@ -1,5 +1,12 @@
 @IsTest private class LadminAIAppointmentReadinessServiceTest {
+    @TestSetup static void createPermissionedUser() { LadminAITestUserFactory.createSchedulerUser('ready'); }
+
+    private static User schedulerUser() {
+        return [SELECT Id FROM User WHERE LastName = 'Scheduler ready' LIMIT 1];
+    }
+
     @IsTest static void reportsIncompleteAndCompleteSetup() {
+        System.runAs(schedulerUser()) {
         LadminAIAppointmentReadinessService.Readiness empty = LadminAIAppointmentReadinessService.getReadiness();
         System.assertEquals(false, empty.bookingReady);
         Service_Resource__c resource = new Service_Resource__c(Name='Ready Resource',Active__c=true); insert resource;
@@ -9,5 +16,6 @@
         LadminAIAppointmentReadinessService.Readiness ready = LadminAIAppointmentReadinessService.getReadiness();
         System.assertEquals(true, ready.bookingReady);
         System.assertEquals(5, ready.completedSteps);
+        }
     }
 }
