@@ -54,3 +54,17 @@ The incomplete `customLookup`, obsolete communication flows, hard-coded Calendly
 - Do not package or deploy from a Harley org.
 - Do not store authentication URLs, tokens, certificates, keys, or usernames in source.
 - Do not create or release a managed package version during Phase 0 without explicit approval.
+
+## Subscriber OpenAI post-install configuration
+
+The package includes `LadminAI_OpenAI` and `LadminAI_OpenAI_External`, but it does not include an API key, token, or other customer credential. External Credential Principal Access is intentionally not embedded in `LadminAI_Analytics_Viewer` because the managed-2GP compiler cannot resolve that principal during package-version creation.
+
+After installation, a subscriber administrator must:
+
+1. Open **Setup > Named Credentials > External Credentials** and select **LadminAI OpenAI Authentication**.
+2. Create or configure its named principal and add the subscriber's OpenAI API key as the `api_key` authentication parameter. Never enter the secret in source metadata.
+3. Open the subscriber-managed permission set that is assigned to AI-insight users.
+4. Under **External Credential Principal Access**, enable the principal for **LadminAI OpenAI Authentication**.
+5. Confirm the packaged `LadminAI Analytics Viewer` permission set is assigned for the normal packaged analytics, Apex, object, field, app, and tab access.
+
+Core scheduling does not require OpenAI configuration. If the principal is not configured, AI insights remain unavailable while booking, availability, appointment management, reporting, reminders, and Event synchronization continue to work.
