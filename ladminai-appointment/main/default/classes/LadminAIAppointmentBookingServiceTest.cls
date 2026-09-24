@@ -66,8 +66,9 @@ private class LadminAIAppointmentBookingServiceTest {
 
             System.assertEquals(false, result.success);
             System.assertEquals('VALIDATION_FAILED', result.errorCode);
-            System.assertEquals(0, [SELECT COUNT() FROM ServiceAppointment__c]);
         }
+
+        System.assertEquals(0, [SELECT COUNT() FROM ServiceAppointment__c]);
     }
 
     @IsTest
@@ -153,11 +154,16 @@ private class LadminAIAppointmentBookingServiceTest {
     static void rejectsUserWithoutBookingPermission() {
         User unauthorizedUser = createUser(false);
         System.runAs(unauthorizedUser) {
+            System.assertEquals(
+                false,
+                FeatureManagement.checkPermission('LadminAI_Book_Appointment'),
+                'The negative-security persona must not inherit booking authorization.'
+            );
             Lead parentLead = new Lead(
                 LastName = 'Unauthorized Context',
                 Company = 'LadminAI Test'
             );
-            insert parentLead;
+            insert as system parentLead;
             Datetime startTime = System.now().addDays(2);
             LadminAIAppointmentBookingRequest request =
                 new LadminAIAppointmentBookingRequest();
@@ -226,6 +232,17 @@ private class LadminAIAppointmentBookingServiceTest {
             FROM User
             WHERE Id = :UserInfo.getUserId()
         ];
+        Id profileId = currentUser.ProfileId;
+        if (!assignBookingPermission) {
+            List<Profile> restrictedProfiles = [
+                SELECT Id
+                FROM Profile
+                WHERE UserType = 'Standard' AND PermissionsModifyAllData = false
+                LIMIT 1
+            ];
+            System.assert(!restrictedProfiles.isEmpty(), 'A non-administrator standard profile is required.');
+            profileId = restrictedProfiles[0].Id;
+        }
         String uniqueValue = String.valueOf(Crypto.getRandomLong()).replace('-', '0');
         User testUser = new User(
             Alias = ('la' + uniqueValue).left(8),
@@ -234,7 +251,7 @@ private class LadminAIAppointmentBookingServiceTest {
             LastName = 'Booking User',
             LanguageLocaleKey = currentUser.LanguageLocaleKey,
             LocaleSidKey = currentUser.LocaleSidKey,
-            ProfileId = currentUser.ProfileId,
+            ProfileId = profileId,
             TimeZoneSidKey = currentUser.TimeZoneSidKey,
             Username = 'ladminai-' + uniqueValue + '@example.com'
         );
