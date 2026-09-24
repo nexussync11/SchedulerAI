@@ -51,12 +51,21 @@ public with sharing class LadminAIAppointmentResourceAdminService {
             Map<String, Object> queryBinds = new Map<String, Object>{
                 'resourceIds' => resourceIds
             };
+            String resourceField = Scheduler_Location_Resource__c.Service_Resource__c
+                .getDescribe().getName();
+            String activeField = Scheduler_Location_Resource__c.Active__c
+                .getDescribe().getName();
+            String locationRelationship = Scheduler_Location_Resource__c.Location__c
+                .getDescribe().getRelationshipName();
+            String associationObject = Scheduler_Location_Resource__c.SObjectType
+                .getDescribe().getName();
             for (SObject associationRecord :
                 Database.queryWithBinds(
-                    'SELECT Service_Resource__c, Location__r.Name '
-                    + 'FROM Scheduler_Location_Resource__c '
-                    + 'WHERE Service_Resource__c IN :resourceIds '
-                    + 'AND Active__c = true ORDER BY Location__r.Name',
+                    'SELECT ' + resourceField + ', ' + locationRelationship + '.Name '
+                    + 'FROM ' + associationObject + ' '
+                    + 'WHERE ' + resourceField + ' IN :resourceIds '
+                    + 'AND ' + activeField + ' = true '
+                    + 'ORDER BY ' + locationRelationship + '.Name',
                     queryBinds,
                     AccessLevel.USER_MODE
                 )
