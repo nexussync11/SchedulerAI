@@ -68,3 +68,14 @@ After installation, a subscriber administrator must:
 5. Confirm the packaged `LadminAI Analytics Viewer` permission set is assigned for the normal packaged analytics, Apex, object, field, app, and tab access.
 
 Core scheduling does not require OpenAI configuration. If the principal is not configured, AI insights remain unavailable while booking, availability, appointment management, reporting, reminders, and Event synchronization continue to work.
+
+## Lead booking action post-install configuration
+
+The package includes the `LadminAI Book Appointment` Lead quick action, but deliberately does not package or replace the subscriber's standard Lead page layout. This avoids overwriting customer-specific Lead fields, actions, and related lists and prevents dependencies on standard actions that vary by Salesforce feature configuration.
+
+After installation, a subscriber administrator must:
+
+1. Open **Setup > Object Manager > Lead > Page Layouts**.
+2. Edit each Lead layout whose users should book appointments.
+3. Add **LadminAI Book Appointment** to **Salesforce Mobile and Lightning Experience Actions**.
+4. Save the layout and confirm the action is visible to a user assigned `LadminAI Smart Appointment Booker`.

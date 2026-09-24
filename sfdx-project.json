@@ -18,6 +18,7 @@
   "sourceApiVersion": "67.0",
   "packageAliases": {
     "LadminAI_Appointment_Scheduler": "0HoOS00000003Nh0AI",
-    "LadminAI_Appointment_Scheduler@1.0.0-1": "04tOS00000MIt7pYAD"
+    "LadminAI_Appointment_Scheduler@1.0.0-1": "04tOS00000MIt7pYAD",
+    "LadminAI_Appointment_Scheduler@1.0.0-2": "04tOS00000MIt9RYAT"
   }
 }
