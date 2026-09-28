@@ -185,8 +185,9 @@ private class LadminAIAppointmentBookingServiceTest {
 
             System.assertEquals(false, result.success);
             System.assertEquals('AUTHORIZATION_REQUIRED', result.errorCode);
-            System.assertEquals(0, [SELECT COUNT() FROM ServiceAppointment__c]);
         }
+
+        System.assertEquals(0, [SELECT COUNT() FROM ServiceAppointment__c]);
     }
 
     @IsTest
