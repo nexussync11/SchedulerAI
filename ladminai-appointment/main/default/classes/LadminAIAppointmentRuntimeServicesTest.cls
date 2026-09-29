@@ -39,6 +39,10 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.runAs(schedulerUser()) {
         Context c = setupContext();
         System.assertEquals(1, LadminAIAppointmentLocationService.getLocations().size());
+        System.assertEquals(
+            'Test',
+            LadminAIAppointmentLocationService.getLocations()[0].description
+        );
         System.assertEquals(1, LadminAIAppointmentLocationService.getActiveLocations().size());
         System.assertEquals(1, LadminAIAppointmentLocationService.getDoctorsForLocation(c.location.Id).size());
         System.assertEquals(0, LadminAIAppointmentLocationService.getDoctorsForLocation(null).size());
@@ -48,6 +52,27 @@ private class LadminAIAppointmentRuntimeServicesTest {
             c.location.Id, c.location.Name, 'Site', 'Updated', true,
             new List<Id>{ c.resource.Id }, 'UTC'
         );
+        System.assertEquals(
+            'Updated',
+            [SELECT Description FROM Location WHERE Id = :c.location.Id].Description
+        );
+        LadminAIAppointmentLocationService.forceDescriptionUnavailable = true;
+        List<LadminAIAppointmentLocationService.LocationRow> restrictedLocations =
+            LadminAIAppointmentLocationService.getLocations();
+        System.assertEquals(null, restrictedLocations[0].description);
+        LadminAIAppointmentLocationService.saveLocation(
+            c.location.Id, 'Updated Without Description', 'Site',
+            'Must be ignored', true, new List<Id>{ c.resource.Id }, 'UTC'
+        );
+        LadminAIAppointmentLocationService.forceDescriptionUnavailable = false;
+        Schema.Location restrictedUpdate = [
+            SELECT Name, Description, Scheduler_Time_Zone__c
+            FROM Location
+            WHERE Id = :c.location.Id
+        ];
+        System.assertEquals('Updated Without Description', restrictedUpdate.Name);
+        System.assertEquals('Updated', restrictedUpdate.Description);
+        System.assertEquals('UTC', restrictedUpdate.Scheduler_Time_Zone__c);
         LadminAIAppointmentLocationService.assertActiveAssociation(c.location.Id, c.resource.Id);
 
         Schema.Location history = new Schema.Location(

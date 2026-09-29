@@ -1,6 +1,7 @@
 public with sharing class LadminAIAppointmentLocationService {
     private static final String SCHEDULER_LOCATION_TYPE = 'Site';
     @TestVisible private static Boolean forceAccessDenied = false;
+    @TestVisible private static Boolean forceDescriptionUnavailable = false;
 
     @AuraEnabled
     public static List<LocationRow> getLocations() {
@@ -9,19 +10,26 @@ public with sharing class LadminAIAppointmentLocationService {
         Map<Id, Integer> appointmentCounts = aggregateAppointments();
         Map<Id, Integer> availabilityCounts = aggregateAvailability();
         List<LocationRow> output = new List<LocationRow>();
-        for (Schema.Location location : [
-            SELECT Id, Name, LocationType, Description, Scheduler_Active__c, Scheduler_Time_Zone__c
-            FROM Location
-            WHERE Scheduler_Managed__c = true
-            WITH USER_MODE
-            ORDER BY Name
-            LIMIT 500
-        ]) {
+        Boolean descriptionReadable = isDescriptionReadable();
+        List<Schema.Location> locations = descriptionReadable
+            ? [SELECT Id, Name, LocationType, Description, Scheduler_Active__c, Scheduler_Time_Zone__c
+                FROM Location
+                WHERE Scheduler_Managed__c = true
+                WITH USER_MODE
+                ORDER BY Name
+                LIMIT 500]
+            : [SELECT Id, Name, LocationType, Scheduler_Active__c, Scheduler_Time_Zone__c
+                FROM Location
+                WHERE Scheduler_Managed__c = true
+                WITH USER_MODE
+                ORDER BY Name
+                LIMIT 500];
+        for (Schema.Location location : locations) {
             LocationRow row = new LocationRow();
             row.id = location.Id;
             row.name = location.Name;
             row.locationType = location.LocationType;
-            row.description = location.Description;
+            row.description = descriptionReadable ? location.Description : null;
             row.active = location.Scheduler_Active__c;
             row.timezoneSidKey = String.isBlank(location.Scheduler_Time_Zone__c)
                 ? LadminAIAppointmentSettingsService.businessTimeZone() : location.Scheduler_Time_Zone__c;
@@ -122,7 +130,9 @@ public with sharing class LadminAIAppointmentLocationService {
                 : [SELECT Id FROM Location WHERE Id = :locationId WITH USER_MODE LIMIT 1];
             row.Name = name.trim();
             row.LocationType = SCHEDULER_LOCATION_TYPE;
-            row.Description = String.isBlank(description) ? null : description.trim();
+            if (isDescriptionWritable(creating)) {
+                row.Description = String.isBlank(description) ? null : description.trim();
+            }
             row.Scheduler_Active__c = active == null ? true : active;
             row.Scheduler_Managed__c = true;
             row.Scheduler_Time_Zone__c = String.isBlank(timezoneSidKey)
@@ -267,6 +277,18 @@ public with sharing class LadminAIAppointmentLocationService {
         if ((creating && !locationDescribe.isCreateable()) || (!creating && !locationDescribe.isUpdateable())) {
             throw new LocationException('You do not have permission to manage locations.');
         }
+    }
+    private static Boolean isDescriptionReadable() {
+        return !forceDescriptionUnavailable &&
+            Schema.Location.Description.getDescribe().isAccessible();
+    }
+    private static Boolean isDescriptionWritable(Boolean creating) {
+        if (forceDescriptionUnavailable) return false;
+        Schema.DescribeFieldResult descriptionDescribe =
+            Schema.Location.Description.getDescribe();
+        return creating
+            ? descriptionDescribe.isCreateable()
+            : descriptionDescribe.isUpdateable();
     }
     private static AuraHandledException safeException(Exception ex, String fallback) {
         if (ex != null && ex.getMessage() == LadminAIAppointmentEditionService.LOCATION_LIMIT_MESSAGE) {
