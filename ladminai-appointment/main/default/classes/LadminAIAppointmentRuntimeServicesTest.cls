@@ -39,8 +39,10 @@ private class LadminAIAppointmentRuntimeServicesTest {
         System.runAs(schedulerUser()) {
         Context c = setupContext();
         System.assertEquals(1, LadminAIAppointmentLocationService.getLocations().size());
+        Boolean descriptionReadable =
+            Schema.Location.Description.getDescribe().isAccessible();
         System.assertEquals(
-            'Test',
+            descriptionReadable ? 'Test' : null,
             LadminAIAppointmentLocationService.getLocations()[0].description
         );
         System.assertEquals(1, LadminAIAppointmentLocationService.getActiveLocations().size());
