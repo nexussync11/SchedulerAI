@@ -54,8 +54,12 @@ private class LadminAIAppointmentRuntimeServicesTest {
             c.location.Id, c.location.Name, 'Site', 'Updated', true,
             new List<Id>{ c.resource.Id }, 'UTC'
         );
+        String expectedDescription =
+            Schema.Location.Description.getDescribe().isUpdateable()
+                ? 'Updated'
+                : 'Test';
         System.assertEquals(
-            'Updated',
+            expectedDescription,
             [SELECT Description FROM Location WHERE Id = :c.location.Id].Description
         );
         LadminAIAppointmentLocationService.forceDescriptionUnavailable = true;
@@ -73,7 +77,7 @@ private class LadminAIAppointmentRuntimeServicesTest {
             WHERE Id = :c.location.Id
         ];
         System.assertEquals('Updated Without Description', restrictedUpdate.Name);
-        System.assertEquals('Updated', restrictedUpdate.Description);
+        System.assertEquals(expectedDescription, restrictedUpdate.Description);
         System.assertEquals('UTC', restrictedUpdate.Scheduler_Time_Zone__c);
         LadminAIAppointmentLocationService.assertActiveAssociation(c.location.Id, c.resource.Id);
 
@@ -309,15 +313,17 @@ private class LadminAIAppointmentRuntimeServicesTest {
         );
         insert appointment;
         insert new Assigned_Resource__c(Service_Appointment__c=appointment.Id, Service_Resource__c=c.resource.Id);
-        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('all', null).size());
-        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('upcoming', null).size());
-        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('status', 'Booked').size());
-        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('location', 'Runtime Location').size());
-        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('resource', 'Runtime Doctor').size());
-        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('user', 'Unattributed / historical').size());
-        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('service', 'No service selected').size());
-        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldown('source', 'Website').size());
-        System.assertEquals(0, LadminAIAppointmentAnalyticsService.getDrilldown('status', 'Completed').size());
+        Date rangeStart = Date.today();
+        Date rangeEnd = rangeStart.addDays(7);
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldownForRange('all', null, rangeStart, rangeEnd).size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldownForRange('upcoming', null, rangeStart, rangeEnd).size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldownForRange('status', 'Booked', rangeStart, rangeEnd).size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldownForRange('location', 'Runtime Location', rangeStart, rangeEnd).size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldownForRange('resource', 'Runtime Doctor', rangeStart, rangeEnd).size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldownForRange('user', 'Unattributed / historical', rangeStart, rangeEnd).size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldownForRange('service', 'No service selected', rangeStart, rangeEnd).size());
+        System.assertEquals(1, LadminAIAppointmentAnalyticsService.getDrilldownForRange('source', 'Website', rangeStart, rangeEnd).size());
+        System.assertEquals(0, LadminAIAppointmentAnalyticsService.getDrilldownForRange('status', 'Completed', rangeStart, rangeEnd).size());
         }
     }
 
