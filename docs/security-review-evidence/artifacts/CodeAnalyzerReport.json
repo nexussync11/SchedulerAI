@@ -1,0 +1,188 @@
+{
+  "runDir": "C:\\Users\\nares\\Documents\\Codex\\2026-09-08\\i-w\\work\\SchedulerAI\\",
+  "violationCounts": {
+    "total": 7,
+    "sev1": 0,
+    "sev2": 0,
+    "sev3": 7,
+    "sev4": 0,
+    "sev5": 0
+  },
+  "versions": {
+    "code-analyzer": "0.48.0",
+    "retire-js": "0.35.0",
+    "regex": "0.36.0",
+    "eslint": "0.43.0",
+    "pmd": "0.41.0"
+  },
+  "violations": [
+    {
+      "rule": "ProtectSensitiveData",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "AppExchange",
+        "Security",
+        "XML"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "ladminai-appointment\\main\\default\\objects\\LadminAI_Appointment_Settings__mdt\\fields\\LadminAI_OpenAI_Named_Credential__c.field-meta.xml",
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 1,
+          "endColumn": 269
+        }
+      ],
+      "message": "LadminAI_OpenAI_Named_Credential__c is a potential auth token in the object: LadminAI_Appointment_Settings__mdt with public visibility",
+      "resources": [
+        "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#protectsensitivedata"
+      ]
+    },
+    {
+      "rule": "ProtectSensitiveData",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "AppExchange",
+        "Security",
+        "XML"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "ladminai-appointment\\main\\default\\objects\\Resource_Availability__c\\fields\\Override_Key__c.field-meta.xml",
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 11,
+          "endColumn": 14
+        }
+      ],
+      "message": "Override_Key__c is a potential auth token in a custom object: Resource_Availability__c",
+      "resources": [
+        "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#protectsensitivedata"
+      ]
+    },
+    {
+      "rule": "ProtectSensitiveData",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "AppExchange",
+        "Security",
+        "XML"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "ladminai-appointment\\main\\default\\objects\\Resource_Availability__c\\fields\\Resource_Day_Key__c.field-meta.xml",
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 12,
+          "endColumn": 14
+        }
+      ],
+      "message": "Resource_Day_Key__c is a potential auth token in a custom object: Resource_Availability__c",
+      "resources": [
+        "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#protectsensitivedata"
+      ]
+    },
+    {
+      "rule": "ProtectSensitiveData",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "AppExchange",
+        "Security",
+        "XML"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "ladminai-appointment\\main\\default\\objects\\Scheduler_Location_Resource__c\\fields\\Location_Resource_Key__c.field-meta.xml",
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 11,
+          "endColumn": 14
+        }
+      ],
+      "message": "Location_Resource_Key__c is a potential auth token in a custom object: Scheduler_Location_Resource__c",
+      "resources": [
+        "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#protectsensitivedata"
+      ]
+    },
+    {
+      "rule": "ProtectSensitiveData",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "AppExchange",
+        "Security",
+        "XML"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "ladminai-appointment\\main\\default\\objects\\ServiceAppointment__c\\fields\\LadminAI_Idempotency_Key__c.field-meta.xml",
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 11,
+          "endColumn": 14
+        }
+      ],
+      "message": "LadminAI_Idempotency_Key__c is a potential auth token in a custom object: ServiceAppointment__c",
+      "resources": [
+        "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#protectsensitivedata"
+      ]
+    },
+    {
+      "rule": "ProtectSensitiveData",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "AppExchange",
+        "Security",
+        "XML"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "ladminai-appointment\\main\\default\\objects\\Service_Location_Eligibility__c\\fields\\Eligibility_Key__c.field-meta.xml",
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 1,
+          "endColumn": 329
+        }
+      ],
+      "message": "Eligibility_Key__c is a potential auth token in a custom object: Service_Location_Eligibility__c",
+      "resources": [
+        "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#protectsensitivedata"
+      ]
+    },
+    {
+      "rule": "ProtectSensitiveData",
+      "engine": "pmd",
+      "severity": 3,
+      "tags": [
+        "AppExchange",
+        "Security",
+        "XML"
+      ],
+      "primaryLocationIndex": 0,
+      "locations": [
+        {
+          "file": "ladminai-appointment\\main\\default\\objects\\Service_Resource_Eligibility__c\\fields\\Eligibility_Key__c.field-meta.xml",
+          "startLine": 1,
+          "startColumn": 1,
+          "endLine": 1,
+          "endColumn": 329
+        }
+      ],
+      "message": "Eligibility_Key__c is a potential auth token in a custom object: Service_Resource_Eligibility__c",
+      "resources": [
+        "https://developer.salesforce.com/docs/platform/salesforce-code-analyzer/guide/rules-pmd-appexchange.html#protectsensitivedata"
+      ]
+    }
+  ]
+}
