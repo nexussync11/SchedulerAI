@@ -1,10 +1,10 @@
 public with sharing class LadminAIAppointmentAnalyticsService {
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<DetailRow> getDrilldown(String dimension, String value) {
         Date first = Date.today().toStartOfMonth();
         return getDrilldownForRange(dimension, value, first, first.addMonths(1).addDays(-1));
     }
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static List<DetailRow> getDrilldownForRange(String dimension, String value, Date startDate, Date endDate) {
         Date first = startDate == null ? Date.today().toStartOfMonth() : startDate;
         Date last = endDate == null ? first.addMonths(1).addDays(-1) : endDate;
@@ -38,12 +38,12 @@ public with sharing class LadminAIAppointmentAnalyticsService {
         }
         return output;
     }
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static Snapshot getSnapshot() {
         Date first = Date.today().toStartOfMonth();
         return getSnapshotForRange(first, first.addMonths(1).addDays(-1));
     }
-    @AuraEnabled(cacheable=true)
+    @AuraEnabled
     public static Snapshot getSnapshotForRange(Date startDate, Date endDate) {
         Date first = startDate == null ? Date.today().toStartOfMonth() : startDate;
         Date last = endDate == null ? first.addMonths(1).addDays(-1) : endDate;
