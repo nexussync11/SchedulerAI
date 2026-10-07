@@ -77,19 +77,19 @@ Expected: timezone saves; the incomplete setup steps are clearly identified; no 
 
 ### 3. Location and edition guardrail
 
-1. Open **Locations** and create/activate `Security Review Clinic`.
-2. Create an inactive second Location if desired.
-3. Attempt to activate another Location.
+1. Open **Locations** and create/activate two Locations, including `Security Review Clinic`.
+2. Create an additional inactive Location if desired.
+3. Attempt to activate the third Location.
 
-Expected: the first Location works; inactive/history records are not unnecessarily blocked; a second active Location is rejected with exactly `Additional active locations are not available in this edition.`
+Expected: the first two Locations work; inactive/history records are not unnecessarily blocked; a third active Location is rejected with exactly `Additional active locations are not available in this edition.`
 
 ### 4. Resource and edition guardrail
 
-1. Open **Doctors / Resources** and create/activate `Security Review Resource`.
-2. Attempt to activate a second resource.
-3. Assign the active resource to `Security Review Clinic`.
+1. Open **Doctors / Resources** and create/activate five resources, including `Security Review Resource`.
+2. Attempt to activate a sixth resource.
+3. Assign an active resource to `Security Review Clinic`.
 
-Expected: the first resource and assignment work; a second active resource is rejected with exactly `Additional active service resources are not available in this edition.`
+Expected: the first five resources and assignments work; inactive/history records are not unnecessarily blocked; a sixth active resource is rejected with exactly `Additional active service resources are not available in this edition.`
 
 ### 5. Service catalog
 
