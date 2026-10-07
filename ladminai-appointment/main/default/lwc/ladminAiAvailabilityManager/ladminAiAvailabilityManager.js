@@ -31,6 +31,22 @@ function emptyRows() {
     }));
 }
 
+function readField(record, apiName) {
+    if (!record) {
+        return undefined;
+    }
+    if (Object.prototype.hasOwnProperty.call(record, apiName)) {
+        return record[apiName];
+    }
+    const expectedName = apiName.toLowerCase();
+    const expectedSuffix = `__${expectedName}`;
+    const resolvedKey = Object.keys(record).find((key) =>
+        key.toLowerCase() === expectedName ||
+        key.toLowerCase().endsWith(expectedSuffix)
+    );
+    return resolvedKey ? record[resolvedKey] : undefined;
+}
+
 export default class LadminAiAvailabilityManager extends LightningElement {
     resources = [];
     locations = [];
@@ -153,21 +169,32 @@ export default class LadminAiAvailabilityManager extends LightningElement {
     }
 
     get specialDateRows() {
-        return this.specialDates.map((row) => ({
-            ...row,
-            typeLabel: row.Override_Type__c === 'Unavailable'
-                ? 'Unavailable / Holiday' : 'Custom Hours',
-            hoursLabel: row.Override_Type__c === 'Unavailable'
-                ? 'No booking slots'
-                : `${this.toInputTime(row.Start_Time__c)} â€“ ${this.toInputTime(row.End_Time__c)}`
-        }));
+        return this.specialDates.map((row) => {
+            const overrideDate = readField(row, 'Override_Date__c');
+            const overrideType = readField(row, 'Override_Type__c');
+            const startTime = readField(row, 'Start_Time__c');
+            const endTime = readField(row, 'End_Time__c');
+            return {
+                ...row,
+                overrideDate,
+                overrideType,
+                typeLabel: overrideType === 'Unavailable'
+                    ? 'Unavailable / Holiday' : 'Custom Hours',
+                hoursLabel: overrideType === 'Unavailable'
+                    ? 'No booking slots'
+                    : `${this.toInputTime(startTime)} â€“ ${this.toInputTime(endTime)}`
+            };
+        });
     }
 
     get specialDateMonths() {
         const groups = new Map();
         this.specialDateRows.forEach((row) => {
-            const date = new Date(`${row.Override_Date__c}T12:00:00Z`);
-            const key = row.Override_Date__c.slice(0, 7);
+            if (!row.overrideDate) {
+                return;
+            }
+            const date = new Date(`${row.overrideDate}T12:00:00Z`);
+            const key = row.overrideDate.slice(0, 7);
             if (!groups.has(key)) {
                 groups.set(key, {
                     key,
@@ -183,7 +210,7 @@ export default class LadminAiAvailabilityManager extends LightningElement {
                 weekday: new Intl.DateTimeFormat('en-GB', {
                     weekday: 'short', timeZone: 'UTC'
                 }).format(date),
-                cardClass: row.Override_Type__c === 'Unavailable'
+                cardClass: row.overrideType === 'Unavailable'
                     ? 'override-day override-day_closed'
                     : 'override-day override-day_custom'
             });
@@ -258,16 +285,18 @@ export default class LadminAiAvailabilityManager extends LightningElement {
                     locationId: this.locationId
                 })
             ]);
-            const byDay = new Map(existing.map((row) => [row.Day_Of_Week__c, row]));
+            const byDay = new Map(existing.map((row) => [
+                readField(row, 'Day_of_Week__c'), row
+            ]));
             this.days = DAYS.map((day) => {
                 const row = byDay.get(day);
                 return {
                     day,
-                    isActive: row?.Is_Active__c || false,
-                    start: this.toInputTime(row?.Start_Time__c),
-                    end: this.toInputTime(row?.End_Time__c),
-                    breakStart: this.toInputTime(row?.Break_Start__c),
-                    breakEnd: this.toInputTime(row?.Break_End__c)
+                    isActive: readField(row, 'Is_Active__c') || false,
+                    start: this.toInputTime(readField(row, 'Start_Time__c')),
+                    end: this.toInputTime(readField(row, 'End_Time__c')),
+                    breakStart: this.toInputTime(readField(row, 'Break_Start__c')),
+                    breakEnd: this.toInputTime(readField(row, 'Break_End__c'))
                 };
             });
             this.specialDates = specialDates || [];
@@ -369,18 +398,18 @@ export default class LadminAiAvailabilityManager extends LightningElement {
     }
 
     handleEditOverride(event) {
-        const row = this.specialDates.find(
+        const row = this.specialDateRows.find(
             (item) => item.Id === event.currentTarget.dataset.id
         );
         if (!row) return;
         this.overrideId = row.Id;
-        this.overrideDate = row.Override_Date__c;
+        this.overrideDate = row.overrideDate;
         this.overrideEndDate = null;
-        this.overrideType = row.Override_Type__c;
-        this.overrideStart = this.toInputTime(row.Start_Time__c);
-        this.overrideEnd = this.toInputTime(row.End_Time__c);
-        this.overrideBreakStart = this.toInputTime(row.Break_Start__c);
-        this.overrideBreakEnd = this.toInputTime(row.Break_End__c);
+        this.overrideType = row.overrideType;
+        this.overrideStart = this.toInputTime(readField(row, 'Start_Time__c'));
+        this.overrideEnd = this.toInputTime(readField(row, 'End_Time__c'));
+        this.overrideBreakStart = this.toInputTime(readField(row, 'Break_Start__c'));
+        this.overrideBreakEnd = this.toInputTime(readField(row, 'Break_End__c'));
     }
 
     async refreshSpecialDates() {
