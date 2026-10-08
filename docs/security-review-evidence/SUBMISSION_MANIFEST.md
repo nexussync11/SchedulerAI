@@ -2,10 +2,10 @@
 
 ## Include
 
-1. Exact managed package/version identity: `0HoOS00000003Nh0AI` / `04tOS00000MJ0ndYAD`.
-2. Source repository or reviewer-accessible source archive pinned to commit `6e2cc33d440467d88b4e7a9315588823556947a9`.
-3. `docs/security-review-evidence/artifacts/CodeAnalyzerReport.json` for internal traceability.
-4. `docs/security-review-evidence/artifacts/CodeAnalyzerReport.html` as the uploadable Code Analyzer report.
+1. Exact managed package/version identity: `0HoOS00000003Nh0AI` / `04tOS00000MJ7abYAD`.
+2. Source repository or reviewer-accessible source archive pinned to package-build commit `924973268fb7c0c6e66b756fc23be9c9e921b194`.
+3. `docs/security-review-evidence/artifacts/CodeAnalyzerReport-1.0.0.7.json` for internal traceability.
+4. `docs/security-review-evidence/artifacts/CodeAnalyzerReport-1.0.0.7.html` as the uploadable Code Analyzer report.
 5. This evidence folder, especially the Moderate finding and system-context explanations.
 6. Customer installation guide and security reviewer test guide prepared for this version.
 7. Privacy policy, terms of service and support details after the publisher confirms their public URLs/contact information.

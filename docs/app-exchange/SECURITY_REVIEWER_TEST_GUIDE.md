@@ -7,11 +7,11 @@
 | Product | LadminAI Appointment Scheduler |
 | Managed 2GP package | `0HoOS00000003Nh0AI` |
 | Namespace | `LadminAI` |
-| Validated beta | `1.0.0.6` |
-| Validated beta version ID | `04tOS00000MJ0ndYAD` |
+| Released version | `1.0.0.7` |
+| Released version ID | `04tOS00000MJ7abYAD` |
 | Package relationships | Independent; no Data Search or Lead Balancer dependency or ancestry |
 
-The version submitted for review must be confirmed at submission time. Do not promote, release, or submit the beta named above solely because it is listed in this guide.
+Submit only the released version identified above. Do not substitute another LadminAI product or package version.
 
 ## Reviewer org and credentials status
 
@@ -52,7 +52,7 @@ Create only synthetic data in the dedicated reviewer org:
 - One future holiday/special-date override and one custom-hours override on another future date.
 - At least one future appointment and, when dashboard history is needed, a small number of synthetic past appointments with varied statuses.
 
-The default edition limit is one active Location and one active resource. Reuse those records throughout the review; inactive/historical records can remain.
+The FREE edition limit is two active Locations and five active resources. Inactive and historical records can remain.
 
 ## Test sequence
 

@@ -1,6 +1,6 @@
 # LadminAI Appointment Scheduler — Security Review Evidence
 
-Evidence baseline: Git commit `6e2cc33d440467d88b4e7a9315588823556947a9` and managed 2GP beta `1.0.0.6` (`04tOS00000MJ0ndYAD`) in package `0HoOS00000003Nh0AI`.
+Evidence baseline: exact package-build source commit `924973268fb7c0c6e66b756fc23be9c9e921b194` and released managed 2GP version `1.0.0.7` (`04tOS00000MJ7abYAD`) in package `0HoOS00000003Nh0AI`.
 
 This folder is the reviewer-facing index for the Appointment Scheduler product only. It does not describe or include LadminAI Data Search, LadminAI Lead Balancer, the legacy LadminAI package, or Harley metadata.
 
@@ -8,8 +8,8 @@ This folder is the reviewer-facing index for the Appointment Scheduler product o
 
 | Evidence | Location | Result / purpose |
 |---|---|---|
-| Final AppExchange Code Analyzer JSON | [`artifacts/CodeAnalyzerReport.json`](artifacts/CodeAnalyzerReport.json) | 0 severity 1 (Critical), 0 severity 2 (High), 7 severity 3 (Moderate) |
-| Human-readable analyzer report | [`artifacts/CodeAnalyzerReport.html`](artifacts/CodeAnalyzerReport.html) | Browser-readable scan evidence |
+| Final AppExchange Code Analyzer JSON | [`artifacts/CodeAnalyzerReport-1.0.0.7.json`](artifacts/CodeAnalyzerReport-1.0.0.7.json) | 0 severity 1 (Critical), 0 severity 2 (High), 7 severity 3 (Moderate) |
+| Human-readable analyzer report | [`artifacts/CodeAnalyzerReport-1.0.0.7.html`](artifacts/CodeAnalyzerReport-1.0.0.7.html) | Browser-readable scan evidence |
 | Moderate finding disposition | [MODERATE_FINDINGS.md](MODERATE_FINDINGS.md) | Field-by-field explanation of all seven `ProtectSensitiveData` results |
 | CRUD/FLS/sharing assessment | [CRUD_FLS_SHARING.md](CRUD_FLS_SHARING.md) | Security enforcement and intentional system-context justification |
 | Test and packaging evidence | [VALIDATION_EVIDENCE.md](VALIDATION_EVIDENCE.md) | Package identity, test, install and uninstall record |
@@ -17,8 +17,8 @@ This folder is the reviewer-facing index for the Appointment Scheduler product o
 
 ## Analyzer integrity
 
-- `artifacts/CodeAnalyzerReport.json` SHA-256: `54C837B64F2B803AEAA508BC990F5B4C3C817002A87231F2E8821CF6DF77837B`
-- `artifacts/CodeAnalyzerReport.html` SHA-256: `5099675DCC57C3D3E32AD9907410DCE0F96C4D024F86C98BA739EF4363E583A4`
+- `artifacts/CodeAnalyzerReport-1.0.0.7.json` SHA-256: `54C837B64F2B803AEAA508BC990F5B4C3C817002A87231F2E8821CF6DF77837B`
+- `artifacts/CodeAnalyzerReport-1.0.0.7.html` SHA-256: `F7EC717B57B432D6A9CD1C8034E4CDEF2F49148A187B8B36583E5C80972707A3`
 - Analyzer versions recorded by the JSON: Salesforce Code Analyzer `0.48.0`, PMD engine `0.41.0`.
 
 ## Secret-handling statement
@@ -27,7 +27,7 @@ No OpenAI API key, bearer token, customer credential, reviewer password, or inst
 
 ## Before portal submission
 
-Upload the immutable HTML report and the relevant supporting Markdown documents in the security-review wizard. Salesforce's current guidance requires a Code Analyzer report generated with the AppExchange and Recommended:Security rule selectors, and separately requires the Source Code Scanner (Checkmarx) scan. Confirm the submitted package version is the promoted version intended for review; this folder documents beta `1.0.0.6` and must be refreshed if a different version is submitted.
+Upload the immutable HTML report and the relevant supporting Markdown documents in the security-review wizard. Salesforce's current guidance requires a Code Analyzer report generated with the AppExchange and Recommended:Security rule selectors, and separately requires the Source Code Scanner (Checkmarx) scan. This folder documents released version `1.0.0.7`; it must be refreshed if a different version is submitted.
 
 Official references:
 

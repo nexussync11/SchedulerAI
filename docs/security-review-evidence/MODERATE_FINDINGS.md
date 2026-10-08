@@ -14,7 +14,7 @@ The final AppExchange ruleset reports seven Moderate findings and no Critical or
 
 ## Reviewer verification
 
-1. Inspect the field metadata referenced by `artifacts/CodeAnalyzerReport.json`.
+1. Inspect the field metadata referenced by `artifacts/CodeAnalyzerReport-1.0.0.7.json`.
 2. Trace the fields' Apex usage. Values are constructed from business-record identifiers or configuration references; they are not read as authorization material.
 3. Inspect the Named/External Credential metadata. No secret is present in source control or package metadata.
 4. Confirm no documentation or test fixture contains an actual API key.
